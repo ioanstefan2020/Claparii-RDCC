@@ -300,6 +300,7 @@ def test_smoke_not_found_envelope(client: TestClient) -> None:
         "/index.html",
         "/employee/profile.html",
         "/employee/clarify.html",
+        "/employee/plan.html",
         "/employer/index.html",
     ],
 )
