@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PrimaZi - Setări & Preferințe de Confort</title>
+  <style>
+    :root {
+      --primary: #0d9488;
+      --primary-dark: #0f766e;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --border: #cbd5e1;
+      --focus-ring: #f59e0b;
+      --radius: 12px;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 840px;
+      margin: 0 auto;
+      padding: 32px 20px 80px;
+    }
+
+    header {
+      margin-bottom: 32px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 20px;
+    }
+
+    .header-title-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo-badge {
+      width: 48px;
+      height: 48px;
+      background: var(--primary);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 24px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+
+    p.subtitle {
+      margin: 6px 0 0;
+      color: var(--text-muted);
+      font-size: 16px;
+    }
+
+    .section-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+
+    .section-card h2 {
+      margin-top: 0;
+      font-size: 20px;
+      color: var(--primary-dark);
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .question-block {
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .question-prompt {
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+
+    .question-help {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .radio-card {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 14px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      min-height: 44px;
+      transition: all 0.15s ease;
+    }
+
+    .radio-card:hover {
+      border-color: var(--primary);
+      background: #f0fdfa;
+    }
+
+    .radio-card input[type="radio"] {
+      margin-top: 4px;
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
+    }
+
+    .radio-card.selected {
+      border-color: var(--primary);
+      background: #f0fdfa;
+      box-shadow: 0 0 0 1px var(--primary);
+    }
+
+    .radio-label {
+      font-weight: 600;
+      font-size: 14px;
+      display: block;
+    }
+
+    .radio-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: block;
+      margin-top: 2px;
+    }
+
+    /* Free text section */
+    textarea {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 12px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 15px;
+      line-height: 1.5;
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    textarea:focus, input[type="text"]:focus {
+      outline: 3px solid var(--focus-ring);
+      border-color: var(--primary);
+    }
+
+    .char-counter {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* Preview Card */
+    .preview-box {
+      border: 2px dashed var(--primary);
+      border-radius: 10px;
+      padding: 20px;
+      background: #fafafa;
+      margin-top: 14px;
+    }
+
+    .preview-box p {
+      margin: 0;
+      line-height: 1.7;
+    }
+
+    /* Form rows */
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .form-row label {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    input[type="text"] {
+      padding: 10px 14px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: inherit;
+    }
+
+    /* Action buttons */
+    .btn {
+      min-height: 44px;
+      padding: 10px 18px;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1.5px solid var(--border);
+      background: white;
+      color: var(--text);
+      transition: all 0.15s ease;
+    }
+
+    .btn:hover {
+      background: #f1f5f9;
+    }
+
+    .btn:focus-visible {
+      outline: 3px solid var(--focus-ring);
+      outline-offset: 2px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-danger {
+      color: #dc2626;
+      border-color: #fca5a5;
+    }
+
+    .btn-danger:hover {
+      background: #fef2f2;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .status-toast {
+      padding: 12px 18px;
+      border-radius: 8px;
+      background: #ecfdf5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+      margin-top: 16px;
+      display: none;
+      font-weight: 600;
+    }
+
+    .status-toast.show {
+      display: block;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-title-row">
+        <div class="logo-badge" aria-hidden="true">P</div>
+        <div>
+          <h1>PrimaZi - Setări de Confort</h1>
+          <p class="subtitle">Personalizează cum vrei să citești și să primești explicațiile pe orice pagină web.</p>
+        </div>
+      </div>
+    </header>
+
+    <div id="statusToast" class="status-toast" role="status" aria-live="polite"></div>
+
+    <!-- Section 1: 7 Comfort Questions -->
+    <section class="section-card" aria-labelledby="heading-questions">
+      <h2 id="heading-questions">1. Chestionar de confort (7 întrebări)</h2>
+      <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
+        Răspunde în ritmul tău. Întrebările ajustează automat mărimea textului, spațierea, nivelul de detaliu și aspectul vizual. Fără întrebări medicale sau diagnostice.
+      </p>
+      <div id="questionsContainer"></div>
+    </section>
+
+    <!-- Section 2: Free text preferences -->
+    <section class="section-card" aria-labelledby="heading-freetext">
+      <h2 id="heading-freetext">2. Preferințe în propriile tale cuvinte</h2>
+      <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 12px;">
+        Descrie cum preferi să fie adaptat textul (de exemplu: <em>„folosește propoziții scurte, extrage verbele de acțiune și folosește un ton direct”</em>).
+      </p>
+      <label for="freeTextInput" class="sr-only">Preferințe de stil în cuvintele tale</label>
+      <textarea id="freeTextInput" maxlength="300" placeholder="Scrie aici preferințele tale de exprimare (maxim 300 de caractere)..."></textarea>
+      <div class="char-counter">
+        <span>Fără etichete medicale. Doar instrucțiuni despre stilul preferat.</span>
+        <span id="charCount">0 / 300</span>
+      </div>
+    </section>
+
+    <!-- Section 3: Live Preview -->
+    <section class="section-card" aria-labelledby="heading-preview">
+      <h2 id="heading-preview">3. Previzualizare în timp real</h2>
+      <p style="font-size: 14px; color: var(--text-muted);">
+        Așa va apărea textul adaptat în fereastra extensiei:
+      </p>
+      <div id="previewBox" class="preview-box">
+        <p id="previewText">
+          <strong>Luni, 28 octombrie la ora 09:00:</strong> Te prezinți la recepția clădirii B pentru instructaj. Completezi formularul intern până la sfârșitul săptămânii.
+        </p>
+      </div>
+    </section>
+
+    <!-- Section 4: Advanced & Connection -->
+    <section class="section-card" aria-labelledby="heading-advanced">
+      <h2 id="heading-advanced">4. Conexiune & Mod Local</h2>
+
+      <div class="form-row">
+        <label for="backendUrlInput">Adresă server API PrimaZi</label>
+        <input type="text" id="backendUrlInput" value="http://localhost:8000">
+      </div>
+
+      <div class="form-row">
+        <label for="tokenInput">Token Securitate Extensie (X-Ext-Token)</label>
+        <input type="text" id="tokenInput" value="primazi-demo-2026">
+      </div>
+
+      <div style="margin-top: 14px;">
+        <label class="radio-card" style="width: auto;">
+          <input type="checkbox" id="localOnlyCheckbox" style="margin-top: 2px; width: 18px; height: 18px;">
+          <div>
+            <span class="radio-label">Păstrează textul doar pe acest dispozitiv (Mod offline complet)</span>
+            <span class="radio-desc">Textul nu va părăsi niciodată browserul. Adaptarea se va face prin reguli locale, fără conexiune la serverul AI.</span>
+          </div>
+        </label>
+      </div>
+    </section>
+
+    <!-- Section 5: Backup & Reset -->
+    <section class="section-card" aria-labelledby="heading-sync">
+      <h2 id="heading-sync">5. Salvare, Export & Sincronizare</h2>
+      <div class="btn-group">
+        <button type="button" id="saveBtn" class="btn btn-primary">💾 Salvează setările</button>
+        <button type="button" id="exportBtn" class="btn">📤 Exportă setări (JSON)</button>
+        <button type="button" id="importBtn" class="btn">📥 Importă setări (JSON)</button>
+        <input type="file" id="importFileInput" accept=".json" style="display: none;">
+        <button type="button" id="resetBtn" class="btn btn-danger">🔄 Resetează la inițial</button>
+      </div>
+    </section>
+  </div>
+
+  <script type="module" src="options.js"></script>
+</body>
+</html>

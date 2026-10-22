@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <title>PrimaZi - Opțiuni Rapide</title>
+  <style>
+    body {
+      width: 300px;
+      margin: 0;
+      padding: 16px;
+      font-family: 'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      color: #0f172a;
+      background: #ffffff;
+      box-sizing: border-box;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      border-bottom: 1.5px solid #e2e8f0;
+      padding-bottom: 10px;
+    }
+
+    .logo-badge {
+      width: 32px;
+      height: 32px;
+      background: #0d9488;
+      color: white;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: #0f766e;
+    }
+
+    .control-group {
+      margin-bottom: 14px;
+    }
+
+    .control-label {
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: block;
+      font-size: 13px;
+    }
+
+    select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 13px;
+      background: #f8fafc;
+      cursor: pointer;
+    }
+
+    select:focus {
+      outline: 2px solid #f59e0b;
+      border-color: #0d9488;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .toggle-row label {
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .toggle-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #0d9488;
+      cursor: pointer;
+    }
+
+    .btn-options {
+      width: 100%;
+      margin-top: 12px;
+      padding: 10px;
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.15s ease;
+    }
+
+    .btn-options:hover {
+      background: #e2e8f0;
+    }
+
+    .btn-options:focus-visible {
+      outline: 2px solid #0d9488;
+    }
+
+    .site-info {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo-badge" aria-hidden="true">P</div>
+    <div>
+      <h1>PrimaZi Claritate</h1>
+      <div id="activeHost" class="site-info">Detectare pagină...</div>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <div class="toggle-row">
+      <label for="siteEnabledCheckbox">Activ pe această pagină</label>
+      <input type="checkbox" id="siteEnabledCheckbox" checked>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label for="readingLevelSelect" class="control-label">Nivel de simplificare</label>
+    <select id="readingLevelSelect">
+      <option value="1">Nivel 1 - Foarte simplu (Ușor de citit)</option>
+      <option value="2" selected>Nivel 2 - Simplu & direct</option>
+      <option value="3">Nivel 3 - Text fidel & curățat</option>
+    </select>
+  </div>
+
+  <div class="control-group">
+    <div class="toggle-row">
+      <label for="localOnlyCheckbox">Mod offline (pe dispozitiv)</label>
+      <input type="checkbox" id="localOnlyCheckbox">
+    </div>
+  </div>
+
+  <button type="button" id="openSettingsBtn" class="btn-options">
+    ⚙️ Deschide toate setările
+  </button>
+
+  <script src="popup.js"></script>
+</body>
+</html>
