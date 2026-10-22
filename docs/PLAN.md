@@ -6,9 +6,9 @@
 | Kickoff done | 0:45 | 12:45 | contract frozen, roles/git set | [x] Complete |
 | **M1** skeleton on main | 1:30 | 13:30 | app runs in mock mode, check.sh green on all machines | [x] Tagged `good-1` |
 | **M2** features on main (mock) | 8:00 | 20:00 | clickable demo path with mock LLM, check.sh green | [x] Complete (All F1-F6 on main) |
-| **M3** real-LLM integration | 14:00 | 02:00 | demo script passes with real LLM bake-off | [ ] In progress |
-| **Harden done** | 19:00 | 07:00 | a11y audit, README, fresh-clone OK | [ ] Next |
-| **FREEZE** | 19:00 | 07:00 | no new features | [ ] |
+| **M3** real-LLM integration & UI rebuild | 14:00 | 02:00 | demo script passes with real LLM bake-off, Gemini shell | [x] Complete (N3.1-N3.6 on main, Ollama/Groq/Gemini ready) |
+| **Harden done** | 19:00 | 07:00 | a11y audit, README, fresh-clone OK | [x] Green gate (292 tests, WCAG AA static, zero raw colors) |
+| **FREEZE** | 19:00 | 07:00 | no new features | [ ] Active |
 | Rehearsal x2 + recording | 19:00–22:00 | 07:00–10:00 | timed runs, backup video | [ ] |
 | Submission slack | 22:00–23:00 | 10:00–11:00 | submit early | [ ] |
 | Stop coding | 24:00 | 12:00 | hard stop | [ ] |
@@ -41,6 +41,11 @@ Browser (web/, vanilla ES modules)                         FastAPI (app/)
 - [x] **F4: Meeting Helper** — P1 + P2 (shipped in `8f0e19f` + `d3d6aac`, `/api/meeting/summarize` + `web/employee/meeting.html`)
 - [x] **F5: Adjustment Request** — P3 + P2 (shipped in `11d4a2a` + `8cc11f9`, `/api/adjustments/catalog`, `/draft` + `web/employee/adjustments.html`)
 - [x] **F6: Employer Accessibility Check** — P3 (shipped in `f71403b` + `709f9bc`, `/api/employer/analyze` & `web/employer/index.html`)
+- [x] **Frontend Rebuild (Gemini Shell & Tokens)** — P3 (shipped in `1ac1664` + `ba3b8e9`, `tokens.css`, `shell.css`, `web/index.html`, `web/js/home.js`)
+- [x] **Welcome Questionnaire & Live Preview** — P3 (shipped in `65a9e11`, `web/welcome.html`, `web/js/welcome.js`)
+- [x] **Settings / Comfort Control Page** — P3 (shipped in `1016215`, `web/settings.html`, `web/js/settings.js`)
+- [x] **Local Browser Library Screen** — P3 (shipped in `bfff3d3`, `web/library.html`, `web/js/library.js`, `web/js/library-storage.js`)
+- [x] **Employer View Shell Migration** — P3 (shipped in `874a835`, `web/employer/index.html`, `web/employer/employer.js`)
 - [x] **Safety & Guardrails Layer** — P1 (shipped in `4acebf0`, `app/safety.py`)
 - [x] **Stretch S2: Tone Suggestion** — P1 (shipped in `app/routers/tone.py`)
 - [x] **Smoke Test Suite** — P3 (shipped in `709f9bc`, `scripts/smoke.sh`, `tests/test_smoke.py`, expanded in M2)

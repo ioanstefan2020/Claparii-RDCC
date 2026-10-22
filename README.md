@@ -48,6 +48,11 @@ Este o platformă bivalentă (Angajat & Angajator), proiectată de la zero pentr
 - **F4. Asistent pentru Ședințe (`/employee/meeting.html`):** Transcriere vocală live (`ro-RO`) sau lipire de text → extrage decizii, acțiuni cu persoană responsabilă (`who`) și puncte neclare. **Strict text-only: zero inferență de emoții din voce sau mimică** (conformitate strictă cu Regulamentul European privind Inteligența Artificială - EU AI Act).
 - **F5. Solicitare de Adaptări Fără Diagnostic (`/employee/adjustments.html`):** Angajatul selectează nevoi funcționale (ex: instrucțiuni scrise, spațiu liniștit, program flexibil) dintr-un catalog curat legislativ și generează un e-mail politicos către HR/manager, **fără a menționa vreun diagnostic medical**.
 
+### Interfață Unificată (Gemini Shell) & Confort Cognitiv
+- **Chestionar de Bun Venit cu Previzualizare Activă (`/welcome.html`):** 7 întrebări prietenoase în limbaj natural; stilurile (culori, font, spațiere) se actualizează reactiv în timp real în panoul de previzualizare.
+- **Panou de Control Confort (`/settings.html`):** Gestionare completă a preferințelor vizuale și cognitive, resetare parțială sau totală cu dialog de confirmare accesibil și export/import JSON offline pentru transfer fără server.
+- **Bibliotecă Locală de Lucru (`/library.html`):** Stocare 100% în browser (`localStorage`) a documentelor și planurilor analizate, cu căutare live, filtrare, vizualizare modală cu citate ancorate și ștergere cu toast de anulare (undo de 7 secunde).
+
 ### Pentru Angajatori & HR (Employer Side)
 - **F6. Audit de Accesibilitate Cognitivă a Documentelor (`/employer/index.html`):**
   - **Scor de lizibilitate determinist (0–100):** Calculat matematic în cod (număr fraze, medie cuvinte/frază, prag fraze lungi $\ge 25$ cuvinte, protecție abrevieri românești `str.`, `nr.`, `art.`, `et.`, `ap.` și numere zecimale). Evaluează **documentul, niciodată un om**.
