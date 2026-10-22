@@ -1,0 +1,9 @@
+Andrei: Bun, să începem. Subiectul de azi este lansarea noii pagini de produs.
+Ioana: Eu am terminat designul, dar mai am nevoie de textele finale de la marketing.
+Radu: Textele vor fi gata până marți, le trimit eu pe e-mail.
+Andrei: Perfect. Atunci, Ioana, tu integrezi textele miercuri și îmi dai un semn când e gata de verificare.
+Mihai: Eu verific partea de testare joi dimineață. Ar trebui să vedem și cum arată pe telefon.
+Andrei: Da, și să nu uităm de decizia de ieri: lansăm vineri, 6 noiembrie, nu mai amânăm.
+Ioana: Am o întrebare: cine vorbește cu clientul despre noul termen?
+Andrei: Rămâne la mine, îi scriu azi.
+Andrei: Altceva? Nu. Mulțumesc, la revedere.

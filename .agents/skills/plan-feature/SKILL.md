@@ -1,13 +1,13 @@
 ---
 name: plan-feature
-description: Use before implementing any feature that touches more than one file or takes more than ~30 minutes. Produces a spec with tasks, interfaces, acceptance criteria and risks in docs/PLAN.md.
+description: Use before implementing any feature that touches more than one file or takes more than ~30 minutes. Produces a spec with tasks, interfaces, acceptance criteria and risks in your own docs/plan/<me>.md.
 ---
 
 # Plan a feature
 
 ## Steps
-1. Read `AGENTS.md`, `docs/PROJECT.md`, `docs/PLAN.md`, and the code the feature will touch.
-2. Write the spec into `docs/PLAN.md` as `## Feature: <name>` using this template:
+1. Read `AGENTS.md`, `docs/PROJECT.md`, `docs/plan/<me>.md`, and the code the feature will touch.
+2. Write the spec into `docs/plan/<me>.md` as `## Feature: <name>` using this template:
 
 ```
 ## Feature: <name>

@@ -11,7 +11,7 @@ Judges see the demo for a few minutes. A working, rehearsed 3-minute demo beats 
 - Declare feature freeze. From here: only bug fixes on the demo path and demo prep. New ideas go to the Backlog.
 - Tag the last known good commit: `git tag good-freeze`.
 
-## 2. Demo script (write it in `docs/PROJECT.md` → Demo story)
+## 2. Demo script (P3 writes it in `docs/PROJECT.md` → Demo story; others send their text to P3)
 - 30 s: problem and who has it (a concrete person or situation, not an abstraction).
 - 90 s: live walkthrough of the happy path, 3–5 steps, exact inputs prepared in advance.
 - 30 s: the technical depth worth bragging about (architecture, tests, how it was built, hard problem solved).

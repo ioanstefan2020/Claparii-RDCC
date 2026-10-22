@@ -8,7 +8,7 @@ description: Use when splitting a feature across multiple subagents at once. Def
 Parallel agents are fast only if they cannot collide. Collisions cost more than they save.
 
 ## Preconditions (all must be true)
-- A spec exists in `docs/PLAN.md` and the **interfaces are frozen** (types, signatures, endpoints, message formats).
+- A spec exists in `docs/plan/<me>.md` and the **interfaces are frozen** (types, signatures, endpoints, message formats).
 - Tasks are independent: each can be built and tested without the others' code, using the frozen interface and a stub/fake of the other side.
 - Each task **owns a disjoint set of files** (including its own test files). Shared files (config, routes registry, package manifests, `README`) are owned by the orchestrator only.
 

@@ -5,12 +5,12 @@ description: Use before every push to the shared repo and before final submissio
 
 # Ship checklist
 
-## Before every push (2 minutes)
+## Before every push (2 minutes) — team mode: push ONLY with `./scripts/ship.sh "type: message"` (it runs the rebase, ownership check and gate for you)
 - [ ] `./scripts/check.sh` green (read the output, not just the exit code)
 - [ ] The feature was run end to end at least once since the last change
 - [ ] `git status` clean of junk: no `.env`, keys, `node_modules`, build output, large files, editor files
 - [ ] `git diff --stat` matches what you intended (no surprise files)
-- [ ] Commit message is clear; `docs/PLAN.md` ticked and notes added
+- [ ] Commit message is clear; `docs/plan/<me>.md` ticked and notes added
 - [ ] Pull/rebase first if others push to the same branch; re-run the gate after merging
 
 ## Before final submission

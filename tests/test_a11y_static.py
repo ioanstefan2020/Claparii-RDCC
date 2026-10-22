@@ -1,0 +1,138 @@
+"""Static accessibility gate for every HTML file under web/ (owner: p2).
+Catches the cheap, common failures on every check.sh run. It does NOT replace a keyboard-only
+walkthrough and a screen-reader pass (see .agents/skills/a11y-by-design)."""
+import re
+from html.parser import HTMLParser
+from pathlib import Path
+
+import pytest
+
+ROOT = Path(__file__).resolve().parent.parent
+HTML_FILES = sorted((ROOT / "web").rglob("*.html")) if (ROOT / "web").exists() else []
+
+FORM_TAGS = {"input", "select", "textarea"}
+SKIP_INPUT_TYPES = {"hidden", "submit", "button", "reset", "image"}
+
+
+class _Audit(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.html_lang = None
+        self.title_text = ""
+        self.h1_count = 0
+        self.has_main = False
+        self.skip_link = False
+        self.viewport = None
+        self.problems = []
+        self._in_title = False
+        self._label_depth = 0
+        self._label_for = set()
+        self._form_controls = []  # (tag, id, has_aria_name, inside_label)
+        self._button_stack = []
+        self._anchor_stack = []
+
+    def handle_starttag(self, tag, attrs):
+        a = dict(attrs)
+        if tag == "html":
+            self.html_lang = a.get("lang")
+        elif tag == "title":
+            self._in_title = True
+        elif tag == "h1":
+            self.h1_count += 1
+        elif tag == "main" or a.get("role") == "main":
+            self.has_main = True
+        elif tag == "meta" and a.get("name") == "viewport":
+            self.viewport = a.get("content", "")
+        elif tag == "label":
+            self._label_depth += 1
+            if a.get("for"):
+                self._label_for.add(a["for"])
+        elif tag == "img" and "alt" not in a:
+            self.problems.append("<img> without alt attribute")
+        elif tag in FORM_TAGS:
+            if not (tag == "input" and a.get("type", "text") in SKIP_INPUT_TYPES):
+                named = bool(a.get("aria-label") or a.get("aria-labelledby"))
+                self._form_controls.append((tag, a.get("id"), named, self._label_depth > 0))
+        elif tag == "button":
+            self._button_stack.append({"text": "", "named": bool(a.get("aria-label") or a.get("aria-labelledby") or a.get("title"))})
+        elif tag == "a":
+            href = a.get("href", "")
+            self._anchor_stack.append({"href": href, "text": ""})
+        if a.get("tabindex") and a["tabindex"].lstrip("-").isdigit() and int(a["tabindex"]) > 0:
+            self.problems.append(f"positive tabindex on <{tag}> (breaks keyboard order)")
+        if "onclick" in a and tag in {"div", "span", "p", "li"}:
+            self.problems.append(f"onclick on non-interactive <{tag}> (use <button>)")
+
+    def handle_endtag(self, tag):
+        if tag == "title":
+            self._in_title = False
+        elif tag == "label":
+            self._label_depth = max(0, self._label_depth - 1)
+        elif tag == "button" and self._button_stack:
+            b = self._button_stack.pop()
+            if not (b["text"].strip() or b["named"]):
+                self.problems.append("<button> without accessible name")
+        elif tag == "a" and self._anchor_stack:
+            link = self._anchor_stack.pop()
+            if link["href"].startswith("#") and len(link["href"]) > 1 and re.search(r"conținut|continut|skip|main", link["text"], re.I):
+                self.skip_link = True
+
+    def handle_data(self, data):
+        if self._in_title:
+            self.title_text += data
+        if self._button_stack:
+            self._button_stack[-1]["text"] += data
+        if self._anchor_stack:
+            self._anchor_stack[-1]["text"] += data
+
+
+def audit_html(text: str, is_fragment: bool = False) -> list:
+    p = _Audit()
+    p.feed(text)
+    problems = list(p.problems)
+    if not is_fragment:
+        if not p.html_lang:
+            problems.append('<html> missing lang attribute (use lang="ro")')
+        if not p.title_text.strip():
+            problems.append("missing or empty <title>")
+        if p.h1_count != 1:
+            problems.append(f"expected exactly one <h1>, found {p.h1_count}")
+        if not p.has_main:
+            problems.append("missing <main> landmark")
+        if not p.skip_link:
+            problems.append('missing skip link (e.g. <a href="#main">Sari la conținut</a>)')
+        if p.viewport is None:
+            problems.append("missing viewport meta")
+    if p.viewport and re.search(r"user-scalable\s*=\s*(no|0)|maximum-scale\s*=\s*1(\.0)?\b", p.viewport):
+        problems.append("viewport disables zoom")
+    for tag, cid, named, inside in p._form_controls:
+        if not (named or inside or (cid and cid in p._label_for)):
+            problems.append(f"<{tag}{' id=' + cid if cid else ''}> has no label (label[for], wrapping label, or aria-label)")
+    return problems
+
+
+GOOD = """<!doctype html><html lang="ro"><head><meta charset="utf-8"><title>Test</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"></head><body>
+<a href="#main">Sari la conținut</a><header><nav></nav></header>
+<main id="main"><h1>Titlu</h1><label for="t">Text</label><textarea id="t"></textarea>
+<button type="submit">Trimite</button><img src="x.png" alt="Logo"></main></body></html>"""
+
+BAD = """<html><head><meta name="viewport" content="width=device-width, user-scalable=no"></head><body>
+<div onclick="go()">Click</div><img src="x.png"><input id="q"><button></button>
+<h1>A</h1><h1>B</h1></body></html>"""
+
+
+def test_audit_accepts_good_page():
+    assert audit_html(GOOD) == []
+
+
+def test_audit_catches_bad_page():
+    problems = " | ".join(audit_html(BAD))
+    for expected in ["lang", "title", "h1", "main", "skip link", "alt", "no label", "accessible name", "onclick", "zoom"]:
+        assert expected in problems, f"checker missed: {expected}\n{problems}"
+
+
+@pytest.mark.parametrize("path", HTML_FILES, ids=[str(p.relative_to(ROOT)) for p in HTML_FILES])
+def test_page_is_statically_accessible(path):
+    problems = audit_html(path.read_text(encoding="utf-8"))
+    assert not problems, f"{path.relative_to(ROOT)}:\n  - " + "\n  - ".join(problems)
