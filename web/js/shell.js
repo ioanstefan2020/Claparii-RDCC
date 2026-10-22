@@ -248,36 +248,63 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnText = document.getElementById("btn-header-text");
   const btnAudio = document.getElementById("btn-header-audio");
   const btnDyslexia = document.getElementById("btn-header-dyslexia");
+  const btnA11yMenu = document.getElementById("btn-header-a11y-menu");
+  const a11yToolbar = document.querySelector(".a11y-header-toolbar");
 
-  // Contrast mode cycle: Soft/Natural -> Dark -> High-Contrast Light -> Soft/Natural
+  // Mobile accessibility dropdown menu toggle
+  if (btnA11yMenu && a11yToolbar) {
+    btnA11yMenu.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = a11yToolbar.classList.toggle("is-dropdown-open");
+      btnA11yMenu.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!a11yToolbar.contains(e.target) && !btnA11yMenu.contains(e.target)) {
+        if (a11yToolbar.classList.contains("is-dropdown-open")) {
+          a11yToolbar.classList.remove("is-dropdown-open");
+          btnA11yMenu.setAttribute("aria-expanded", "false");
+        }
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && a11yToolbar.classList.contains("is-dropdown-open")) {
+        a11yToolbar.classList.remove("is-dropdown-open");
+        btnA11yMenu.setAttribute("aria-expanded", "false");
+        btnA11yMenu.focus();
+      }
+    });
+  }
+
+  // Theme toggle: exactly 2 modes: Luminos (warm default) <-> Întunecat (relaxing navy)
   if (btnContrast) {
+    // Initial sync based on active theme
+    const activeTheme = root.getAttribute("data-theme") || "light";
+    const initialLabel = activeTheme === "dark" ? "Mod: Întunecat" : "Mod: Luminos";
+    const initialSpan = btnContrast.querySelector("span");
+    if (initialSpan) initialSpan.textContent = initialLabel;
+
     btnContrast.addEventListener("click", () => {
       const currentTheme = root.getAttribute("data-theme") || "light";
-      let nextTheme = "light";
-      let nextContrast = "normal";
-      let label = "Contrast: Cald";
-
-      if (currentTheme === "light" || currentTheme === "system") {
-        nextTheme = "dark";
-        nextContrast = "high-dark";
-        label = "Contrast: Întunecat";
-      } else if (currentTheme === "dark") {
-        nextTheme = "high-contrast-light";
-        nextContrast = "high-light";
-        label = "Contrast: Luminos";
-      } else {
-        nextTheme = "light";
-        nextContrast = "normal";
-        label = "Contrast: Cald";
-      }
+      const isDark = currentTheme === "dark";
+      const nextTheme = isDark ? "light" : "dark";
+      const label = isDark ? "Mod: Luminos" : "Mod: Întunecat";
 
       root.setAttribute("data-theme", nextTheme);
-      root.setAttribute("data-contrast", nextContrast);
+      root.removeAttribute("data-contrast"); // remove high-contrast yellow lines
+
       const span = btnContrast.querySelector("span");
       if (span) span.textContent = label;
+      btnContrast.setAttribute("aria-label", `Comută tema: ${label}`);
+
       updatePref("theme", nextTheme);
-      updatePref("contrast", nextContrast);
-      announce(`Tema a fost schimbată la ${label}.`);
+      updatePref("contrast", "normal");
+      announce(
+        isDark
+          ? "Tema luminoasă relaxantă a fost activată."
+          : "Tema întunecată pe fond bleumarin a fost activată.",
+      );
     });
   }
 

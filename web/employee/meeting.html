@@ -35,9 +35,9 @@
       } catch (e) {}
     })();
   </script>
-  <link rel="stylesheet" href="/shared/a11y.css?v=2.2">
-  <link rel="stylesheet" href="/css/tokens.css?v=2.2">
-  <link rel="stylesheet" href="/css/shell.css?v=2.2">
+  <link rel="stylesheet" href="/shared/a11y.css?v=2.3">
+  <link rel="stylesheet" href="/css/tokens.css?v=2.3">
+  <link rel="stylesheet" href="/css/shell.css?v=2.3">
   <style>
     .meeting-toolbar {
       display: flex;
@@ -210,10 +210,16 @@
           <span class="topbar-title">Ședințe</span>
         </div>
         <div class="topbar-right">
-          <!-- Persistent Accessibility Header Toolbar -->
-          <div class="a11y-header-toolbar" role="toolbar" aria-label="Ajustări rapide de accesibilitate">
-            <button type="button" id="btn-header-contrast" class="a11y-toolbar-btn" aria-label="Comută modul de contrast: Cald, Întunecat sau Luminos">
-              <span>Contrast: Cald</span>
+          <!-- Mobile Dropdown Toggle Button -->
+          <button type="button" id="btn-header-a11y-menu" class="btn-comfort btn-a11y-menu" aria-expanded="false" aria-controls="header-a11y-toolbar" aria-label="Meniu opțiuni confort">
+            <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line></svg>
+            <span>Confort ▾</span>
+          </button>
+
+          <!-- Persistent Accessibility Header Toolbar (Inline on Desktop, Dropdown on Mobile) -->
+          <div id="header-a11y-toolbar" class="a11y-header-toolbar" role="toolbar" aria-label="Ajustări rapide de accesibilitate">
+            <button type="button" id="btn-header-contrast" class="a11y-toolbar-btn" aria-label="Comută modul: Luminos sau Întunecat">
+              <span>Mod: Luminos</span>
             </button>
             <button type="button" id="btn-header-text" class="a11y-toolbar-btn" aria-label="Comută dimensiunea textului: Mediu, Mare sau Foarte Mare">
               <span>Text: Mediu</span>

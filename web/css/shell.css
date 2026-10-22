@@ -435,6 +435,10 @@ aside nav ul {
   font-weight: var(--font-weight-medium);
 }
 
+.btn-a11y-menu {
+  display: none;
+}
+
 .btn-comfort:hover {
   background-color: var(--bg-surface-hover);
 }
@@ -2696,7 +2700,8 @@ mark.quote-highlight {
 .capsule-dropdown-menu,
 .mode-dropdown-menu {
   position: absolute;
-  bottom: calc(100% + var(--space-xs));
+  top: calc(100% + var(--space-xs));
+  bottom: auto;
   left: 0;
   min-width: 260px;
   background-color: var(--gemini-surface);
@@ -2704,7 +2709,7 @@ mark.quote-highlight {
   border-radius: var(--radius-lg);
   padding: var(--space-xs);
   box-shadow: var(--gemini-menu-shadow);
-  z-index: 100;
+  z-index: 1000;
   display: flex;
   flex-direction: column;
   gap: var(--space-xxs);
@@ -2971,25 +2976,27 @@ mark.quote-highlight {
 /* Mobile & Small Tablets (<= 767px) */
 @media (max-width: 767px) {
   .app-topbar {
+    height: 56px;
+    min-height: 56px;
+    padding: 0 var(--space-sm);
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
-    height: auto;
-    min-height: unset;
-    padding: 0;
+    justify-content: space-between;
     background-color: var(--bg-surface);
     border-bottom: 1px solid var(--border-color);
-    gap: 0;
+    position: sticky;
+    top: 0;
+    z-index: 500;
   }
 
   .topbar-left {
     display: flex;
     align-items: center;
     gap: var(--space-xs);
-    height: 52px;
-    padding-left: var(--space-sm);
     flex: 1 1 auto;
+    min-width: 0;
   }
 
   .btn-menu-toggle {
@@ -3006,71 +3013,91 @@ mark.quote-highlight {
   .topbar-title {
     font-size: 1.05rem;
     font-weight: var(--font-weight-bold);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .topbar-right {
-    display: contents;
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    position: relative;
+    flex-shrink: 0;
   }
 
-  .topbar-right > .btn-comfort {
-    height: 36px;
-    min-height: 36px;
-    padding: 0 var(--space-xs);
+  .btn-a11y-menu {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 4px;
+    min-height: 38px;
+    height: 38px;
+    padding: 0 10px;
+    font-size: 0.82rem;
+    border-radius: var(--radius-full);
+    background-color: var(--bg-surface-alt);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .btn-a11y-menu:hover {
+    background-color: var(--bg-surface-hover);
+  }
+
+  .topbar-right > a.btn-comfort {
+    height: 38px;
+    min-height: 38px;
+    padding: 0 10px;
     font-size: 0.82rem;
     border-radius: var(--radius-full);
     display: inline-flex;
     align-items: center;
     gap: 4px;
     border: 1px solid var(--border-color);
+    white-space: nowrap;
   }
 
   .topbar-right > a[href="/welcome.html"] {
-    order: 2;
-    margin-left: auto;
-  }
-
-  .topbar-right > a[href="/settings.html"] {
-    order: 3;
-    margin-right: var(--space-sm);
-    margin-left: 6px;
-  }
-
-  .a11y-header-toolbar {
-    order: 4;
-    width: 100%;
-    flex-basis: 100%;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    overflow-y: hidden;
-    gap: 8px;
-    padding: 6px var(--space-sm) 8px;
-    background-color: var(--bg-surface-alt);
-    border-top: 1px solid var(--border-color);
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-
-  .a11y-header-toolbar::-webkit-scrollbar {
     display: none;
   }
 
-  .a11y-toolbar-btn {
-    flex: 0 0 auto;
-    white-space: nowrap;
-    height: 34px;
-    min-height: 34px;
-    padding: 0 12px;
-    font-size: 0.8rem;
-    font-weight: var(--font-weight-medium);
-    border-radius: var(--radius-full);
+  .a11y-header-toolbar {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 250px;
+    flex-direction: column;
     background-color: var(--bg-surface);
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--gemini-menu-shadow);
+    padding: 8px;
+    gap: 6px;
+    z-index: 1000;
+  }
+
+  .a11y-header-toolbar.is-dropdown-open {
+    display: flex;
+  }
+
+  .a11y-toolbar-btn {
+    width: 100%;
+    height: 42px;
+    min-height: 42px;
+    padding: 0 12px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    border-radius: var(--radius-md);
+    background-color: var(--bg-surface-alt);
     border: 1px solid var(--border-color);
     color: var(--text-main);
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    cursor: pointer;
   }
 
   .a11y-toolbar-btn:hover {
