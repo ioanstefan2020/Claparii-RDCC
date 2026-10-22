@@ -36,7 +36,6 @@ docs/plan/p2.md p2
 docs/decisions/p2.md p2
 
 # ---- P3: frontend rebuild (Gemini shell), evidence, employer ----
-web/ p3
 app/routers/employer.py p3
 app/routers/adjustments.py p3
 app/schemas/employer.py p3
@@ -50,8 +49,35 @@ scripts/smoke.sh p3
 data/ p3
 docs/PROJECT.md p3
 docs/PLAN.md p3
-docs/evidence/ p3
 docs/plan/p3.md p3
 docs/decisions/p3.md p3
-docs/ARCHITECTURE.md p3
-README.md p3
+web/ p3
+web/a11y/ p2
+web/shared/ p2
+web/fonts/ p3
+README.md p1
+docs/ARCHITECTURE.md p1
+docs/evidence/ p2
+docs/DEMO.md p3
+docs/TASKS-WAVE2.md frozen
+docs/PROMPTS-WAVE2.md frozen
+docs/RESEARCH-WAVE2.md frozen
+docs/SETTINGS-SPEC.md p2
+docs/settings.schema.json p2
+docs/DESIGN.md p3
+docs/CONTRACTS-WAVE2.md p1
+docs/PROMPT-SPEC.md p1
+Dockerfile p1
+tests/eval/ p1
+tests/web/ p2
+app/prompts/profile.py p2
+app/routers/profile.py p2
+app/routers/transcribe.py p2
+app/routers/tts.py p2
+app/schemas/profile.py p2
+app/schemas/transcribe.py p2
+tests/backend/test_profile_and_calendar.py p2
+tests/backend/test_transcribe.py p2
+tests/backend/test_tts.py p2
+app/tts/ p2
+app/audio/ p2
