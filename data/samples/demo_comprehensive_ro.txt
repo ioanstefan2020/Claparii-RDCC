@@ -1,0 +1,32 @@
+Subiect: Procedură de integrare operațională și cerințe administrative — Departamentul Tehnic
+De la: Resurse Umane <hr.onboarding@techcorp-romania.example>
+Către: Alexandru Popa <alexandru.popa@techcorp-romania.example>
+Data: 22 Octombrie 2026, 09:15
+
+Stimate domnule Alexandru Popa,
+
+Vă urăm bun venit în cadrul echipei TechCorp Solutions SRL! În vederea finalizării etapei preliminare de integrare operațională și a conformării cu standardele interne de securitate a muncii și confidențialitate, vă aducem la cunoștință următoarele dispoziții și termene imperative:
+
+1. Formalități de acces și recepție:
+Luni, 27 octombrie 2026, la ora 09:00, este obligatoriu să vă prezentați la recepția clădirii West Gate, Corpul B (Bulevardul Preciziei nr. 24, etaj 1), pentru ridicarea ecusonului magnetic de acces și preluarea kitului hardware de lucru de la doamna Elena Dumitrescu din Departamentul IT.
+
+2. Documente contractuale și proceduri bancare:
+Până miercuri, 28 octombrie 2026, aveți obligația de a încărca pe portalul intern al companiei copia scanată a cărții de identitate, extrasul de cont bancar pentru virarea salariului și formularul tipizat F-12 completat și semnat olograf sau cu semnătură electronică calificată.
+
+3. Sesiune obligatorie de instruire:
+Joi, 29 octombrie 2026, între orele 11:00 și 13:00, veți participa prin videoconferință la instructajul introductiv de securitate și sănătate în muncă (SSM) și prevenirea situațiilor de urgență (PSI). Link-ul de conectare securizată va fi transmis pe canalul dedicat de comunicare internă.
+
+4. Sarcini inițiale de echipă:
+Managerul direct, domnul Cristian Radu, solicită să parcurgeți documentația tehnică a proiectului Alpha și să transmiteți o scurtă sinteză cu primele observații cât mai curând posibil, de preferat până joi la prânz, pentru a putea fi inclusă în ordinea de zi a ședinței de retrospectivă.
+
+5. Adaptări rezonabile ale spațiului de lucru:
+În conformitate cu politicile noastre de incluziune și prevederile legale în vigoare, dacă aveți nevoie de adaptări specifice ale mediului de muncă (program flexibil, echipament periferic ergonomic, software de accesibilitate sau spațiu individual cu nivel redus de zgomot), vă rugăm să trimiteți o solicitare confidențială către consilierul de integrare la adresa incluziune@techcorp-romania.example în termen de maximum 10 zile lucrătoare de la începerea activității.
+
+Vă rugăm să confirmați primirea acestei notificări și luarea la cunoștință a instrucțiunilor menționate.
+
+Cu stimă,
+Elena Dumitrescu
+Specialist Onboarding & Resurse Umane
+TechCorp Solutions SRL
+Telefon: 0722 123 456
+Email: hr.onboarding@techcorp-romania.example
