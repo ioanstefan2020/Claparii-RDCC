@@ -53,8 +53,8 @@ def test_plan_html_landmarks_and_controls():
     assert 'aria-live="polite"' in html_text
     assert html_text.count("<h1") == 1
     assert "Planificator de sarcini și termene limită" in html_text
-    assert '<header role="banner">' in html_text
-    assert '<footer role="contentinfo">' in html_text
+    assert ('<header role="banner">' in html_text or '<header class="app-topbar" role="banner">' in html_text)
+    assert ('<footer role="contentinfo">' in html_text or '<footer class="app-footer" role="contentinfo">' in html_text)
 
     # Navigation current page check
     assert 'href="/employee/plan.html" aria-current="page"' in html_text

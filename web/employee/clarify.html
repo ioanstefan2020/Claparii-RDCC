@@ -4,14 +4,36 @@
   <meta charset="utf-8">
   <title>Clarificare Documente &amp; Instrucțiuni — PrimaZi</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Inline <head> loader script reading wp.prefs.v1 to eliminate FOUC -->
+  <script>
+    (function() {
+      try {
+        var raw = localStorage.getItem('wp.prefs.v1');
+        if (raw) {
+          var data = JSON.parse(raw);
+          var p = data && data.prefs ? data.prefs : {};
+          var root = document.documentElement;
+          if (p.theme) root.setAttribute('data-theme', p.theme);
+          if (p.textSize) root.setAttribute('data-text', p.textSize);
+          if (p.spacing) root.setAttribute('data-spacing', p.spacing);
+          if (p.contrast) root.setAttribute('data-contrast', p.contrast);
+          if (p.motion) root.setAttribute('data-motion', p.motion);
+          if (p.font) root.setAttribute('data-font', p.font);
+          if (p.density) root.setAttribute('data-density', p.density);
+          if (p.sidebar) root.setAttribute('data-sidebar', p.sidebar);
+        }
+      } catch (e) {}
+    })();
+  </script>
   <link rel="stylesheet" href="/shared/a11y.css">
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/shell.css">
   <style>
-    /* Clarify Screen specific layout and accessible quote highlight tokens */
     .clarify-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 1.75rem;
-      margin-top: 1.5rem;
+      gap: var(--space-lg);
+      margin-top: var(--space-md);
     }
     @media (min-width: 900px) {
       .clarify-grid {
@@ -26,12 +48,14 @@
       border-radius: var(--radius-sm);
       outline: 2px solid #ca8a04;
     }
-    [data-theme="dark"] mark.quote-highlight {
+    [data-theme="dark"] mark.quote-highlight,
+    [data-contrast="high-dark"] mark.quote-highlight {
       background-color: #78350f;
       color: #fef08a;
       outline: 2px solid #f59e0b;
     }
-    [data-theme="high-contrast"] mark.quote-highlight {
+    [data-theme="high-contrast"] mark.quote-highlight,
+    [data-contrast="high"] mark.quote-highlight {
       background-color: #ffff00;
       color: #000000;
       outline: 3px solid #ffffff;
@@ -42,172 +66,274 @@
   <!-- Skip link for keyboard navigation -->
   <a href="#main" class="skip-link">Sari la conținutul principal</a>
 
-  <!-- Header & Navigation -->
-  <header role="banner">
-    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-      <div>
-        <a href="/index.html" style="text-decoration: none;">
-          <span style="font-size: 1.5rem; font-weight: 800; color: var(--primary);">PrimaZi</span>
+  <div class="app-container">
+    <!-- Mobile Backdrop -->
+    <div id="sidebar-backdrop" class="sidebar-backdrop" tabindex="-1" aria-hidden="true"></div>
+
+    <!-- Collapsible Sidebar -->
+    <aside id="app-sidebar" class="app-sidebar" aria-label="Bara laterală de navigare">
+      <div class="sidebar-header">
+        <a href="/" class="sidebar-brand" aria-label="PrimaZi Acasă">
+          <span class="brand-badge" aria-hidden="true">PZ</span>
+          <span class="sidebar-brand-text">PrimaZi</span>
         </a>
-        <span class="meta-secondary" style="margin-left: 0.5rem; color: var(--text-muted); font-size: 0.95rem;">
-          — Clarificare Documente
-        </span>
       </div>
-      <nav aria-label="Navigare principală">
-        <ul style="list-style: none; display: flex; gap: 1rem; margin: 0; padding: 0; flex-wrap: wrap;">
-          <li><a href="/index.html">Acasă</a></li>
-          <li><a href="/employee/profile.html">Profil &amp; Nevoi</a></li>
-          <li><a href="/employee/clarify.html" aria-current="page">Clarificare</a></li>
-          <li><a href="/employee/plan.html">Planificator</a></li>
-          <li><a href="/employee/meeting.html">Ședințe</a></li>
-          <li><a href="/employee/adjustments.html">Adaptări</a></li>
-          <li><a href="/employer/index.html">Zona Angajator</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
 
-  <!-- Main Content Landmark -->
-  <main id="main">
-    <!-- Live region for accessibility announcements -->
-    <div id="status-live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+      <div class="sidebar-content">
+        <a href="/employee/clarify.html" class="btn-new" aria-label="Pornește o clarificare nouă">
+          <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <span class="btn-new-text">Conversație nouă</span>
+        </a>
 
-    <!-- Page Title & Introduction -->
-    <header style="border-bottom: none; background: transparent; padding: 0; margin-bottom: 1rem;">
-      <h1>Clarifică documente și instrucțiuni de lucru</h1>
-      <p style="font-size: 1.15rem; color: var(--text-muted); max-width: 800px; margin-top: 0.5rem;">
-        Transformă ghidurile de onboarding, procedurile sau mesajele stufoase în pași clari, ușor de urmărit. Fiecare pas este ancorat cu citate exacte în textul original.
-      </p>
-    </header>
+        <!-- Main Navigation Landmark with all required links -->
+        <nav aria-label="Navigare principală">
+          <ul class="sidebar-nav">
+            <li>
+              <a href="/" class="nav-link">
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                <span class="nav-text">Acasă</span>
+              </a>
+            </li>
+            <li>
+              <a href="/library.html" class="nav-link">
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                <span class="nav-text">Bibliotecă</span>
+              </a>
+            </li>
+            <li>
+              <a href="/employee/clarify.html" aria-current="page" class="nav-link active">
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                <span class="nav-text">Clarificare</span>
+              </a>
+            </li>
+            <li>
+              <a href="/employee/plan.html" class="nav-link">
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <span class="nav-text">Planificator</span>
+              </a>
+            </li>
+            <li>
+              <a href="/employee/meeting.html" class="nav-link">
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                <span class="nav-text">Ședințe</span>
+              </a>
+            </li>
+            <li>
+              <a href="/employee/adjustments.html" class="nav-link">
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <span class="nav-text">Adaptări</span>
+              </a>
+            </li>
+            <li>
+              <a href="/employee/profile.html" class="nav-link">
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <span class="nav-text">Profil &amp; Nevoi</span>
+              </a>
+            </li>
+            <li>
+              <a href="/employer/index.html" class="nav-link">
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                <span class="nav-text">Zona Angajator</span>
+              </a>
+            </li>
+            <li>
+              <a href="/settings.html" class="nav-link">
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <span class="nav-text">Setări Confort</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
 
-    <!-- Error Banner (announced via aria-live and role=alert) -->
-    <div id="error-banner" class="status-message status-error" role="alert" style="display: none;"></div>
+      <div class="sidebar-footer">
+        <button type="button" id="btn-sidebar-collapse" class="btn-sidebar-toggle" aria-expanded="true" aria-label="Restrânge bara laterală">
+          <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          <span class="collapse-text">Restrânge meniul</span>
+        </button>
+      </div>
+    </aside>
 
-    <!-- 2-Column Responsive Layout -->
-    <div class="clarify-grid">
-      <!-- Left Column: Input Form & Source Text Viewer -->
-      <section aria-labelledby="input-section-heading">
-        <h2 id="input-section-heading" class="sr-only">Introducere text document</h2>
-
-        <form id="clarify-form" class="card">
-          <!-- File Upload Option -->
-          <div style="margin-bottom: 1.25rem;">
-            <label for="file-upload">Încarcă document text (.txt):</label>
-            <p id="file-upload-desc" class="meta-secondary" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.35rem;">
-              Poți încărca direct un fișier text cu instrucțiuni primit de la companie.
-            </p>
-            <input type="file" id="file-upload" accept=".txt,text/plain" aria-describedby="file-upload-desc">
-          </div>
-
-          <!-- Direct Text Paste Area -->
-          <div style="margin-bottom: 1rem;">
-            <label for="doc-text">Sau lipește textul documentului:</label>
-            <textarea id="doc-text" maxlength="12000" rows="9" placeholder="Lipește aici instrucțiunile de lucru, e-mailul de bun venit sau ghidul de onboarding..." aria-describedby="char-counter"></textarea>
-            <div id="char-counter" class="meta-secondary" style="font-size: 0.85rem; color: var(--text-muted); text-align: right; margin-top: 0.25rem;">
-              0 / 12.000 caractere
-            </div>
-          </div>
-
-          <!-- Controls & Actions -->
-          <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center;">
-            <button type="submit" id="btn-clarify" class="btn">
-              Clarifică documentul
-            </button>
-            <button type="button" id="btn-load-sample" class="btn btn-secondary">
-              Încarcă exemplu onboarding
-            </button>
-            <button type="button" id="btn-clear-text" class="btn btn-secondary" style="margin-left: auto;">
-              Golește
-            </button>
-          </div>
-        </form>
-
-        <!-- Original Source Text Viewer with interactive quote highlighting -->
-        <section class="card" aria-labelledby="source-viewer-heading" style="margin-top: 1.5rem;">
-          <h2 id="source-viewer-heading" style="font-size: 1.2rem; border-bottom: none; margin-bottom: 0.4rem;">
-            Text original cu evidențiere citate
-          </h2>
-          <p class="meta-secondary" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.75rem;">
-            Când apeși pe „Arată în text” la oricare pas simplificat din dreapta, pasajul corespunzător va fi evidențiat automat aici.
-          </p>
-          <div id="source-viewer" tabindex="0" role="region" aria-label="Text original cu evidențiere citate" style="min-height: 180px; max-height: 420px; overflow-y: auto; padding: 1rem; background-color: var(--bg-surface-alt); border: 2px solid var(--border-color); border-radius: var(--radius-md); font-family: inherit; font-size: 0.95rem; line-height: 1.6; white-space: pre-wrap;">(Textul original va apărea aici după încărcare sau introducere)</div>
-        </section>
-      </section>
-
-      <!-- Right Column: Simplified Results Section -->
-      <section id="results-section" aria-labelledby="results-section-heading" style="display: none;">
-        <h2 id="results-section-heading" class="sr-only">Rezultate simplificare</h2>
-
-        <!-- Warning Notices from Guardrails (if any) -->
-        <div id="warnings-container" style="display: none; margin-bottom: 1.25rem;"></div>
-
-        <!-- AI Transparency Notice Banner -->
-        <div id="ai-notice" class="status-message status-info" role="note" style="margin-bottom: 1.25rem;">
-          Generat de AI — verifică datele importante.
+    <!-- Main Content Area -->
+    <div class="app-main-area">
+      <!-- Top Bar -->
+      <header class="app-topbar" role="banner">
+        <div class="topbar-left">
+          <button type="button" id="btn-menu-toggle" class="btn-menu-toggle" aria-expanded="false" aria-controls="app-sidebar" aria-label="Deschide meniul de navigare">
+            <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            <span>Meniu</span>
+          </button>
+          <span class="topbar-title">Clarificare</span>
         </div>
-
-        <!-- Summary Card with TTS button -->
-        <article class="card" aria-labelledby="summary-heading">
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem;">
-            <h3 id="summary-heading" tabindex="-1" style="margin: 0; font-size: 1.25rem;">Rezumat pe scurt</h3>
-            <button type="button" id="btn-tts-toggle" class="btn btn-secondary" style="font-size: 0.9rem; padding: 0.4rem 0.85rem;" aria-pressed="false">
-              <span>Ascultă rezumatul</span>
+        <div class="topbar-right">
+          <!-- Persistent Accessibility Header Toolbar -->
+          <div class="a11y-header-toolbar" role="toolbar" aria-label="Ajustări rapide de accesibilitate">
+            <button type="button" id="btn-header-contrast" class="a11y-toolbar-btn" aria-label="Comută modul de contrast: Cald, Întunecat sau Luminos">
+              <span>Contrast: Cald</span>
+            </button>
+            <button type="button" id="btn-header-text" class="a11y-toolbar-btn" aria-label="Comută dimensiunea textului: Mediu, Mare sau Foarte Mare">
+              <span>Text: Mediu</span>
+            </button>
+            <button type="button" id="btn-header-audio" class="a11y-toolbar-btn" aria-label="Controlează redarea audio: Pauză sau Continuă">
+              <span>Audio: Pauză</span>
+            </button>
+            <button type="button" id="btn-header-dyslexia" class="a11y-toolbar-btn" aria-pressed="false" aria-label="Comută fontul pentru dislexie">
+              <span>Dislexie: Oprită</span>
             </button>
           </div>
-          <div id="summary-content"></div>
-        </article>
 
-        <!-- Steps Card -->
-        <article class="card" aria-labelledby="steps-heading">
-          <h3 id="steps-heading" style="margin-bottom: 0.5rem; font-size: 1.25rem;">Pași de urmat</h3>
-          <p class="meta-secondary" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
-            Instrucțiunile ordonate cronologic. Fiecare pas include un citat verbatim extras din document.
-          </p>
-          <div id="steps-content"></div>
-        </article>
-
-        <!-- Key Terms Card -->
-        <article class="card" aria-labelledby="terms-heading">
-          <h3 id="terms-heading" style="margin-bottom: 0.5rem; font-size: 1.25rem;">Termeni și acronime explicate</h3>
-          <p class="meta-secondary" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
-            Explicații simple pentru jargonul intern sau denumirile specifice din text.
-          </p>
-          <div id="terms-content"></div>
-        </article>
-
-        <!-- Suggested Questions Card -->
-        <article class="card" aria-labelledby="questions-heading">
-          <h3 id="questions-heading" style="margin-bottom: 0.5rem; font-size: 1.25rem;">Întrebări utile pentru manager sau colegi</h3>
-          <p class="meta-secondary" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
-            Formulări pregătite pe care le poți adresa dacă ceva este încă neclar.
-          </p>
-          <div id="questions-content"></div>
-        </article>
-
-        <!-- Next Action / Planner CTA -->
-        <div class="card" style="background-color: var(--bg-surface-alt); border-left: 6px solid var(--primary); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-          <div>
-            <strong style="font-size: 1.05rem; display: block;">Vrei să-ți organizezi termenele în calendar?</strong>
-            <span style="font-size: 0.9rem; color: var(--text-muted);">
-              Extrage automat datele limită și generează fișierul de calendar .ics compatibil cu Google Calendar și Outlook.
-            </span>
-          </div>
-          <a href="/employee/plan.html" class="btn">
-            Deschide Planificatorul &rarr;
+          <a href="/welcome.html" class="btn-comfort" aria-label="Deschide chestionarul de configurare confort">
+            <span>Chestionar</span>
+          </a>
+          <a href="/settings.html" class="btn-comfort" aria-label="Deschide setările de confort și personalizare">
+            <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <span>Setări</span>
           </a>
         </div>
-      </section>
-    </div>
-  </main>
+      </header>
 
-  <!-- Footer Landmark -->
-  <footer role="contentinfo">
-    <p>
-      PrimaZi — Asistent accesibil pentru primul loc de muncă (WCAG 2.2 AA). Datele tale rămân 100% confidențiale pe acest dispozitiv.
-    </p>
-  </footer>
+      <!-- Main Content Landmark -->
+      <main id="main">
+        <!-- Live region for accessibility announcements -->
+        <div id="status-live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+        <!-- Page Title & Introduction -->
+        <section class="hero-section">
+          <h1 class="page-title">Clarifică documente și instrucțiuni de lucru</h1>
+          <p class="page-lead">
+            Transformă ghidurile de onboarding, procedurile sau mesajele stufoase în pași clari, ușor de urmărit. Fiecare pas este ancorat cu citate exacte în textul original.
+          </p>
+        </section>
+
+        <!-- Error Banner (announced via aria-live and role=alert) -->
+        <div id="error-banner" class="status-message status-error" role="alert" style="display: none;"></div>
+
+        <!-- 2-Column Responsive Layout -->
+        <div class="clarify-grid">
+          <!-- Left Column: Input Form & Source Text Viewer -->
+          <section aria-labelledby="input-section-heading">
+            <h2 id="input-section-heading" class="sr-only">Introducere text document</h2>
+
+            <form id="clarify-form" class="feature-card">
+              <!-- File Upload Option -->
+              <div style="margin-bottom: 1.25rem;">
+                <label for="file-upload">Încarcă document text (.txt):</label>
+                <p id="file-upload-desc" class="meta-secondary" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.35rem;">
+                  Poți încărca direct un fișier text cu instrucțiuni primit de la companie.
+                </p>
+                <input type="file" id="file-upload" accept=".txt,text/plain" aria-describedby="file-upload-desc">
+              </div>
+
+              <!-- Direct Text Paste Area -->
+              <div style="margin-bottom: 1rem;">
+                <label for="doc-text">Sau lipește textul documentului:</label>
+                <textarea id="doc-text" maxlength="12000" rows="9" placeholder="Lipește aici instrucțiunile de lucru, e-mailul de bun venit sau ghidul de onboarding..." aria-describedby="char-counter" style="width: 100%; box-sizing: border-box;"></textarea>
+                <div id="char-counter" class="meta-secondary" style="font-size: 0.85rem; color: var(--text-muted); text-align: right; margin-top: 0.25rem;">
+                  0 / 12.000 caractere
+                </div>
+              </div>
+
+              <!-- Controls & Actions -->
+              <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center;">
+                <button type="submit" id="btn-clarify" class="btn btn-primary">
+                  Clarifică documentul
+                </button>
+                <button type="button" id="btn-load-sample" class="btn btn-secondary">
+                  Încarcă exemplu onboarding
+                </button>
+                <button type="button" id="btn-clear-text" class="btn btn-secondary" style="margin-left: auto;">
+                  Golește
+                </button>
+              </div>
+            </form>
+
+            <!-- Original Source Text Viewer with interactive quote highlighting -->
+            <section class="feature-card" aria-labelledby="source-viewer-heading" style="margin-top: 1.5rem;">
+              <h2 id="source-viewer-heading" style="font-size: 1.2rem; border-bottom: none; margin-bottom: 0.4rem;">
+                Text original cu evidențiere citate
+              </h2>
+              <p class="meta-secondary" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+                Când apeși pe „Arată în text” la oricare pas simplificat din dreapta, pasajul corespunzător va fi evidențiat automat aici.
+              </p>
+              <div id="source-viewer" tabindex="0" role="region" aria-label="Text original cu evidențiere citate" style="min-height: 180px; max-height: 420px; overflow-y: auto; padding: 1rem; background-color: var(--bg-surface-alt); border: 1.5px solid var(--border-color); border-radius: var(--radius-md); font-family: inherit; font-size: 0.95rem; line-height: 1.6; white-space: pre-wrap;">(Textul original va apărea aici după încărcare sau introducere)</div>
+            </section>
+          </section>
+
+          <!-- Right Column: Simplified Results Section -->
+          <section id="results-section" aria-labelledby="results-section-heading" style="display: none;">
+            <h2 id="results-section-heading" class="sr-only">Rezultate simplificare</h2>
+
+            <!-- Warning Notices from Guardrails (if any) -->
+            <div id="warnings-container" style="display: none; margin-bottom: 1.25rem;"></div>
+
+            <!-- AI Transparency Notice Banner -->
+            <div id="ai-notice" class="status-message status-info" role="note" style="margin-bottom: 1.25rem;">
+              Generat de AI — verifică datele importante.
+            </div>
+
+            <!-- Summary Card with TTS button -->
+            <article class="feature-card" aria-labelledby="summary-heading" style="margin-bottom: 1rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem;">
+                <h3 id="summary-heading" tabindex="-1" style="margin: 0; font-size: 1.25rem;">Rezumat pe scurt</h3>
+                <button type="button" id="btn-tts-toggle" class="btn btn-secondary" style="font-size: 0.9rem; padding: 0.4rem 0.85rem;" aria-pressed="false">
+                  <span>Ascultă rezumatul</span>
+                </button>
+              </div>
+              <div id="summary-content"></div>
+            </article>
+
+            <!-- Steps Card -->
+            <article class="feature-card" aria-labelledby="steps-heading" style="margin-bottom: 1rem;">
+              <h3 id="steps-heading" style="margin-bottom: 0.5rem; font-size: 1.25rem;">Pași de urmat</h3>
+              <p class="meta-secondary" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+                Instrucțiunile ordonate cronologic. Fiecare pas include un citat verbatim extras din document.
+              </p>
+              <div id="steps-content"></div>
+            </article>
+
+            <!-- Key Terms Card -->
+            <article class="feature-card" aria-labelledby="terms-heading" style="margin-bottom: 1rem;">
+              <h3 id="terms-heading" style="margin-bottom: 0.5rem; font-size: 1.25rem;">Termeni și acronime explicate</h3>
+              <p class="meta-secondary" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+                Explicații simple pentru jargonul intern sau denumirile specifice din text.
+              </p>
+              <div id="terms-content"></div>
+            </article>
+
+            <!-- Suggested Questions Card -->
+            <article class="feature-card" aria-labelledby="questions-heading" style="margin-bottom: 1rem;">
+              <h3 id="questions-heading" style="margin-bottom: 0.5rem; font-size: 1.25rem;">Întrebări utile pentru manager sau colegi</h3>
+              <p class="meta-secondary" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+                Formulări pregătite pe care le poți adresa dacă ceva este încă neclar.
+              </p>
+              <div id="questions-content"></div>
+            </article>
+
+            <!-- Next Action / Planner CTA -->
+            <div class="feature-card" style="background-color: var(--primary-subtle); border-left: 6px solid var(--primary); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+              <div>
+                <strong style="font-size: 1.05rem; display: block;">Vrei să-ți organizezi termenele în calendar?</strong>
+                <span style="font-size: 0.9rem; color: var(--text-muted);">
+                  Extrage automat datele limită și generează fișierul de calendar .ics compatibil cu Google Calendar și Outlook.
+                </span>
+              </div>
+              <a href="/employee/plan.html" class="btn btn-primary">
+                Deschide Planificatorul &rarr;
+              </a>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <!-- Footer -->
+      <footer class="app-footer" role="contentinfo">
+        <p>PrimaZi — Asistent accesibil pentru primul loc de muncă. Creat pentru AccessABILITY Hackathon 2026.</p>
+      </footer>
+    </div>
+  </div>
 
   <!-- Wiring Script -->
+  <script type="module" src="/js/shell.js"></script>
   <script type="module">
     import { initClarifyPage } from "./clarify.js";
     initClarifyPage();

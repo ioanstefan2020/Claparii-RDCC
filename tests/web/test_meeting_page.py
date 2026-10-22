@@ -51,8 +51,8 @@ def test_meeting_html_landmarks_and_controls():
     assert 'aria-live="polite"' in html_text
     assert html_text.count("<h1") == 1
     assert "Asistent pentru ședințe de lucru și discuții de echipă" in html_text
-    assert '<header role="banner">' in html_text
-    assert '<footer role="contentinfo">' in html_text
+    assert ('<header role="banner">' in html_text or '<header class="app-topbar" role="banner">' in html_text)
+    assert ('<footer role="contentinfo">' in html_text or '<footer class="app-footer" role="contentinfo">' in html_text)
 
     # Navigation current page check
     assert 'href="/employee/meeting.html" aria-current="page"' in html_text
