@@ -1,0 +1,31 @@
+{
+  "api_version": "v2",
+  "status": "ready",
+  "supported_situations": [
+    "work",
+    "official",
+    "contract",
+    "school"
+  ],
+  "supported_formats": [
+    ".txt",
+    ".md",
+    ".docx",
+    ".pdf",
+    ".eml"
+  ],
+  "max_upload_size_bytes": 10485760,
+  "max_text_chars": 50000,
+  "supported_languages": [
+    "ro",
+    "en"
+  ],
+  "privacy": {
+    "zero_server_storage": true,
+    "pii_masking": true,
+    "no_content_logging": true,
+    "no_diagnosis_inference": true,
+    "no_emotion_detection": true
+  },
+  "active_provider": "mock"
+}

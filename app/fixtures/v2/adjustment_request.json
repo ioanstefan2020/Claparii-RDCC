@@ -1,0 +1,21 @@
+{
+  "request_id": "req-adjust-005",
+  "subject_ro": "Solicitare de adaptări rezonabile pentru organizarea activității de lucru",
+  "body_ro": "Bună ziua,\n\nÎn vederea bunei desfășurări a activității mele profesionale și pentru a asigura un ritm de lucru eficient și predictibil, aș dori să convenim asupra următoarelor adaptări funcționale la locul de muncă:\n\n1. Instrucțiuni scrise, pas cu pas: transmiterea obiectivelor și a sarcinilor tehnice și în format scris pentru claritate maximă.\n2. Timp suplimentar pentru asimilarea procedurilor noi: un interval de acomodare în primele săptămâni de lucru.\n\nAceste ajustări mă ajută să lucrez cu precizie și autonomie ridicată. Sunt disponibil(ă) pentru o scurtă discuție pentru a stabili detaliile practice.\n\nCu respect,\nAlexandru Popa",
+  "checklist": [
+    {
+      "id": "written_instructions",
+      "title": "Instrucțiuni scrise, pas cu pas",
+      "legal_basis_ro": "Bună practică generală și art. 78 din Legea 448/2006 (adaptare rezonabilă)."
+    },
+    {
+      "id": "extra_time",
+      "title": "Timp suplimentar pentru proceduri noi",
+      "legal_basis_ro": "Bună practică generală de onboarding incluziv."
+    }
+  ],
+  "usage": {
+    "provider": "mock",
+    "latency_ms": 65
+  }
+}

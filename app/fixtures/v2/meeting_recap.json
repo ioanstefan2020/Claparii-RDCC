@@ -1,0 +1,34 @@
+{
+  "request_id": "req-meeting-004",
+  "summary": "Ședința de planificare a sprintului. S-a stabilit data lansării pe 6 noiembrie și ordinea priorităților pentru componentele principale.",
+  "decisions": [
+    {
+      "text": "Lansarea pe mediul de producție are loc vineri, 6 noiembrie.",
+      "quote": "lansăm vineri, 6 noiembrie, fără amânare",
+      "quote_found": true
+    }
+  ],
+  "actions": [
+    {
+      "who": "Ioana",
+      "task": "Finalizează integrarea textelor accesibile",
+      "deadline": "2026-10-28",
+      "quote": "Ioana integrează textele finale până miercuri, 28 octombrie",
+      "quote_found": true
+    },
+    {
+      "who": "Andrei",
+      "task": "Rulează testele de contrast și raportul a11y",
+      "deadline": null,
+      "quote": "Andrei face verificarea contrastului",
+      "quote_found": true
+    }
+  ],
+  "unclear": [
+    "Nu s-a stabilit cine trimite notificarea oficială către parteneri."
+  ],
+  "usage": {
+    "provider": "mock",
+    "latency_ms": 85
+  }
+}

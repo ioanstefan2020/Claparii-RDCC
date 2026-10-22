@@ -1,0 +1,18 @@
+{
+  "request_id": "req-reply-003",
+  "subject_ro": "Răspuns referitor la dosarul de impunere nr. 8421",
+  "body_ro": "Bună ziua,\n\nVă transmit atașat copia scanată a contractului solicitat în adresa nr. 8421.\nConfirm de asemenea că am achitat taxa de 45 lei prin intermediul portalului Ghiseul.ro (atașez dovada plății).\n\nVă rog să-mi confirmați primirea documentelor și încheierea procedurii.\n\nCu stimă,\nAlexandru Popa",
+  "alternatives": [
+    "Stimate domnule / Stimată doamnă, vă expediez documentele cerute conform notificării primite. Vă rog să confirmați înregistrarea dosarului.",
+    "Bună ziua! Atașez contractul și recipisa de plată conform instrucțiunilor din scrisoare. Mulțumesc!"
+  ],
+  "checklist_before_sending": [
+    "Verifică dacă fișierul atașat este lizibil (toate paginile sunt clare).",
+    "Atașează chitanța de pe Ghiseul.ro.",
+    "Nu trimite fără confirmarea numelui complet și a numărului de dosar."
+  ],
+  "usage": {
+    "provider": "mock",
+    "latency_ms": 70
+  }
+}

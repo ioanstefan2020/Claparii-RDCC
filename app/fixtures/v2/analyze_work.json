@@ -1,0 +1,78 @@
+{
+  "request_id": "req-work-onboard-002",
+  "detected": {
+    "language": "ro",
+    "situation": "work",
+    "confidence": 0.98
+  },
+  "summary": "Ghid de primă săptămână la locul de muncă. Ai de configurat contul de email, de completat formularul de securitate și de participat la instructajul SSM marți la ora 10:00.",
+  "actions": [
+    {
+      "text": "Mergi la biroul IT de la etajul 2 pentru parola temporară",
+      "quote": "te prezinți la biroul IT (etaj 2) pentru activarea credențialelor de acces",
+      "quote_found": true
+    },
+    {
+      "text": "Completează formularul de SSM și semnează fișa individuală",
+      "quote": "completarea și semnarea fișei de instruire individuală SSM",
+      "quote_found": true
+    }
+  ],
+  "deadlines": [
+    {
+      "date": "2026-10-27",
+      "text": "marți, 27 octombrie la ora 10:00",
+      "quote": "marți, 27 octombrie la ora 10:00 – instructaj introductiv general",
+      "quote_found": true
+    },
+    {
+      "date": null,
+      "text": "până la sfârșitul primei săptămâni",
+      "quote": "până la sfârșitul primei săptămâni de lucru",
+      "quote_found": true
+    }
+  ],
+  "glossary": [
+    {
+      "term": "SSM",
+      "plain": "Sănătate și Securitate în Muncă (protecția muncii)."
+    },
+    {
+      "term": "credențiale",
+      "plain": "Nume de utilizator și parolă pentru conectare."
+    }
+  ],
+  "checklist": [
+    {
+      "step": 1,
+      "text": "Ia cardul de acces de la recepție și mergi la IT (etaj 2).",
+      "est_minutes": 15
+    },
+    {
+      "step": 2,
+      "text": "Conectează-te pe laptop și schimbă parola temporară.",
+      "est_minutes": 10
+    },
+    {
+      "step": 3,
+      "text": "Mergi marți la ora 10:00 în sala 'Stejarul' pentru instructaj.",
+      "est_minutes": 45
+    }
+  ],
+  "warnings": [
+    {
+      "code": "UNCERTAIN_DATE",
+      "message": "Termenul 'până la sfârșitul primei săptămâni' nu are o dată exactă calendaristică specificată."
+    }
+  ],
+  "metrics": {
+    "readability_before": 42.1,
+    "readability_after": 81.3,
+    "words_before": 520,
+    "words_after": 130
+  },
+  "usage": {
+    "provider": "mock",
+    "latency_ms": 95
+  }
+}

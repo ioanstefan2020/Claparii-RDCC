@@ -1,0 +1,67 @@
+{
+  "request_id": "req-ana-official-001",
+  "detected": {
+    "language": "ro",
+    "situation": "official",
+    "confidence": 0.94
+  },
+  "summary": "Primăria Sector 3 vă solicită clarificarea declarației de impunere până la 15 noiembrie 2026. Dacă nu trimiteți documentul justificativ, se aplică o penalitate de 0.1% pe zi.",
+  "actions": [
+    {
+      "text": "Trimiteți copia contractului de comodat scanată la adresa registratura@primarie.ro",
+      "quote": "Vă rugăm să depuneți sau să transmiteți electronic la registratura@primarie.ro copia lizibilă a contractului",
+      "quote_found": true
+    },
+    {
+      "text": "Achitați taxa de regularizare de 45 lei prin portalul Ghiseul.ro",
+      "quote": "taxa de timbru în cuantum de 45 lei, ce poate fi achitată prin www.ghiseul.ro",
+      "quote_found": true
+    }
+  ],
+  "deadlines": [
+    {
+      "date": "2026-11-15",
+      "text": "până la data de 15 noiembrie 2026",
+      "quote": "termen limită imperativ: 15 noiembrie 2026",
+      "quote_found": true
+    }
+  ],
+  "glossary": [
+    {
+      "term": "termen imperativ",
+      "plain": "Dată limită strictă; după această dată se aplică penalități automate."
+    },
+    {
+      "term": "contract de comodat",
+      "plain": "Contract de împrumut gratuit de folosință a unui spațiu sau bun."
+    }
+  ],
+  "checklist": [
+    {
+      "step": 1,
+      "text": "Găsește contractul de comodat și fotografiază sau scanează toate paginile.",
+      "est_minutes": 10
+    },
+    {
+      "step": 2,
+      "text": "Intră pe ghiseul.ro și plătește taxa de 45 lei.",
+      "est_minutes": 5
+    },
+    {
+      "step": 3,
+      "text": "Trimite email cu documentul și dovada plății la registratura@primarie.ro.",
+      "est_minutes": 5
+    }
+  ],
+  "warnings": [],
+  "metrics": {
+    "readability_before": 38.4,
+    "readability_after": 79.2,
+    "words_before": 680,
+    "words_after": 145
+  },
+  "usage": {
+    "provider": "mock",
+    "latency_ms": 110
+  }
+}

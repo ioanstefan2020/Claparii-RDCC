@@ -99,7 +99,7 @@ def verify_quotes(items: list[dict], source_text: str, key: str = "source_quote"
 
 `GET /api/health` → `{"ok": true, "provider": "mock"}`. The server also serves `web/` at `/` (StaticFiles, html=True).
 
-## 3. Endpoints
+## 3. Endpoints (v1)
 
 ### 3.1 `POST /api/simplify` (P1) — F2
 
@@ -253,3 +253,163 @@ Request: `{"job_title": "Junior Web Developer", "job_description": "...", "profi
 - Frontend always sends `today_iso` from the browser's local date.
 - Frontend renders `meta.ai_notice_ro` near every AI result, shows `meta.warnings`, and offers "Arată în text" using `source_quote`.
 - Errors: show `error.message_ro` in an `aria-live="assertive"` region with a "Încearcă din nou" button.
+
+---
+
+## 5. CONTRACTS v2 (P1-TASKS.md — De la MVP la Produs Real)
+
+All v2 endpoints live under base path `/api/v2`.
+
+### 5.1 `POST /api/v2/analyze` (P1-00)
+
+Main unified analysis endpoint for any real document (work, official, contract, school).
+
+**Request:**
+
+```json
+{
+  "text": "...",
+  "file_id": null,
+  "language": "auto",
+  "situation": "auto",
+  "adaptations": {
+    "reading_level": 1,
+    "length": "short",
+    "steps": true,
+    "glossary": true,
+    "literal_language": true,
+    "tts_ready": false
+  },
+  "outputs": ["summary", "actions", "deadlines", "glossary", "checklist"]
+}
+```
+
+- `language`: `auto | ro | en`
+- `situation`: `auto | work | official | contract | school | medical`
+- `adaptations.reading_level`: `1` (foarte simplu), `2` (simplu), `3` (original curățat)
+- `adaptations.length`: `short | medium | full`
+- `outputs`: subset of `["summary", "actions", "deadlines", "glossary", "checklist"]`
+
+**Response:** (Fixtures: `app/fixtures/v2/analyze_official.json`, `app/fixtures/v2/analyze_work.json`)
+
+```json
+{
+  "request_id": "req-ana-official-001",
+  "detected": {
+    "language": "ro",
+    "situation": "official",
+    "confidence": 0.94
+  },
+  "summary": "...",
+  "actions": [
+    {
+      "text": "...",
+      "quote": "...",
+      "quote_found": true
+    }
+  ],
+  "deadlines": [
+    {
+      "date": "2026-11-15",
+      "text": "...",
+      "quote": "...",
+      "quote_found": true
+    }
+  ],
+  "glossary": [
+    {
+      "term": "...",
+      "plain": "..."
+    }
+  ],
+  "checklist": [
+    {
+      "step": 1,
+      "text": "...",
+      "est_minutes": 10
+    }
+  ],
+  "warnings": [
+    {
+      "code": "UNCERTAIN_DATE",
+      "message": "..."
+    }
+  ],
+  "metrics": {
+    "readability_before": 38.4,
+    "readability_after": 79.2,
+    "words_before": 680,
+    "words_after": 145
+  },
+  "usage": {
+    "provider": "mock",
+    "latency_ms": 110
+  }
+}
+```
+
+### 5.2 `POST /api/v2/analyze/stream` (P1-11)
+
+Server-Sent Events (SSE) streaming endpoint with progressive feedback.
+
+- `event: progress` data: `{"stage": "reading | extracting | adapting | fidelity", "message_ro": "Citesc documentul..."}`
+- `event: partial` data: `{"field": "summary", "chunk": "..."}`
+- `event: done` data: Full JSON response identical to `/api/v2/analyze`.
+
+### 5.3 `POST /api/v2/upload` (P1-02)
+
+Multipart file upload accepting `.txt`, `.md`, `.docx`, `.pdf`, `.eml`.
+Returns:
+
+```json
+{
+  "file_id": "f_12345",
+  "filename": "notificare.pdf",
+  "size_bytes": 14200,
+  "text": "...",
+  "char_count": 850
+}
+```
+
+- Maximum file size: 10MB.
+- Real MIME/magic inspection (never blindly trust file extension).
+- Macro execution disabled.
+
+### 5.4 `POST /api/v2/draft-reply` (P1-20)
+
+Drafts a response to an analyzed document (Fixture: `app/fixtures/v2/draft_reply.json`).
+Request: `{"context": "...", "tone": "polite | direct | friendly", "goal": "..."}`
+Response: `{"request_id": "...", "subject_ro": "...", "body_ro": "...", "alternatives": [...], "checklist_before_sending": [...]}`
+
+### 5.5 `POST /api/v2/meeting-recap` (P1-21)
+
+Meeting minutes extractor with decisions and assigned actions (Fixture: `app/fixtures/v2/meeting_recap.json`).
+Request: `{"transcript": "...", "today_iso": "2026-10-22"}`
+Response: `{"request_id": "...", "summary": "...", "decisions": [...], "actions": [...], "unclear": [...]}`
+
+### 5.6 `POST /api/v2/adjustment-request` (P1-22)
+
+Employer adjustment request generator mapped to verified catalog (Fixture: `app/fixtures/v2/adjustment_request.json`).
+Request: `{"need_ids": ["written_instructions", "extra_time"], "tone": "friendly"}`
+Response: `{"request_id": "...", "subject_ro": "...", "body_ro": "...", "checklist": [...]}`
+
+### 5.7 `GET /api/v2/capabilities`
+
+Returns supported situations, formats, languages, active provider, and privacy guarantees (Fixture: `app/fixtures/v2/capabilities.json`).
+
+### 5.8 `GET /api/v2/health`
+
+Returns: `{"status": "ok", "provider": "mock", "version": "v2"}`
+
+### 5.9 Error Format (v2)
+
+```json
+{
+  "error": {
+    "code": "file_too_large | corrupted_file | unsupported_type | empty_input | timeout | provider_error",
+    "message_ro": "Fișierul depășește limita de 10 MB.",
+    "message_en": "File exceeds the 10 MB limit.",
+    "retryable": false
+  }
+}
+```
