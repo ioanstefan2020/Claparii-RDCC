@@ -17,6 +17,7 @@ async def call_ollama(
     base_url = os.getenv("OLLAMA_BASE_URL", settings.OLLAMA_BASE_URL).rstrip("/")
     url = f"{base_url}/chat/completions"
     model_name = model or settings.OLLAMA_MODEL or "qwen2.5:3b"
+    effective_timeout = int(os.getenv("OLLAMA_TIMEOUT_SECONDS", str(max(timeout, 90))))
 
     json_schema_prompt = (
         f"{system}\n\nIMPORTANT: You must respond ONLY with a valid JSON object strictly "
@@ -37,7 +38,7 @@ async def call_ollama(
     }
 
     try:
-        async with httpx.AsyncClient(timeout=timeout) as client:
+        async with httpx.AsyncClient(timeout=effective_timeout) as client:
             resp = await client.post(url, headers=headers, json=payload)
     except httpx.TimeoutException:
         raise LLMUnavailable(
