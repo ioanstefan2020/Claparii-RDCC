@@ -2,14 +2,21 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 
 from app.main import app
-from app.prompts.base import apply_custom_decorations
+from app.prompts.base import (
+    adapt_block,
+    apply_custom_decorations,
+    detect_disability_adaptation_hints,
+)
 
 
 def test_apply_custom_decorations_miau_both():
     text = "Primul paragraf de test.\nAl doilea paragraf de test."
     notes = "Vreau cuvantul miau inainte si dupa fiecare paragraf"
     res = apply_custom_decorations(text, notes)
-    assert res == "miau Primul paragraf de test. miau\nmiau Al doilea paragraf de test. miau"
+    assert (
+        res
+        == "miau Primul paragraf de test. miau\nmiau Al doilea paragraf de test. miau"
+    )
 
 
 def test_apply_custom_decorations_miau_after():
@@ -26,6 +33,36 @@ def test_apply_custom_decorations_every_n_words():
     assert "banana" in res
     words = res.split()
     assert words[5] == "banana"
+
+
+def test_detect_disability_adaptation_hints():
+    # Memory
+    hints_mem = detect_disability_adaptation_hints(
+        "uit des, am probleme de memorie si retinere"
+    )
+    assert any("MEMORIE" in h for h in hints_mem)
+    assert any("key_terms" in h for h in hints_mem)
+
+    # Low vision
+    hints_vis = detect_disability_adaptation_hints(
+        "nu vad bine, am nevoie de font mare si vizibilitate"
+    )
+    assert any("VEDERE SCĂZUTĂ" in h for h in hints_vis)
+
+    # ADHD / Focus
+    hints_adhd = detect_disability_adaptation_hints(
+        "ma distrag usor si imi pierd concentrarea"
+    )
+    assert any("ATENȚIE" in h for h in hints_adhd)
+
+    # Combined in adapt_block
+    profile = {
+        "needs_notes": "uit des si am memorie slaba, am nevoie de vizibilitate marita"
+    }
+    block = adapt_block(profile)
+    assert "ADAPTĂRI COGNITIVE ȘI DE ACCESIBILITATE DEDUSE DIN NEVOI" in block
+    assert "MEMORIE" in block
+    assert "VEDERE" in block
 
 
 @pytest.mark.anyio

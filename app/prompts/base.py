@@ -54,6 +54,133 @@ def scrub_diagnosis_words(text: str) -> str:
     return result.strip()
 
 
+def detect_disability_adaptation_hints(notes: str | None) -> list[str]:
+    """Infers semantic accessibility requirements from user freeform notes."""
+    if not notes:
+        return []
+    low = notes.lower()
+    hints: list[str] = []
+
+    # 1. Memory / Recall / Forgetting
+    if any(
+        k in low
+        for k in [
+            "uit",
+            "memorie",
+            "amintesc",
+            "reținere",
+            "retinere",
+            "uituc",
+            "checklist",
+            "pierd",
+            "remember",
+            "memory",
+            "forget",
+            "recall",
+        ]
+    ):
+        hints.append(
+            "- ADAPTARE PENTRU MEMORIE ȘI REȚINERE:\n"
+            "  * Extrage de 2x mai mulți termeni cheie și concepte esențiale în lista `key_terms`.\n"
+            "  * În text și pași, bolduiește cuvintele ancoră (**termeni importanți**, **date limită**, **nume**).\n"
+            "  * Adaugă în `summary` o primă frază tip «📌 De reținut imediat» cu acțiunea și termenul critic."
+        )
+
+    # 2. Low vision / Visibility
+    if any(
+        k in low
+        for k in [
+            "veder",
+            "ochi",
+            "vizibil",
+            "text mare",
+            "font mare",
+            "litere mari",
+            "ecran mare",
+            "nu vad",
+            "vision",
+            "blind",
+            "sight",
+            "large text",
+            "bigger",
+        ]
+    ):
+        hints.append(
+            "- ADAPTARE PENTRU VEDERE SCĂZUTĂ ȘI VIZIBILITATE:\n"
+            "  * Formatează conceptele importante, numerele și orele astfel încât să iasă imediat în evidență vizual (folosește MAJUSCULE sau bold pentru termene: ex. **LUNI 09:00**, **FORMULARUL F-12**).\n"
+            "  * Evită aglomerarea de propoziții lungi; lasă spațiu generos între idei."
+        )
+
+    # 3. ADHD / Attention / Focus
+    if any(
+        k in low
+        for k in [
+            "aten",
+            "distrag",
+            "rabdare",
+            "concentr",
+            "pierd sirul",
+            "fara chef",
+            "prea lung",
+            "plictis",
+            "attention",
+            "adhd",
+            "focus",
+            "short steps",
+        ]
+    ):
+        hints.append(
+            "- ADAPTARE PENTRU ATENȚIE ȘI CONCENTRARE (ADHD):\n"
+            "  * Limitează răspunsul la maximum 3-4 pași prioritari. Fără introduceri, fără concluzii de complezență.\n"
+            "  * Fiecare pas începe direct cu un verb de acțiune la imperativ (ex: «Deschide...», «Trimite...») și are sub 10 cuvinte."
+        )
+
+    # 4. Autism / Neurodivergence / Literal language
+    if any(
+        k in low
+        for k in [
+            "metafor",
+            "glum",
+            "literal",
+            "direct",
+            "subtilit",
+            "ambigu",
+            "ce vrea sa zica",
+            "ton",
+            "social",
+            "figurative",
+            "idiom",
+        ]
+    ):
+        hints.append(
+            "- ADAPTARE PENTRU NEURODIVERGENȚĂ ȘI COMUNICARE LITERALĂ:\n"
+            "  * Limbaj 100% literal și explicit. Dacă documentul conține expresii figurate, colocviale sau corporatiste, explică-le direct în fapte concrete.\n"
+            "  * Menționează clar cine ce așteaptă și cui i se raportează rezultatul."
+        )
+
+    # 5. Dyslexia / Reading difficulties
+    if any(
+        k in low
+        for k in [
+            "dislex",
+            "amestec",
+            "litere",
+            "danseaz",
+            "citesc greu",
+            "invers",
+            "dyslex",
+            "reading",
+        ]
+    ):
+        hints.append(
+            "- ADAPTARE PENTRU DIFICULTĂȚI DE CITIRE / DISLEXIE:\n"
+            "  * Folosește exclusiv cuvinte din vocabularul de bază, fără jargon.\n"
+            "  * Propoziții scurte (maximum 8-10 cuvinte). Fără negații duble și fără diateză pasivă."
+        )
+
+    return hints
+
+
 def adapt_block(profile: Any) -> str:
     """Generates the adaptation prompt block per SETTINGS-SPEC & PROMPT-SPEC §3."""
     p = normalize_profile(profile)
@@ -98,6 +225,12 @@ def adapt_block(profile: Any) -> str:
                 f"Utilizatorul a specificat următoarele cerințe proprii de redactare în profilul său: «{scrubbed}».\n"
                 f"Instrucțiune de execuție: Respectă cu strictețe absolută această cerință în toate textele generate (inclusiv summary, fiecare pas/paragraf generat, formule cerute sau inserare de cuvinte specificate)."
             )
+            hints = detect_disability_adaptation_hints(scrubbed)
+            if hints:
+                hints_joined = "\n".join(hints)
+                lines.append(
+                    f"ADAPTĂRI COGNITIVE ȘI DE ACCESIBILITATE DEDUSE DIN NEVOI:\n{hints_joined}"
+                )
 
     return "\n".join(lines)
 

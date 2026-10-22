@@ -325,16 +325,71 @@ export function highlightQuoteInViewer(quote) {
 /**
  * Renders the Simplify result.
  */
+/**
+ * Formats text with accessible bold highlights and prominent key concepts.
+ */
+export function formatTextWithHighlights(rawText, keyTerms = [], needsProminence = false) {
+  if (!rawText) return "";
+  let formatted = escapeHtml(rawText);
+
+  // Convert markdown bold **word** to prominent badges
+  formatted = formatted.replace(/\*\*(.*?)\*\*/g, (match, p1) => {
+    return `<mark class="keyword-prominent">${p1}</mark>`;
+  });
+
+  if (needsProminence) {
+    // Highlight specific key terms
+    if (Array.isArray(keyTerms)) {
+      keyTerms.forEach(kt => {
+        const term = typeof kt === "string" ? kt : kt?.term;
+        if (term && term.length > 2) {
+          const escapedTerm = escapeHtml(term);
+          const regex = new RegExp(`(?<!<[^>]*)\\b(${escapedTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})\\b(?![^<]*>)`, "gi");
+          formatted = formatted.replace(regex, `<mark class="keyword-prominent">$1</mark>`);
+        }
+      });
+    }
+
+    // Highlight times, dates, and deadlines
+    const timeDateRegex = /(?<!<[^>]*)\\b(\\d{1,2}:\\d{2}|luni|marți|miercuri|joi|vineri|\\d{1,2}\\s+(?:ianuarie|februarie|martie|aprilie|mai|iunie|iulie|august|septembrie|octombrie|noiembrie|decembrie))\\b(?![^<]*>)/gi;
+    formatted = formatted.replace(timeDateRegex, `<mark class="keyword-prominent">$1</mark>`);
+  }
+
+  return formatted;
+}
+
 export function renderSimplifyResult(data, meta = {}) {
   const container = document.getElementById("home-result-body");
   if (!container) return;
 
   currentSummaryForTTS = data.summary || "";
 
-  let html = `
+  const profile = getStoredProfile();
+  const notesLow = (profile?.needs_notes || "").toLowerCase();
+  const isMemoryNeed = /uit|memorie|amintesc|reținere|retinere|checklist|remember|recall/i.test(notesLow);
+  const isVisionNeed = /veder|ochi|vizibil|text mare|font mare|litere mari|nu vad|vision|sight/i.test(notesLow);
+  const needsProminence = isMemoryNeed || isVisionNeed || document.documentElement.getAttribute("data-highlight-terms") === "true";
+
+  let html = "";
+
+  // Dedicated Memento Card for users with memory/recall needs
+  if (isMemoryNeed && data.steps && data.steps.length > 0) {
+    const topStep = data.steps[0];
+    html += `
+      <div class="memory-memento-card" role="region" aria-label="Memento rapid pentru memorie">
+        <div class="memento-icon" aria-hidden="true">📌</div>
+        <div class="memento-content">
+          <h4 class="memory-memento-title">De reținut imediat</h4>
+          <p class="memory-memento-body"><strong>Prioritate 1:</strong> ${formatTextWithHighlights(topStep.text, data.key_terms, true)}</p>
+        </div>
+      </div>
+    `;
+  }
+
+  html += `
     <div class="result-card">
       <h3 class="result-subtitle">Rezumatul documentului</h3>
-      <p class="result-summary-text">${escapeHtml(data.summary)}</p>
+      <p class="result-summary-text">${formatTextWithHighlights(data.summary, data.key_terms, needsProminence)}</p>
     </div>
   `;
 
@@ -350,8 +405,8 @@ export function renderSimplifyResult(data, meta = {}) {
         <li class="step-item" id="step-${idx + 1}">
           <div class="step-content">
             <span class="step-number">${step.n || idx + 1}.</span>
-            <span class="step-text">${escapeHtml(step.text)}</span>
-          </div>
+            <span class="step-text">${formatTextWithHighlights(step.text, data.key_terms, needsProminence)}</span>
+          </div>`
           ${stepQuote ? `
             <div class="step-quote-action">
               <button type="button" class="btn-quote" data-quote="${stepQuote}" aria-label="Arată citatul pentru pasul ${step.n || idx + 1} în textul original">
@@ -409,7 +464,12 @@ export function renderRewriteResult(data, meta = {}) {
 
   // Split into clean paragraphs
   const paragraphs = rewrittenText.split(/\n\s*\n/).filter(p => p.trim());
-  const paragraphsHtml = paragraphs.map(p => `<p class="result-summary-text" style="margin-bottom: var(--space-md); font-size: 1.05rem; line-height: 1.6;">${escapeHtml(p)}</p>`).join("");
+  const profile = getStoredProfile();
+  const notesLow = (profile?.needs_notes || "").toLowerCase();
+  const isMemoryNeed = /uit|memorie|amintesc|reținere|retinere|checklist|remember|recall/i.test(notesLow);
+  const isVisionNeed = /veder|ochi|vizibil|text mare|font mare|litere mari|nu vad|vision|sight/i.test(notesLow);
+  const needsProminence = isMemoryNeed || isVisionNeed || document.documentElement.getAttribute("data-highlight-terms") === "true";
+  const paragraphsHtml = paragraphs.map(p => `<p class="result-summary-text" style="margin-bottom: var(--space-md); font-size: 1.05rem; line-height: 1.6;">${formatTextWithHighlights(p, [], needsProminence)}</p>`).join("");
 
   let html = `
     <div class="result-card">
