@@ -1,5 +1,7 @@
+import asyncio
 import hashlib
 import json
+import logging
 import os
 from pathlib import Path
 from typing import Any, Type, TypeVar
@@ -7,11 +9,19 @@ from typing import Any, Type, TypeVar
 from pydantic import BaseModel
 
 from app.config import settings
+from app.llm.circuit_breaker import CircuitBreaker, CircuitBreakerOpenException
 from app.llm.providers.deepseek import call_deepseek
 from app.llm.providers.gemini import call_gemini
 from app.schemas.common import BadLLMOutput, LLMUnavailable
 
 T = TypeVar("T", bound=BaseModel)
+logger = logging.getLogger("primazi.llm")
+
+# Circuit breakers per provider
+_breakers: dict[str, CircuitBreaker] = {
+    "gemini": CircuitBreaker(failure_threshold=3, recovery_time_seconds=60.0),
+    "deepseek": CircuitBreaker(failure_threshold=3, recovery_time_seconds=60.0),
+}
 
 
 def get_cache_key(task: str, system: str, user: str) -> str:
@@ -19,21 +29,62 @@ def get_cache_key(task: str, system: str, user: str) -> str:
     return hashlib.sha256(content).hexdigest()
 
 
+async def _execute_provider_call(
+    provider_name: str,
+    system: str,
+    user: str,
+    schema: Type[T],
+    model: str,
+    timeout: int,
+) -> dict[str, Any]:
+    breaker = _breakers.get(provider_name)
+    if breaker:
+        breaker.check_available()
+
+    call_fn = call_gemini if provider_name == "gemini" else call_deepseek
+    last_err: Exception | None = None
+
+    for attempt in range(2):
+        try:
+            res = await call_fn(
+                system=system,
+                user=user,
+                schema=schema,
+                model=model,
+                timeout=timeout,
+            )
+            if breaker:
+                breaker.record_success()
+            return res
+        except BadLLMOutput as err:
+            last_err = err
+            if attempt == 0:
+                await asyncio.sleep(0.5)
+                continue
+            raise err
+        except Exception as err:
+            if breaker:
+                breaker.record_failure()
+            raise err
+
+    if last_err is not None:
+        raise last_err
+    raise LLMUnavailable(f"Provider {provider_name} call failed without response.")
+
+
 async def generate_json(
     task: str, system: str, user: str, schema: Type[T], mock: dict[str, Any]
 ) -> tuple[T, dict[str, Any]]:
     """
-    Returns (validated_model, meta_dict).
-    provider=mock returns `mock` validated against schema.
-    Real providers (gemini / deepseek): JSON output, timeout, 1 retry on invalid JSON,
-    cached by hash(task+system+user).
-    Raises LLMUnavailable / BadLLMOutput.
+    Unified LLM abstraction supporting provider fallback, timeout, exponential retry,
+    circuit breaker, and local cache.
     """
     provider = os.getenv("LLM_PROVIDER", settings.LLM_PROVIDER).lower()
+    fallback_provider = os.getenv("LLM_FALLBACK_PROVIDER", "").lower()
     cache_dir_str = os.getenv("LLM_CACHE_DIR", settings.LLM_CACHE_DIR)
     no_cache = os.getenv("NO_CACHE", "0") == "1"
     timeout = int(os.getenv("LLM_TIMEOUT_SECONDS", str(settings.LLM_TIMEOUT_SECONDS)))
-    model_override = os.getenv("LLM_MODEL", settings.LLM_MODEL)
+    model_override = os.getenv("LLM_MODEL", settings.LLM_MODEL) or ""
 
     cache_dir = Path(cache_dir_str)
     cache_key = get_cache_key(task, system, user)
@@ -53,7 +104,6 @@ async def generate_json(
             }
             return validated, meta
         except Exception:
-            # If cache file is invalid, ignore and re-call provider
             pass
 
     # 1. Mock provider
@@ -80,37 +130,41 @@ async def generate_json(
         }
         return validated, meta
 
-    # 2. Real providers with 1 retry on BadLLMOutput / Invalid JSON
-    if provider not in ("gemini", "deepseek"):
-        raise LLMUnavailable(
-            f"Furnizorul AI '{provider}' nu este suportat (alege mock, gemini sau deepseek)."
-        )
+    # 2. Real provider with automatic fallback
+    providers_to_try = [provider]
+    if fallback_provider and fallback_provider != provider:
+        providers_to_try.append(fallback_provider)
+    elif provider != "mock":
+        # Safe default fallback
+        alt = "deepseek" if provider == "gemini" else "gemini"
+        providers_to_try.append(alt)
 
-    call_fn = call_gemini if provider == "gemini" else call_deepseek
-    last_err: Exception | None = None
     raw_dict: dict[str, Any] | None = None
+    successful_provider = provider
+    primary_error: Exception | None = None
 
-    for attempt in range(2):
+    for active_p in providers_to_try:
         try:
-            raw_dict = await call_fn(
+            raw_dict = await _execute_provider_call(
+                provider_name=active_p,
                 system=system,
                 user=user,
                 schema=schema,
                 model=model_override,
                 timeout=timeout,
             )
+            successful_provider = active_p
             break
-        except BadLLMOutput as err:
-            last_err = err
-            if attempt == 0:
-                continue
-            raise err
-        except LLMUnavailable:
-            # Do not retry network failures or missing credentials
-            raise
+        except (LLMUnavailable, CircuitBreakerOpenException, Exception) as exc:
+            logger.warning(f"Provider '{active_p}' failed ({exc}). Trying fallback...")
+            if primary_error is None:
+                primary_error = exc
+            continue
 
-    if raw_dict is None and last_err is not None:
-        raise last_err
+    if raw_dict is None:
+        if primary_error:
+            raise primary_error
+        raise LLMUnavailable(f"All configured providers failed for task '{task}'.")
 
     try:
         validated = schema.model_validate(raw_dict)
@@ -128,7 +182,7 @@ async def generate_json(
             pass
 
     meta = {
-        "provider": provider,
+        "provider": successful_provider,
         "cached": False,
         "warnings": [],
         "ai_notice_ro": "Generat de AI — verifică datele importante.",
