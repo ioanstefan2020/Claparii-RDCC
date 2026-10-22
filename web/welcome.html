@@ -54,6 +54,27 @@
         <span class="topbar-title">Configurare Confort</span>
       </div>
       <div class="topbar-right">
+        <!-- Mobile Comfort Dropdown Toggle -->
+        <button type="button" id="btn-header-a11y-menu" class="btn-comfort btn-a11y-menu" aria-expanded="false" aria-controls="header-a11y-toolbar" aria-label="Meniu opțiuni confort">
+          <span>Confort ▾</span>
+        </button>
+
+        <!-- Accessible Header Toolbar -->
+        <div id="header-a11y-toolbar" class="a11y-header-toolbar" role="toolbar" aria-label="Comenzi rapide de accesibilitate">
+          <button type="button" id="btn-header-contrast" class="a11y-toolbar-btn" aria-label="Comută modul: Luminos sau Întunecat">
+            <span class="toolbar-btn-text">Mod: Luminos</span>
+          </button>
+          <button type="button" id="btn-header-text" class="a11y-toolbar-btn" aria-label="Comută dimensiunea textului: Mediu, Mare sau Foarte Mare">
+            <span class="toolbar-btn-text">Text: Mediu</span>
+          </button>
+          <button type="button" id="btn-header-audio" class="a11y-toolbar-btn" aria-label="Controlează redarea audio: Pauză sau Continuă">
+            <span class="toolbar-btn-text">Audio: Redă</span>
+          </button>
+          <button type="button" id="btn-header-dyslexia" class="a11y-toolbar-btn" aria-pressed="false" aria-label="Comută fontul pentru dislexie">
+            <span class="toolbar-btn-text">Font: Standard</span>
+          </button>
+        </div>
+
         <a href="/" class="btn-comfort" aria-label="Sari peste chestionar și mergi direct la Acasă">
           <span>Sari peste (Acasă)</span>
         </a>
@@ -167,6 +188,7 @@
     </footer>
   </div>
 
+  <script type="module" src="/js/shell.js"></script>
   <script type="module" src="/js/welcome.js"></script>
 </body>
 </html>

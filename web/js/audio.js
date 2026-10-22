@@ -487,3 +487,4 @@ export function initAudioPage() {
 if (typeof document !== "undefined") {
   document.addEventListener("DOMContentLoaded", initAudioPage);
 }
+

@@ -135,8 +135,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Apply stored reading ruler and cognitive attributes
+  // Apply stored reading ruler, theme and cognitive attributes
   const currentPrefs = readPrefs().prefs || {};
+  if (currentPrefs.theme) {
+    root.setAttribute("data-theme", currentPrefs.theme);
+  }
   if (currentPrefs.readingRuler) {
     toggleReadingRuler(true);
   }
@@ -280,10 +283,12 @@ document.addEventListener("DOMContentLoaded", () => {
   // Theme toggle: exactly 2 modes: Luminos (warm default) <-> Întunecat (relaxing navy)
   if (btnContrast) {
     // Initial sync based on active theme
-    const activeTheme = root.getAttribute("data-theme") || "light";
+    const activeTheme = currentPrefs.theme || root.getAttribute("data-theme") || "light";
+    root.setAttribute("data-theme", activeTheme);
     const initialLabel = activeTheme === "dark" ? "Mod: Întunecat" : "Mod: Luminos";
     const initialSpan = btnContrast.querySelector("span");
     if (initialSpan) initialSpan.textContent = initialLabel;
+    btnContrast.setAttribute("aria-label", `Comută tema: ${initialLabel}`);
 
     btnContrast.addEventListener("click", () => {
       const currentTheme = root.getAttribute("data-theme") || "light";
@@ -307,6 +312,25 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     });
   }
+
+  // Cross-tab and cross-page synchronization for theme changes
+  window.addEventListener("storage", (e) => {
+    if (e.key === STORAGE_KEY && e.newValue) {
+      try {
+        const data = JSON.parse(e.newValue);
+        if (data && data.prefs && data.prefs.theme) {
+          const t = data.prefs.theme;
+          root.setAttribute("data-theme", t);
+          if (btnContrast) {
+            const lbl = t === "dark" ? "Mod: Întunecat" : "Mod: Luminos";
+            const span = btnContrast.querySelector("span");
+            if (span) span.textContent = lbl;
+            btnContrast.setAttribute("aria-label", `Comută tema: ${lbl}`);
+          }
+        }
+      } catch {}
+    }
+  });
 
   // Text size cycle: Normal (m) -> Mare (l) -> Foarte Mare (xl) -> Normal (m)
   if (btnText) {

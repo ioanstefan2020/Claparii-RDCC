@@ -47,9 +47,13 @@ export function announce(message) {
  * Updates the badges and sample document inside the Live Preview panel.
  */
 export function updateLivePreview() {
-  const derived = derivePrefs(welcomeState.answers);
+  const loaded = loadPrefs();
+  const currentTheme = document.documentElement.getAttribute("data-theme") || (loaded && loaded.prefs && loaded.prefs.theme) || "light";
+  const derived = derivePrefs(welcomeState.answers, loaded ? loaded.prefs : {}, loaded ? loaded.overrides : []);
+  derived.theme = currentTheme;
   welcomeState.prefs = derived;
   applyPrefs(derived, document.documentElement);
+  document.documentElement.setAttribute("data-theme", currentTheme);
 
   // Update badges
   const textBadge = document.getElementById("badge-pref-text");
@@ -226,13 +230,18 @@ export function prevStep() {
  * Saves current preferences state and redirects to Home.
  */
 export function saveAndContinue() {
-  const derived = derivePrefs(welcomeState.answers);
+  const loaded = loadPrefs();
+  const currentTheme = document.documentElement.getAttribute("data-theme") || (loaded && loaded.prefs && loaded.prefs.theme) || "light";
+  const derived = derivePrefs(welcomeState.answers, loaded ? loaded.prefs : {}, loaded ? loaded.overrides : []);
+  derived.theme = currentTheme;
+  const overrides = Array.from(new Set([...(loaded && loaded.overrides ? loaded.overrides : []), "theme"]));
+
   const state = {
     version: 1,
     updatedAt: new Date().toISOString(),
     answers: { ...welcomeState.answers },
     prefs: derived,
-    overrides: []
+    overrides: overrides
   };
 
   savePrefs(state);
@@ -251,6 +260,8 @@ export function initWelcome() {
   if (loaded && loaded.answers) {
     welcomeState.answers = { ...welcomeState.answers, ...loaded.answers };
   }
+  const currentTheme = (loaded && loaded.prefs && loaded.prefs.theme) || document.documentElement.getAttribute("data-theme") || "light";
+  document.documentElement.setAttribute("data-theme", currentTheme);
 
   // Initial live preview sync
   updateLivePreview();

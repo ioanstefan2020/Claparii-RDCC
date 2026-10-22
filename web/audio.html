@@ -9,13 +9,15 @@
   <script>
     (function () {
       try {
-        var raw = localStorage.getItem("primazi_prefs_v1");
+        var raw = localStorage.getItem("wp.prefs.v1");
         if (raw) {
-          var p = JSON.parse(raw);
+          var data = JSON.parse(raw);
+          var p = data && data.prefs ? data.prefs : {};
           var doc = document.documentElement;
           if (p.theme) doc.setAttribute("data-theme", p.theme);
           if (p.contrast) doc.setAttribute("data-contrast", p.contrast);
-          if (p.fontSize) doc.setAttribute("data-font-size", p.fontSize);
+          if (p.textSize) doc.setAttribute("data-text", p.textSize);
+          if (p.spacing) doc.setAttribute("data-spacing", p.spacing);
           if (p.font) doc.setAttribute("data-font", p.font);
           if (p.density) doc.setAttribute("data-density", p.density);
           if (p.sidebar) doc.setAttribute("data-sidebar", p.sidebar);
@@ -327,3 +329,4 @@
   <script type="module" src="/js/audio.js?v=2.3"></script>
 </body>
 </html>
+
