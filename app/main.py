@@ -7,6 +7,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -20,10 +21,24 @@ WEB_DIR = ROOT_DIR / "web"
 logger = logging.getLogger("primazi.api")
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 
-app = FastAPI(title="Accesibilitate Workplace API")
+app = FastAPI(
+    title="PrimaZi API — Asistent Accesibil pentru Primul Loc de Muncă",
+    version="2.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc",
+)
+
+# CORS Middleware (Task P1-15)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
-# Request Metrics & Privacy-Safe Logging Middleware (Task N1.7)
+# Request Metrics & Privacy-Safe Logging & Security Headers Middleware (Tasks N1.7 & P1-15)
 @app.middleware("http")
 async def metrics_middleware(request: Request, call_next):
     start_time = time.perf_counter()
@@ -36,6 +51,11 @@ async def metrics_middleware(request: Request, call_next):
         status = response.status_code
         # Add latency header for UI & client diagnostics
         response.headers["X-Response-Time"] = f"{duration:.3f}s"
+        # Security headers (Task P1-15)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         logger.info(f"[METRICS] {method} {path} -> {status} ({duration:.3f}s)")
         return response
     except Exception as exc:
@@ -75,8 +95,7 @@ async def health_check():
     return {"ok": True, "provider": provider}
 
 
-# Global Exception Handlers returning error envelope:
-# {"ok": false, "error": {"code": "...", "message_ro": "..."}}
+# Global Exception Handlers
 @app.exception_handler(AppError)
 async def app_error_handler(request: Request, exc: AppError):
     return JSONResponse(
@@ -88,59 +107,36 @@ async def app_error_handler(request: Request, exc: AppError):
     )
 
 
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    if isinstance(exc.detail, dict):
+        return JSONResponse(status_code=exc.status_code, content=exc.detail)
+    code = "not_found" if exc.status_code == 404 else "bad_request"
+    msg_ro = (
+        "Pagina sau resursa nu a fost găsită."
+        if exc.status_code == 404
+        else str(exc.detail)
+    )
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"ok": False, "error": {"code": code, "message_ro": msg_ro}},
+    )
+
+
 @app.exception_handler(RequestValidationError)
-async def validation_error_handler(request: Request, exc: RequestValidationError):
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
     return JSONResponse(
         status_code=422,
         content={
             "ok": False,
             "error": {
                 "code": "bad_request",
-                "message_ro": "Datele trimise sunt invalide sau lipsesc câmpuri obligatorii.",
+                "message_ro": "Datele trimise nu respectă formatul cerut.",
             },
         },
     )
 
 
-@app.exception_handler(StarletteHTTPException)
-async def http_exception_handler(request: Request, exc: StarletteHTTPException):
-    code_map = {
-        400: "bad_request",
-        404: "not_found",
-        422: "bad_request",
-        500: "internal",
-        502: "bad_llm_output",
-        503: "llm_unavailable",
-    }
-    code = code_map.get(exc.status_code, "error")
-    msg = (
-        exc.detail
-        if isinstance(exc.detail, str)
-        else "A apărut o eroare la procesarea cererii."
-    )
-    if exc.status_code == 404:
-        msg = "Resursa cerută nu a fost găsită."
-
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={"ok": False, "error": {"code": code, "message_ro": msg}},
-    )
-
-
-@app.exception_handler(Exception)
-async def general_exception_handler(request: Request, exc: Exception):
-    return JSONResponse(
-        status_code=500,
-        content={
-            "ok": False,
-            "error": {
-                "code": "internal",
-                "message_ro": "A apărut o eroare internă. Te rugăm să încerci din nou.",
-            },
-        },
-    )
-
-
-# Serve web/ at / if the directory exists
-if WEB_DIR.exists() and WEB_DIR.is_dir():
-    app.mount("/", StaticFiles(directory=str(WEB_DIR), html=True), name="web")
+# Mount static files at / (web directory)
+if WEB_DIR.exists():
+    app.mount("/", StaticFiles(directory=str(WEB_DIR), html=True), name="static")

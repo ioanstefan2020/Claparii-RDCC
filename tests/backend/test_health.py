@@ -15,6 +15,9 @@ async def test_health_endpoint():
         assert data == {"ok": True, "provider": "mock"}
         # Verify metrics header added by middleware
         assert "x-response-time" in response.headers
+        # Verify security headers added by middleware (P1-15)
+        assert response.headers.get("x-content-type-options") == "nosniff"
+        assert response.headers.get("x-frame-options") == "DENY"
 
 
 @pytest.mark.anyio
