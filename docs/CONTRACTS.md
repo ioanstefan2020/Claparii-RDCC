@@ -211,6 +211,43 @@ Request: `{"text": "...", "context": "clarification", "tone_goal": "polite", "pr
  "meta": {…}}
 ```
 
+### 3.8 `POST /api/interview/prep` (P1) — Stretch S1
+
+Request: `{"job_title": "Junior Web Developer", "job_description": "...", "profile": {…}}`
+
+```json
+{
+  "ok": true,
+  "data": {
+    "overview_ro": "Pregătire pentru interviul de angajare. Rolul pune accent pe învățare, atenție la detalii și comunicare deschisă.",
+    "common_questions": [
+      {
+        "question_ro": "Cum îți organizezi sarcinile zilnice atunci când primești mai multe cerințe în același timp?",
+        "why_asked_ro": "Angajatorul dorește să afle dacă ai o metodă structurată de prioritizare și dacă ceri îndrumare când e nevoie.",
+        "suggested_approach_ro": "Menționează că notezi cerințele în scris, ceri clarificări pentru ordinea priorităților și lucrezi la câte o sarcină pe rând."
+      }
+    ],
+    "suggested_adjustments": [
+      {
+        "id": "written_instructions",
+        "title": "Instrucțiuni scrise, pas cu pas",
+        "talking_point_ro": "„Lucrez cel mai rapid și precis când cerințele tehnice sau procedurile sunt transmise și în scris, cu pași bine delimitați.”"
+      }
+    ],
+    "questions_to_ask_employer": [
+      "Cum sunt transmise sarcinile zilnice (prin tichete scrise, email sau discuții scurte)?",
+      "Există un mentor sau o persoană de contact dedicată pentru îndrumare la început?"
+    ]
+  },
+  "meta": {
+    "provider": "mock",
+    "cached": false,
+    "warnings": [],
+    "ai_notice_ro": "Ghid generat prin asistență AI pentru pregătirea interviului. Răspunsurile sunt orientative."
+  }
+}
+```
+
 ## 4. Frontend ↔ backend rules
 
 - Frontend always sends `today_iso` from the browser's local date.
