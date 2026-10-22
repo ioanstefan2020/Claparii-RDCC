@@ -7,6 +7,8 @@ from pydantic import BaseModel
 from app.llm import generate_json
 from app.llm.providers.deepseek import call_deepseek
 from app.llm.providers.gemini import call_gemini
+from app.llm.providers.groq import call_groq
+from app.llm.providers.ollama import call_ollama
 from app.schemas.common import BadLLMOutput, LLMUnavailable
 
 
@@ -29,6 +31,14 @@ async def test_deepseek_missing_api_key(monkeypatch):
     with pytest.raises(LLMUnavailable) as exc:
         await call_deepseek("sys", "usr", DummyOutputSchema, "deepseek-chat", 10)
     assert "DEEPSEEK_API_KEY lipsește" in str(exc.value)
+
+
+@pytest.mark.anyio
+async def test_groq_missing_api_key(monkeypatch):
+    monkeypatch.setenv("GROQ_API_KEY", "")
+    with pytest.raises(LLMUnavailable) as exc:
+        await call_groq("sys", "usr", DummyOutputSchema, "llama-3.3-70b-versatile", 10)
+    assert "GROQ_API_KEY lipsește" in str(exc.value)
 
 
 @pytest.mark.anyio
@@ -61,6 +71,64 @@ async def test_deepseek_invalid_json_maps_to_bad_llm_output(monkeypatch):
 
     with pytest.raises(BadLLMOutput):
         await call_deepseek("sys", "usr", DummyOutputSchema, "deepseek-chat", 10)
+
+
+@pytest.mark.anyio
+async def test_groq_invalid_json_maps_to_bad_llm_output(monkeypatch):
+    monkeypatch.setenv("GROQ_API_KEY", "dummy_key")
+
+    class MockResponse:
+        status_code = 200
+
+        def json(self):
+            return {"choices": [{"message": {"content": "invalid json from groq"}}]}
+
+    async def mock_post(*args, **kwargs):
+        return MockResponse()
+
+    monkeypatch.setattr(httpx.AsyncClient, "post", mock_post)
+
+    with pytest.raises(BadLLMOutput):
+        await call_groq("sys", "usr", DummyOutputSchema, "llama-3.3-70b-versatile", 10)
+
+
+@pytest.mark.anyio
+async def test_ollama_network_error_maps_to_llm_unavailable(monkeypatch):
+    def mock_post(*args, **kwargs):
+        raise httpx.ConnectError("Ollama daemon down")
+
+    monkeypatch.setattr(httpx.AsyncClient, "post", mock_post)
+
+    with pytest.raises(LLMUnavailable):
+        await call_ollama("sys", "usr", DummyOutputSchema, "qwen2.5:3b", 10)
+
+
+@pytest.mark.anyio
+async def test_ollama_valid_json_response(monkeypatch):
+    class MockResponse:
+        status_code = 200
+
+        def json(self):
+            return {
+                "choices": [
+                    {
+                        "message": {
+                            "content": json.dumps(
+                                {"summary": "rezumat local", "points": ["punct1"]}
+                            )
+                        }
+                    }
+                ]
+            }
+
+    async def mock_post(*args, **kwargs):
+        return MockResponse()
+
+    monkeypatch.setattr(httpx.AsyncClient, "post", mock_post)
+
+    res = await call_ollama("sys", "usr", DummyOutputSchema, "qwen2.5:3b", 10)
+    assert res["summary"] == "rezumat local"
+    assert res["points"] == ["punct1"]
 
 
 @pytest.mark.anyio

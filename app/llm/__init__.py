@@ -13,6 +13,8 @@ from app.llm.circuit_breaker import CircuitBreaker, CircuitBreakerOpenException
 from app.llm.dynamic_mock import generate_dynamic_response
 from app.llm.providers.deepseek import call_deepseek
 from app.llm.providers.gemini import call_gemini
+from app.llm.providers.groq import call_groq
+from app.llm.providers.ollama import call_ollama
 from app.schemas.common import BadLLMOutput, LLMUnavailable
 
 T = TypeVar("T", bound=BaseModel)
@@ -22,6 +24,8 @@ logger = logging.getLogger("primazi.llm")
 _breakers: dict[str, CircuitBreaker] = {
     "gemini": CircuitBreaker(failure_threshold=3, recovery_time_seconds=60.0),
     "deepseek": CircuitBreaker(failure_threshold=3, recovery_time_seconds=60.0),
+    "groq": CircuitBreaker(failure_threshold=3, recovery_time_seconds=60.0),
+    "ollama": CircuitBreaker(failure_threshold=3, recovery_time_seconds=30.0),
 }
 
 
@@ -42,7 +46,17 @@ async def _execute_provider_call(
     if breaker:
         breaker.check_available()
 
-    call_fn = call_gemini if provider_name == "gemini" else call_deepseek
+    if provider_name == "gemini":
+        call_fn = call_gemini
+    elif provider_name == "deepseek":
+        call_fn = call_deepseek
+    elif provider_name == "groq":
+        call_fn = call_groq
+    elif provider_name == "ollama":
+        call_fn = call_ollama
+    else:
+        raise LLMUnavailable(f"Furnizor LLM necunoscut: {provider_name}")
+
     last_err: Exception | None = None
 
     for attempt in range(2):
@@ -81,7 +95,9 @@ async def generate_json(
     circuit breaker, and local cache.
     """
     provider = os.getenv("LLM_PROVIDER", settings.LLM_PROVIDER).lower()
-    fallback_provider = os.getenv("LLM_FALLBACK_PROVIDER", "").lower()
+    fallback_provider = os.getenv(
+        "LLM_FALLBACK_PROVIDER", settings.LLM_FALLBACK_PROVIDER
+    ).lower()
     cache_dir_str = os.getenv("LLM_CACHE_DIR", settings.LLM_CACHE_DIR)
     no_cache = os.getenv("NO_CACHE", "0") == "1"
     timeout = int(os.getenv("LLM_TIMEOUT_SECONDS", str(settings.LLM_TIMEOUT_SECONDS)))
@@ -145,9 +161,11 @@ async def generate_json(
     if fallback_provider and fallback_provider != provider:
         providers_to_try.append(fallback_provider)
     elif provider != "mock":
-        # Safe default fallback
-        alt = "deepseek" if provider == "gemini" else "gemini"
-        providers_to_try.append(alt)
+        # Intelligent fallback priority
+        chain = ["deepseek", "groq", "ollama", "gemini"]
+        for p in chain:
+            if p != provider and p not in providers_to_try:
+                providers_to_try.append(p)
 
     raw_dict: dict[str, Any] | None = None
     successful_provider = provider

@@ -10,10 +10,25 @@ load_dotenv(ROOT_DIR / ".env")
 
 class Config:
     LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", "mock")
+    LLM_FALLBACK_PROVIDER: str = os.getenv("LLM_FALLBACK_PROVIDER", "")
     LLM_MODEL: str = os.getenv("LLM_MODEL", "")
-    GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
+
+    # DeepSeek
     DEEPSEEK_API_KEY: str = os.getenv("DEEPSEEK_API_KEY", "")
     DEEPSEEK_BASE_URL: str = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com")
+
+    # Groq (Free fast inference)
+    GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
+    GROQ_BASE_URL: str = os.getenv("GROQ_BASE_URL", "https://api.groq.com/openai/v1")
+    GROQ_MODEL: str = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+
+    # Local Ollama (Offline / Privacy)
+    OLLAMA_BASE_URL: str = os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:11434/v1")
+    OLLAMA_MODEL: str = os.getenv("OLLAMA_MODEL", "qwen2.5:3b")
+
+    # Gemini
+    GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
+
     LLM_TIMEOUT_SECONDS: int = int(os.getenv("LLM_TIMEOUT_SECONDS", "30"))
     LLM_CACHE_DIR: str = os.getenv("LLM_CACHE_DIR", ".cache/llm")
     MAX_INPUT_CHARS: int = int(os.getenv("MAX_INPUT_CHARS", "12000"))
