@@ -254,3 +254,4 @@ def test_client_api_adjustments_draft_empty_rejection():
     assert data["res1"]["error"]["code"] == "bad_request"
     assert data["res2"]["ok"] is False
     assert data["res2"]["error"]["code"] == "bad_request"
+

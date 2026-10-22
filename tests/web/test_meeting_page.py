@@ -356,3 +356,4 @@ async def test_api_meeting_summarize_boundary_limits():
         res_long = await client.post("/api/meeting/summarize", json={"transcript": too_long_text})
         assert res_long.status_code == 400
         assert res_long.json()["error"]["code"] == "too_long"
+
