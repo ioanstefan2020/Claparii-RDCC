@@ -35,9 +35,9 @@
       } catch (e) {}
     })();
   </script>
-  <link rel="stylesheet" href="/shared/a11y.css">
-  <link rel="stylesheet" href="/css/tokens.css">
-  <link rel="stylesheet" href="/css/shell.css">
+  <link rel="stylesheet" href="/shared/a11y.css?v=2.2">
+  <link rel="stylesheet" href="/css/tokens.css?v=2.2">
+  <link rel="stylesheet" href="/css/shell.css?v=2.2">
 </head>
 <body>
   <!-- Skip link for keyboard navigation -->
@@ -206,8 +206,8 @@
             <form id="home-input-form" class="gemini-input-capsule" role="search" novalidate>
               <!-- Left: Attachment / Quick Samples Dropdown Button -->
               <div class="capsule-left">
-                <button type="button" id="btn-capsule-attach" class="capsule-circle-btn" aria-label="Atașează document sau alege un exemplu demonstrativ" aria-expanded="false" aria-haspopup="menu">
-                  <svg class="capsule-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="3" x2="12" y2="21"></line><line x1="3" y1="12" x2="21" y2="12"></line></svg>
+                <button type="button" id="btn-capsule-attach" class="capsule-circle-btn" aria-label="Atașează document sau alege un exemplu demonstrativ" aria-expanded="false" aria-haspopup="menu" style="width: 48px; height: 48px; min-width: 48px; min-height: 48px;">
+                  <svg class="capsule-icon" width="32" height="32" viewBox="0 0 24 24" style="width: 32px !important; height: 32px !important; min-width: 32px; min-height: 32px;" aria-hidden="true"><line x1="12" y1="2" x2="12" y2="22" stroke-width="3"></line><line x1="2" y1="12" x2="22" y2="12" stroke-width="3"></line></svg>
                 </button>
 
                 <!-- Floating Dropdown for Samples -->
@@ -277,18 +277,18 @@
                 </div>
 
                 <!-- Speech Dictation Button -->
-                <button type="button" id="btn-capsule-mic" class="capsule-circle-btn" aria-label="Pornește dictarea vocală" title="Dictare vocală">
-                  <svg class="capsule-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                <button type="button" id="btn-capsule-mic" class="capsule-circle-btn" aria-label="Pornește dictarea vocală" title="Dictare vocală" style="width: 48px; height: 48px; min-width: 48px; min-height: 48px;">
+                  <svg class="capsule-icon" width="30" height="30" viewBox="0 0 24 24" style="width: 30px !important; height: 30px !important; min-width: 30px; min-height: 30px;" aria-hidden="true"><path d="M12 2a3.5 3.5 0 0 0-3.5 3.5v7a3.5 3.5 0 0 0 7 0v-7A3.5 3.5 0 0 0 12 2z" stroke-width="2.6"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke-width="2.6"></path><line x1="12" y1="19" x2="12" y2="23" stroke-width="2.6"></line><line x1="8" y1="23" x2="16" y2="23" stroke-width="2.6"></line></svg>
                 </button>
 
                 <!-- Clear Button -->
-                <button type="button" id="btn-home-clear" class="capsule-circle-btn" aria-label="Golește textul" title="Golește" style="display: none;">
-                  <svg class="capsule-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                <button type="button" id="btn-home-clear" class="capsule-circle-btn" aria-label="Golește textul" title="Golește" style="display: none; width: 48px; height: 48px; min-width: 48px; min-height: 48px;">
+                  <svg class="capsule-icon" width="28" height="28" viewBox="0 0 24 24" style="width: 28px !important; height: 28px !important;" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18" stroke-width="2.8"></line><line x1="6" y1="6" x2="18" y2="18" stroke-width="2.8"></line></svg>
                 </button>
 
                 <!-- Submit / Send Arrow Button -->
-                <button type="submit" id="btn-home-execute" class="capsule-send-btn" aria-label="Clarifică documentul" title="Trimite">
-                  <svg class="send-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+                <button type="submit" id="btn-home-execute" class="capsule-send-btn" aria-label="Clarifică documentul" title="Trimite" style="width: 48px; height: 48px; min-width: 48px; min-height: 48px;">
+                  <svg class="send-icon" width="28" height="28" viewBox="0 0 24 24" style="width: 28px !important; height: 28px !important; min-width: 28px; min-height: 28px; fill: currentColor; display: block;" aria-hidden="true"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
                 </button>
               </div>
             </form>

@@ -2583,10 +2583,12 @@ mark.quote-highlight {
 }
 
 .capsule-icon {
-  width: 26px;
-  height: 26px;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
   stroke: currentColor;
-  stroke-width: 2.4;
+  stroke-width: 2.8 !important;
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -2682,8 +2684,10 @@ mark.quote-highlight {
 }
 
 .capsule-send-btn .send-icon {
-  width: 24px;
-  height: 24px;
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  min-height: 30px !important;
   fill: currentColor;
   display: block;
 }
@@ -2967,19 +2971,110 @@ mark.quote-highlight {
 /* Mobile & Small Tablets (<= 767px) */
 @media (max-width: 767px) {
   .app-topbar {
-    padding: var(--space-xs) var(--space-sm);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    height: auto;
+    min-height: unset;
+    padding: 0;
+    background-color: var(--bg-surface);
+    border-bottom: 1px solid var(--border-color);
+    gap: 0;
+  }
+
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    height: 52px;
+    padding-left: var(--space-sm);
+    flex: 1 1 auto;
+  }
+
+  .btn-menu-toggle {
+    min-height: 38px;
+    height: 38px;
+    padding: 0 var(--space-xs);
+    font-size: 0.85rem;
+    border-radius: var(--radius-full);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .topbar-title {
+    font-size: 1.05rem;
+    font-weight: var(--font-weight-bold);
+  }
+
+  .topbar-right {
+    display: contents;
+  }
+
+  .topbar-right > .btn-comfort {
+    height: 36px;
+    min-height: 36px;
+    padding: 0 var(--space-xs);
+    font-size: 0.82rem;
+    border-radius: var(--radius-full);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid var(--border-color);
+  }
+
+  .topbar-right > a[href="/welcome.html"] {
+    order: 2;
+    margin-left: auto;
+  }
+
+  .topbar-right > a[href="/settings.html"] {
+    order: 3;
+    margin-right: var(--space-sm);
+    margin-left: 6px;
+  }
+
+  .a11y-header-toolbar {
+    order: 4;
+    width: 100%;
+    flex-basis: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 8px;
+    padding: 6px var(--space-sm) 8px;
+    background-color: var(--bg-surface-alt);
+    border-top: 1px solid var(--border-color);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .a11y-header-toolbar::-webkit-scrollbar {
+    display: none;
   }
 
   .a11y-toolbar-btn {
-    padding: var(--space-xxs) var(--space-xs);
+    flex: 0 0 auto;
+    white-space: nowrap;
+    height: 34px;
+    min-height: 34px;
+    padding: 0 12px;
     font-size: 0.8rem;
-    min-height: 40px;
+    font-weight: var(--font-weight-medium);
+    border-radius: var(--radius-full);
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .btn-comfort {
-    padding: var(--space-xxs) var(--space-sm);
-    font-size: 0.85rem;
-    min-height: 40px;
+  .a11y-toolbar-btn:hover {
+    background-color: var(--bg-surface-hover);
   }
 
   main#main {
