@@ -46,7 +46,7 @@ function updatePref(key, value) {
 document.addEventListener("DOMContentLoaded", () => {
   const root = document.documentElement;
   const menuToggle = document.getElementById("btn-menu-toggle");
-  const sidebarCollapse = document.getElementById("btn-sidebar-collapse");
+  const sidebarCollapseButtons = document.querySelectorAll("#btn-sidebar-collapse, .btn-sidebar-toggle");
   const sidebar = document.getElementById("app-sidebar");
   const backdrop = document.getElementById("sidebar-backdrop");
   const liveRegion = document.getElementById("status-live");
@@ -82,13 +82,38 @@ document.addEventListener("DOMContentLoaded", () => {
     announce("Meniul de navigare a fost închis.");
   }
 
-  if (menuToggle) {
-    menuToggle.addEventListener("click", () => {
+  function toggleSidebarCollapse() {
+    if (window.innerWidth <= 768) {
       const isOpen = sidebar && sidebar.classList.contains("is-drawer-open");
       if (isOpen) {
         closeDrawer();
       } else {
         openDrawer();
+      }
+      return;
+    }
+    const isCurrentlyCollapsed = root.getAttribute("data-sidebar") === "collapsed";
+    const nextState = isCurrentlyCollapsed ? "open" : "collapsed";
+    root.setAttribute("data-sidebar", nextState);
+    sidebarCollapseButtons.forEach(btn => {
+      btn.setAttribute("aria-expanded", nextState === "open" ? "true" : "false");
+    });
+    if (menuToggle) menuToggle.setAttribute("aria-expanded", nextState === "open" ? "true" : "false");
+    updatePref("sidebar", nextState);
+    announce(nextState === "collapsed" ? "Bara laterală a fost restrânsă." : "Bara laterală a fost extinsă.");
+  }
+
+  if (menuToggle) {
+    menuToggle.addEventListener("click", () => {
+      if (window.innerWidth <= 768) {
+        const isOpen = sidebar && sidebar.classList.contains("is-drawer-open");
+        if (isOpen) {
+          closeDrawer();
+        } else {
+          openDrawer();
+        }
+      } else {
+        toggleSidebarCollapse();
       }
     });
   }
@@ -107,16 +132,9 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // 2. Desktop Sidebar Collapse Toggle
-  if (sidebarCollapse) {
-    sidebarCollapse.addEventListener("click", () => {
-      const isCurrentlyCollapsed = root.getAttribute("data-sidebar") === "collapsed";
-      const nextState = isCurrentlyCollapsed ? "open" : "collapsed";
-      root.setAttribute("data-sidebar", nextState);
-      sidebarCollapse.setAttribute("aria-expanded", nextState === "open" ? "true" : "false");
-      updatePref("sidebar", nextState);
-      announce(nextState === "collapsed" ? "Bara laterală a fost restrânsă." : "Bara laterală a fost extinsă.");
-    });
-  }
+  sidebarCollapseButtons.forEach(btn => {
+    btn.addEventListener("click", toggleSidebarCollapse);
+  });
 
   // 3. Persistent Accessibility Header Toolbar Wiring
   const btnContrast = document.getElementById("btn-header-contrast");
