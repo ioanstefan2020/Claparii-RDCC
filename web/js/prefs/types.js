@@ -18,12 +18,12 @@ export const DEFAULT_ANSWERS = Object.freeze({
 });
 
 export const DEFAULT_PREFS = Object.freeze({
-  theme: "system",            // "light" | "dark" | "system"
+  theme: "system",            // "light" | "dark" | "high-contrast-light" | "system"
   textSize: "m",              // "m" | "l" | "xl"
   spacing: "comfortable",     // "comfortable" | "roomy"
-  contrast: "normal",         // "normal" | "high"
+  contrast: "normal",         // "normal" | "high" | "high-dark" | "high-light"
   motion: "full",             // "reduced" | "full"
-  font: "default",            // "default" | "readable"
+  font: "default",            // "default" | "readable" | "dyslexic"
   density: "full",            // "focused" | "full"
   language: "ro",             // "ro" | "en"
   sidebar: "open",            // "open" | "collapsed"
@@ -40,12 +40,12 @@ export const VALID_ANSWERS = Object.freeze({
 });
 
 export const VALID_PREFS = Object.freeze({
-  theme: ["light", "dark", "system"],
+  theme: ["light", "dark", "high-contrast-light", "system"],
   textSize: ["m", "l", "xl"],
   spacing: ["comfortable", "roomy"],
-  contrast: ["normal", "high"],
+  contrast: ["normal", "high", "high-dark", "high-light"],
   motion: ["reduced", "full"],
-  font: ["default", "readable"],
+  font: ["default", "readable", "dyslexic"],
   density: ["focused", "full"],
   language: ["ro", "en"],
   sidebar: ["open", "collapsed"],
@@ -64,4 +64,3 @@ export function createDefaultState() {
     overrides: [],
   };
 }
-

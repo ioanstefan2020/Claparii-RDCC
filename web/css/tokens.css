@@ -1,19 +1,19 @@
 /**
- * tokens.css - Complete Design System Tokens
+ * tokens.css - Complete Design System Tokens (Stilul Gemini)
  * Project: PrimaZi (AccessABILITY Hackathon 2026)
- * Owner: p3
- * Spec: docs/NEXT-STEPS.md (§1, §2)
+ * Spec: docs/plan/p2.md (G2.1)
  *
  * Rules:
  * - All colors, sizes, radii, spacing live as CSS variables here.
  * - Switches via data-* attributes on <html> (theme, text, spacing, contrast, motion, font, density, sidebar).
- * - Accessible: WCAG 2.2 AA (contrast >= 4.5:1, touch targets >= 44px, focus ring 3px).
+ * - Accessible: WCAG 2.2 AA & AAA (contrast >= 7:1 for text, touch targets >= 48px, focus ring 3px).
  */
 
 :root {
   /* Sizing and Touch Targets */
-  --min-touch-target: 44px;
-  --max-content-width: 720px;
+  --min-touch-target: 48px;
+  --button-gap: 12px;
+  --max-content-width: 768px;
   --sidebar-width-expanded: 260px;
   --sidebar-width-collapsed: 64px;
   --topbar-height: 64px;
@@ -35,9 +35,9 @@
   --radius-xl: 24px;
   --radius-full: 9999px;
 
-  /* Typography Base */
-  --font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-scale: 1.125rem; /* 18px base */
+  /* Typography Base - Atkinson Hyperlegible / Inter */
+  --font-family: "Atkinson Hyperlegible", Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-scale: 1.0625rem; /* 17px base */
   --line-height: 1.6;
   --letter-spacing: normal;
   --word-spacing: normal;
@@ -46,19 +46,19 @@
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
 
-  /* Light Theme (Default: Warm Off-White, Inclusive, No Gradients) */
-  --bg-app: #fbfaf8;          /* Warm off-white background */
+  /* Light Theme (Default: Warm Ivory/Cream #f9f9f7, Charcoal AAA #1e2022) */
+  --bg-app: #f9f9f7;          /* Warm ivory/cream canvas */
   --bg-surface: #ffffff;      /* Pure white card surface */
   --bg-surface-alt: #f3f1ec;  /* Soft warm neutral surface */
   --bg-surface-hover: #eae7e0;
-  --text-main: #1c1b1f;       /* Deep warm charcoal (15.5:1 on white) */
-  --text-muted: #49454f;      /* Soft dark charcoal (7.2:1 on white) */
+  --text-main: #1e2022;       /* Charcoal AAA text (>15:1 contrast on #f9f9f7) */
+  --text-muted: #4a4f55;      /* Secondary text (>7.7:1 contrast on #f9f9f7) */
   --text-inverse: #ffffff;
 
-  --border-color: #e4e1d9;    /* Gentle border */
+  --border-color: #e3e2de;    /* Tactile 1.5px border */
   --border-strong: #79747e;   /* Accessible strong border */
 
-  --primary: #1a56db;         /* Warm professional royal blue (5.7:1) */
+  --primary: #1d4ed8;         /* Warm functional royal blue */
   --primary-hover: #1e40af;
   --primary-contrast: #ffffff;
   --primary-subtle: #eff6ff;
@@ -79,37 +79,39 @@
   --error-text: #991b1b;
   --error-border: #dc2626;
 
-  --focus-ring: #0284c7;
-  --focus-ring-offset: 3px;
-  --card-shadow: 0 1px 3px rgba(28, 27, 31, 0.05), 0 1px 2px rgba(28, 27, 31, 0.03);
-  --card-shadow-hover: 0 4px 6px -1px rgba(28, 27, 31, 0.08), 0 2px 4px -2px rgba(28, 27, 31, 0.05);
+  --focus-ring: #005fb8;
+  --focus-ring-offset: 2px;
+  --focus-ring-width: 3px;
+  --card-shadow: none;
+  --card-shadow-hover: none;
   --modal-backdrop: rgba(15, 23, 42, 0.6);
 
   --transition-fast: 150ms ease;
   --transition-normal: 250ms ease;
 }
 
-/* Theme: Dark (Dark grey/navy, never pitch black on white) */
-[data-theme="dark"] {
-  --bg-app: #121824;
-  --bg-surface: #1e293b;
-  --bg-surface-alt: #334155;
-  --bg-surface-hover: #475569;
-  --text-main: #f8fafc;
-  --text-muted: #cbd5e1;
-  --text-inverse: #121824;
+/* Theme: Dark (High-Contrast Dark #121212 canvas with yellow AAA accents) */
+[data-theme="dark"],
+[data-contrast="high-dark"] {
+  --bg-app: #121212;
+  --bg-surface: #1e1e1e;
+  --bg-surface-alt: #2a2a2a;
+  --bg-surface-hover: #333333;
+  --text-main: #ffffff;
+  --text-muted: #ffe600;
+  --text-inverse: #121212;
 
-  --border-color: #334155;
-  --border-strong: #94a3b8;
+  --border-color: #ffe600;
+  --border-strong: #ffffff;
 
-  --primary: #60a5fa;
-  --primary-hover: #93c5fd;
-  --primary-contrast: #0f172a;
-  --primary-subtle: #1e3a8a;
+  --primary: #ffe600;
+  --primary-hover: #fff066;
+  --primary-contrast: #000000;
+  --primary-subtle: #242200;
 
-  --secondary: #94a3b8;
-  --secondary-hover: #cbd5e1;
-  --secondary-contrast: #0f172a;
+  --secondary: #ffffff;
+  --secondary-hover: #ffe600;
+  --secondary-contrast: #000000;
 
   --success-bg: #064e3b;
   --success-text: #a7f3d0;
@@ -123,33 +125,75 @@
   --error-text: #fecaca;
   --error-border: #f87171;
 
-  --focus-ring: #38bdf8;
-  --card-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
-  --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --focus-ring: #ffe600;
+  --focus-ring-offset: 2px;
+  --card-shadow: none;
+  --card-shadow-hover: none;
   --modal-backdrop: rgba(0, 0, 0, 0.75);
 }
 
-/* Theme: High Contrast (meets WCAG AAA >= 7:1) */
+/* Theme: High-Contrast Light Mode (#ffffff canvas / #000000 text & borders) */
+[data-theme="high-contrast-light"],
+[data-contrast="high-light"] {
+  --bg-app: #ffffff;
+  --bg-surface: #ffffff;
+  --bg-surface-alt: #f0f0f0;
+  --bg-surface-hover: #e0e0e0;
+  --text-main: #000000;
+  --text-muted: #000000;
+  --text-inverse: #ffffff;
+
+  --border-color: #000000;
+  --border-strong: #000000;
+
+  --primary: #000000;
+  --primary-hover: #222222;
+  --primary-contrast: #ffffff;
+  --primary-subtle: #e5e5e5;
+
+  --secondary: #000000;
+  --secondary-hover: #222222;
+  --secondary-contrast: #ffffff;
+
+  --success-bg: #ffffff;
+  --success-text: #000000;
+  --success-border: #000000;
+
+  --warning-bg: #ffffff;
+  --warning-text: #000000;
+  --warning-border: #000000;
+
+  --error-bg: #ffffff;
+  --error-text: #000000;
+  --error-border: #000000;
+
+  --focus-ring: #000000;
+  --focus-ring-offset: 2px;
+  --card-shadow: none;
+  --card-shadow-hover: none;
+}
+
+/* Legacy Theme: High Contrast (Yellow on black, WCAG AAA >= 7:1) */
 [data-theme="high-contrast"],
 [data-contrast="high"] {
-  --bg-app: #000000;
-  --bg-surface: #000000;
-  --bg-surface-alt: #1a1a1a;
-  --bg-surface-hover: #262626;
+  --bg-app: #121212;
+  --bg-surface: #1e1e1e;
+  --bg-surface-alt: #2a2a2a;
+  --bg-surface-hover: #333333;
   --text-main: #ffffff;
-  --text-muted: #ffff55;
-  --text-inverse: #000000;
+  --text-muted: #ffe600;
+  --text-inverse: #121212;
 
-  --border-color: #ffffff;
+  --border-color: #ffe600;
   --border-strong: #ffffff;
 
-  --primary: #ffff00;
+  --primary: #ffe600;
   --primary-hover: #ffffff;
   --primary-contrast: #000000;
-  --primary-subtle: #1a1a1a;
+  --primary-subtle: #242200;
 
   --secondary: #ffffff;
-  --secondary-hover: #ffff00;
+  --secondary-hover: #ffe600;
   --secondary-contrast: #000000;
 
   --success-bg: #000000;
@@ -164,7 +208,7 @@
   --error-text: #ff6666;
   --error-border: #ff6666;
 
-  --focus-ring: #00ffff;
+  --focus-ring: #ffe600;
   --focus-ring-offset: 4px;
   --card-shadow: none;
   --card-shadow-hover: none;
@@ -174,17 +218,17 @@
 /* Text Size Preferences */
 [data-text="m"],
 [data-text-size="normal"] {
-  --font-scale: 1.125rem;
+  --font-scale: 1.0625rem; /* 17px */
 }
 
 [data-text="l"],
 [data-text-size="large"] {
-  --font-scale: 1.25rem;
+  --font-scale: 1.25rem;   /* 20px */
 }
 
 [data-text="xl"],
 [data-text-size="xlarge"] {
-  --font-scale: 1.4rem;
+  --font-scale: 1.45rem;   /* 23.2px */
 }
 
 /* Spacing Preferences */
@@ -206,6 +250,14 @@
 [data-font="readable"] {
   --font-family: "Atkinson Hyperlegible", "Segoe UI", -apple-system, sans-serif;
   --letter-spacing: 0.02em;
+}
+
+/* Dyslexia Mode Font Preference */
+[data-font="dyslexic"],
+[data-dyslexia="true"] {
+  --font-family: "OpenDyslexic", "Comic Sans MS", "Atkinson Hyperlegible", sans-serif;
+  --letter-spacing: 0.12em;
+  --line-height: 1.6;
 }
 
 /* Density Preferences */
@@ -233,4 +285,3 @@
     scroll-behavior: auto !important;
   }
 }
-

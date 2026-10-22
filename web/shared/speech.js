@@ -64,6 +64,40 @@ export function stopSpeaking() {
 }
 
 /**
+ * Pauses active speech synthesis.
+ */
+export function pauseSpeaking() {
+  if (isSynthesisSupported() && window.speechSynthesis.speaking) {
+    window.speechSynthesis.pause();
+  }
+}
+
+/**
+ * Resumes paused speech synthesis.
+ */
+export function resumeSpeaking() {
+  if (isSynthesisSupported() && window.speechSynthesis.paused) {
+    window.speechSynthesis.resume();
+  }
+}
+
+/**
+ * Checks if speech synthesis is currently active (speaking or paused).
+ * @returns {boolean}
+ */
+export function isSpeaking() {
+  return isSynthesisSupported() && window.speechSynthesis.speaking;
+}
+
+/**
+ * Checks if speech synthesis is currently paused.
+ * @returns {boolean}
+ */
+export function isPaused() {
+  return isSynthesisSupported() && window.speechSynthesis.paused;
+}
+
+/**
  * Checks if Web Speech Recognition (voice-to-text) is supported.
  */
 export function isRecognitionSupported() {

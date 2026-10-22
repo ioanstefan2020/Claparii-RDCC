@@ -374,7 +374,7 @@ main#main {
 
 .feature-card {
   background-color: var(--bg-surface);
-  border: 1px solid var(--border-color);
+  border: 1.5px solid var(--border-color);
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
   display: flex;
@@ -1612,6 +1612,7 @@ mark.quote-highlight {
   color: var(--error-text);
   border: 1px solid var(--error-border);
 }
+
 /* -------------------------------------------------- */
 /* Library Screen (N3.5)                              */
 /* -------------------------------------------------- */
@@ -2301,4 +2302,56 @@ mark.quote-highlight {
 
 .adjustments-list li {
   line-height: 1.5;
+}
+
+/* -------------------------------------------------- */
+/* Header Accessibility Toolbar (Gemini Style)        */
+/* -------------------------------------------------- */
+.a11y-header-toolbar {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.a11y-toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xxs);
+  min-height: var(--min-touch-target);
+  padding: var(--space-xs) var(--space-sm);
+  background-color: var(--bg-surface);
+  color: var(--text-main);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.a11y-toolbar-btn:hover {
+  background-color: var(--bg-surface-alt);
+  border-color: var(--border-strong);
+}
+
+.a11y-toolbar-btn:focus-visible {
+  outline: 3px solid var(--focus-ring) !important;
+  outline-offset: var(--focus-ring-offset) !important;
+}
+
+[data-theme="dark"] .a11y-toolbar-btn,
+[data-contrast="high-dark"] .a11y-toolbar-btn {
+  background-color: var(--bg-surface);
+  border-color: var(--primary);
+  color: var(--text-main);
+}
+
+[data-theme="high-contrast-light"] .a11y-toolbar-btn,
+[data-contrast="high-light"] .a11y-toolbar-btn {
+  background-color: var(--bg-surface);
+  border-color: var(--primary);
+  color: var(--text-main);
 }

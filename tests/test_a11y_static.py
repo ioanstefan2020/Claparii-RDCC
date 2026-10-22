@@ -164,9 +164,9 @@ def test_wcag_contrast_tokens_in_css():
     assert css_path.exists(), "a11y.css missing"
     css_text = css_path.read_text(encoding="utf-8")
 
-    # Verify light theme tokens
-    assert _contrast_ratio("#111827", "#ffffff") >= 4.5  # text-main on white (17.7:1)
-    assert _contrast_ratio("#374151", "#ffffff") >= 4.5  # text-muted on white (10.3:1)
+    # Verify light theme tokens (WCAG AAA >= 7:1)
+    assert _contrast_ratio("#1e2022", "#f9f9f7") >= 7.0  # text-main on canvas (15.4:1)
+    assert _contrast_ratio("#4a4f55", "#f9f9f7") >= 7.0  # text-muted on canvas (7.8:1)
     assert _contrast_ratio("#1d4ed8", "#ffffff") >= 4.5  # primary on white (6.7:1)
 
     # Verify high contrast tokens (>= 7:1)
@@ -175,11 +175,18 @@ def test_wcag_contrast_tokens_in_css():
 
 
 def test_wcag_touch_targets_and_reduced_motion():
-    """Verify that minimum touch targets (>= 44px) and reduced-motion query exist in a11y.css."""
+    """Verify that minimum touch targets (>= 48px) and reduced-motion query exist in a11y.css."""
     css_text = (ROOT / "web" / "shared" / "a11y.css").read_text(encoding="utf-8")
-    assert "--min-touch-target: 44px" in css_text
+    assert "--min-touch-target: 48px" in css_text
     assert "@media (prefers-reduced-motion: reduce)" in css_text
     assert "animation-duration: 0.001ms !important" in css_text
+
+
+def test_no_sparkles_in_html_files():
+    """Verify that no AI hype sparkle emojis (✨) appear anywhere across served HTML files."""
+    for html_file in HTML_FILES:
+        content = html_file.read_text(encoding="utf-8")
+        assert "✨" not in content, f"AI anti-pattern sparkle emoji (✨) found in {html_file.name}"
 
 
 def test_wcag_no_external_cdn_dependencies():

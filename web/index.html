@@ -133,12 +133,28 @@
           <span class="topbar-title">Acasă</span>
         </div>
         <div class="topbar-right">
+          <!-- Persistent Accessibility Header Toolbar -->
+          <div class="a11y-header-toolbar" role="toolbar" aria-label="Ajustări rapide de accesibilitate">
+            <button type="button" id="btn-header-contrast" class="a11y-toolbar-btn" aria-label="Comută modul de contrast: Cald, Întunecat sau Luminos">
+              <span>Contrast: Cald</span>
+            </button>
+            <button type="button" id="btn-header-text" class="a11y-toolbar-btn" aria-label="Comută dimensiunea textului: Mediu, Mare sau Foarte Mare">
+              <span>Text: Mediu</span>
+            </button>
+            <button type="button" id="btn-header-audio" class="a11y-toolbar-btn" aria-label="Controlează redarea audio: Pauză sau Continuă">
+              <span>Audio: Pauză</span>
+            </button>
+            <button type="button" id="btn-header-dyslexia" class="a11y-toolbar-btn" aria-pressed="false" aria-label="Comută fontul pentru dislexie">
+              <span>Dislexie: Oprită</span>
+            </button>
+          </div>
+
           <a href="/welcome.html" class="btn-comfort" aria-label="Deschide chestionarul de configurare confort">
-            <span>Chestionar confort</span>
+            <span>Chestionar</span>
           </a>
           <a href="/settings.html" class="btn-comfort" aria-label="Deschide setările de confort și personalizare">
             <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-            <span>Setări confort</span>
+            <span>Setări</span>
           </a>
         </div>
       </header>

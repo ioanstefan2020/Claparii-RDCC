@@ -191,23 +191,21 @@ def test_token_contrast_matrix_wcag_aa_and_aaa():
     assert TOKENS_CSS.exists(), f"Missing tokens.css at {TOKENS_CSS}"
     css_text = TOKENS_CSS.read_text(encoding="utf-8")
 
-    # 1. Light Theme (:root) - WCAG 2.2 AA (>= 4.5:1)
+    # 1. Light Theme (:root) - WCAG 2.2 AAA (>= 7:1) and AA (>= 4.5:1)
     light = _parse_css_variables(css_text, ":root")
     assert "--text-main" in light and "--bg-surface" in light
-    assert _contrast_ratio(light["--text-main"], light["--bg-surface"]) >= 4.5, "Light --text-main on --bg-surface < 4.5"
-    assert _contrast_ratio(light["--text-main"], light["--bg-app"]) >= 4.5, "Light --text-main on --bg-app < 4.5"
-    assert _contrast_ratio(light["--text-muted"], light["--bg-surface"]) >= 4.5, "Light --text-muted on --bg-surface < 4.5"
+    assert _contrast_ratio(light["--text-main"], light["--bg-surface"]) >= 14.0, "Light --text-main on --bg-surface < 14:1"
+    assert _contrast_ratio(light["--text-main"], light["--bg-app"]) >= 14.0, "Light --text-main on --bg-app < 14:1"
+    assert _contrast_ratio(light["--text-muted"], light["--bg-app"]) >= 7.0, "Light --text-muted on --bg-app < 7:1"
     assert _contrast_ratio(light["--primary"], light["--bg-surface"]) >= 4.5, "Light --primary on --bg-surface < 4.5"
     assert _contrast_ratio(light["--primary-contrast"], light["--primary"]) >= 4.5, "Light --primary-contrast on --primary < 4.5"
 
-    # 2. Dark Theme ([data-theme="dark"]) - WCAG 2.2 AA (>= 4.5:1)
+    # 2. Dark Theme ([data-theme="dark"]) - WCAG 2.2 AAA (>= 14:1)
     dark = _parse_css_variables(css_text, '[data-theme="dark"]')
     assert "--text-main" in dark and "--bg-surface" in dark
-    assert _contrast_ratio(dark["--text-main"], dark["--bg-surface"]) >= 4.5, "Dark --text-main on --bg-surface < 4.5"
-    assert _contrast_ratio(dark["--text-main"], dark["--bg-app"]) >= 4.5, "Dark --text-main on --bg-app < 4.5"
-    assert _contrast_ratio(dark["--text-muted"], dark["--bg-surface"]) >= 4.5, "Dark --text-muted on --bg-surface < 4.5"
-    assert _contrast_ratio(dark["--text-muted"], dark["--bg-app"]) >= 4.5, "Dark --text-muted on --bg-app < 4.5"
-    assert _contrast_ratio(dark["--primary"], dark["--bg-surface"]) >= 4.5, "Dark --primary on --bg-surface < 4.5"
+    assert _contrast_ratio(dark["--text-main"], dark["--bg-app"]) >= 14.0, "Dark --text-main on --bg-app < 14:1"
+    assert _contrast_ratio(dark["--text-muted"], dark["--bg-app"]) >= 14.0, "Dark --text-muted on --bg-app < 14:1"
+    assert _contrast_ratio(dark["--primary"], dark["--bg-app"]) >= 14.0, "Dark --primary on --bg-app < 14:1"
     assert _contrast_ratio(dark["--primary-contrast"], dark["--primary"]) >= 4.5, "Dark --primary-contrast on --primary < 4.5"
 
     # 3. High Contrast Theme ([data-theme="high-contrast"] / [data-contrast="high"]) - WCAG AAA (>= 7.0:1)
@@ -229,20 +227,20 @@ def test_data_attribute_mapping_completeness():
     shell_css = SHELL_CSS.read_text(encoding="utf-8")
     combined_css = tokens_css + "\n" + shell_css
 
-    # Touch target requirement check
-    assert "--min-touch-target: 44px" in tokens_css, "tokens.css must define --min-touch-target: 44px"
+    # Touch target requirement check (Gemini standard: 48px)
+    assert "--min-touch-target: 48px" in tokens_css, "tokens.css must define --min-touch-target: 48px"
 
     valid_prefs = _extract_valid_prefs_from_types_js()
 
     # Mapping of preference key to attribute name and non-default values to verify
     # (Language maps to lang="ro" / lang="en", handled outside data-* attribute selectors)
     pref_attr_map: dict[str, tuple[str, list[str]]] = {
-        "theme": ("data-theme", ["dark"]),
+        "theme": ("data-theme", ["dark", "high-contrast-light"]),
         "textSize": ("data-text", ["l", "xl"]),
         "spacing": ("data-spacing", ["roomy"]),
-        "contrast": ("data-contrast", ["high"]),
+        "contrast": ("data-contrast", ["high", "high-dark", "high-light"]),
         "motion": ("data-motion", ["reduced"]),
-        "font": ("data-font", ["readable"]),
+        "font": ("data-font", ["readable", "dyslexic"]),
         "density": ("data-density", ["focused"]),
         "sidebar": ("data-sidebar", ["collapsed"]),
     }
