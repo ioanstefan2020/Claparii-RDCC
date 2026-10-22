@@ -18,6 +18,7 @@ from app.ingest import (
     unmask_pii,
 )
 from app.llm import generate_json
+from app.llm.dynamic_mock import generate_dynamic_v2_payload, is_default_sample
 from app.prompts.v2 import SYSTEM, build_user, load_fixture_mock
 from app.schemas.v2 import (
     ActionV2,
@@ -124,11 +125,16 @@ def _run_analysis_logic(
     situation = situation_req if situation_req != "auto" else det_info["situation"]
     language = language_req if language_req != "auto" else det_info["language"]
 
-    mock_fixture = load_fixture_mock(situation)
+    if is_default_sample(text):
+        mock_fixture = load_fixture_mock(situation)
+    else:
+        mock_fixture = generate_dynamic_v2_payload(text, situation, adaptations)
 
     # In mock mode, we adapt the fixture dynamically
     summary_text = mock_fixture.get("summary", "Document analizat cu succes.")
-    if adaptations.reading_level == 1:
+    if adaptations.reading_level == 1 and not summary_text.startswith(
+        "Sinteză simplificată:"
+    ):
         summary_text = "Sinteză simplificată: " + summary_text
 
     raw_actions = mock_fixture.get("actions", [])
@@ -325,7 +331,8 @@ async def draft_reply_v2(payload: DraftReplyV2Request):
     # Professional Romanian template based on goal and tone
     subject = f"Răspuns referitor la solicitarea primită"
     body = (
-        f"Bună ziua,\n\nVă transmit acest mesaj cu privire la: {payload.goal}\n"
+        f"Bună ziua,\n\n"
+        f"Vă transmit acest mesaj cu privire la: {payload.goal}\n"
         f"Confirm transmiterea informațiilor solicitate și rămân la dispoziție pentru eventuale detalii suplimentare.\n\n"
         f"Cu stimă,\nAlexandru Popa"
     )

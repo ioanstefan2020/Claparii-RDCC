@@ -10,6 +10,7 @@ from pydantic import BaseModel
 
 from app.config import settings
 from app.llm.circuit_breaker import CircuitBreaker, CircuitBreakerOpenException
+from app.llm.dynamic_mock import generate_dynamic_response
 from app.llm.providers.deepseek import call_deepseek
 from app.llm.providers.gemini import call_gemini
 from app.schemas.common import BadLLMOutput, LLMUnavailable
@@ -106,18 +107,27 @@ async def generate_json(
         except Exception:
             pass
 
-    # 1. Mock provider
+    # 1. Mock provider (with dynamic document extraction on non-sample inputs)
     if provider == "mock":
+        dynamic_payload = generate_dynamic_response(
+            task=task, user_prompt=user, schema=schema, canned_mock=mock
+        )
         try:
-            validated = schema.model_validate(mock)
-        except Exception as e:
-            raise BadLLMOutput(f"Mock data invalid against schema: {e}")
+            validated = schema.model_validate(dynamic_payload)
+        except Exception:
+            # Safe fallback to canned mock
+            try:
+                validated = schema.model_validate(mock)
+                dynamic_payload = mock
+            except Exception as e:
+                raise BadLLMOutput(f"Mock data invalid against schema: {e}")
 
         if not no_cache:
             try:
                 cache_dir.mkdir(parents=True, exist_ok=True)
                 cache_file.write_text(
-                    json.dumps(mock, ensure_ascii=False, indent=2), encoding="utf-8"
+                    json.dumps(dynamic_payload, ensure_ascii=False, indent=2),
+                    encoding="utf-8",
                 )
             except OSError:
                 pass
