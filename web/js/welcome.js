@@ -49,59 +49,235 @@ export function announce(message) {
 export function updateLivePreview() {
   const loaded = loadPrefs();
   const currentTheme = document.documentElement.getAttribute("data-theme") || (loaded && loaded.prefs && loaded.prefs.theme) || "light";
-  const derived = derivePrefs(welcomeState.answers, loaded ? loaded.prefs : {}, loaded ? loaded.overrides : []);
+  
+  // Notice: pass [] for overrides so that questionnaire answers ALWAYS derive the visual preferences directly
+  const derived = derivePrefs(welcomeState.answers, loaded ? loaded.prefs : {}, []);
   derived.theme = currentTheme;
+  if (loaded && loaded.prefs && loaded.prefs.sidebar) {
+    derived.sidebar = loaded.prefs.sidebar;
+  }
+  
   welcomeState.prefs = derived;
   applyPrefs(derived, document.documentElement);
   document.documentElement.setAttribute("data-theme", currentTheme);
 
+  // Update contrast styling on preview sample card
+  const sampleCard = document.getElementById("preview-sample-card");
+  const isLowNoise = welcomeState.answers.visualNoise === "low";
+  if (sampleCard) {
+    sampleCard.classList.toggle("is-high-contrast", isLowNoise);
+  }
+
   // Update badges
   const textBadge = document.getElementById("badge-pref-text");
   const spacingBadge = document.getElementById("badge-pref-spacing");
-  const contrastBadge = document.getElementById("badge-pref-contrast");
+  const densityBadge = document.getElementById("badge-pref-density");
   const formatBadge = document.getElementById("badge-pref-format");
+  const contrastBadge = document.getElementById("badge-pref-contrast");
+  const motionBadge = document.getElementById("badge-pref-motion");
+  const langBadge = document.getElementById("badge-pref-lang");
+  const timeBadge = document.getElementById("badge-pref-time");
 
+  const pace = welcomeState.answers.readingPace;
   if (textBadge) {
-    const sizeMap = { slow: "Mare (L)", medium: "Standard (M)", fast: "Compact" };
-    textBadge.textContent = `Text: ${sizeMap[welcomeState.answers.readingPace] || "Standard"}`;
+    const textLabel = pace === "slow" ? "Text: Mare (20px)" : (pace === "fast" ? "Text: Compact (17px)" : "Text: Standard (17px)");
+    textBadge.textContent = textLabel;
   }
 
   if (spacingBadge) {
-    const spacingMap = { slow: "Aerisită / Generoasă", medium: "Confortabilă", fast: "Compactă" };
-    spacingBadge.textContent = `Spațiere: ${spacingMap[welcomeState.answers.readingPace] || "Confortabilă"}`;
+    const spacingLabel = pace === "slow" ? "Spațiere: Aerisită (1.9x)" : (pace === "fast" ? "Spațiere: Densă (1.5x)" : "Spațiere: Confortabilă (1.6x)");
+    spacingBadge.textContent = spacingLabel;
+  }
+
+  if (densityBadge) {
+    const amt = welcomeState.answers.textAmount;
+    const amtLabel = amt === "short" ? "Conținut: Esențial" : (amt === "full" ? "Conținut: Detaliat" : "Conținut: Echilibrat");
+    densityBadge.textContent = amtLabel;
+  }
+
+  const isSteps = Boolean(welcomeState.answers.stepByStep);
+  if (formatBadge) {
+    formatBadge.textContent = isSteps ? "Format: Pași numerotați" : "Format: Text continuu";
   }
 
   if (contrastBadge) {
-    contrastBadge.textContent = `Contrast: ${welcomeState.answers.visualNoise === "low" ? "Înalt (AAA)" : "Normal"}`;
+    contrastBadge.textContent = isLowNoise ? "Contrast: Ridicat (AAA)" : "Contrast: Normal";
   }
 
-  if (formatBadge) {
-    formatBadge.textContent = `Format: ${welcomeState.answers.stepByStep ? "Pași numerotați" : "Text cursiv"}`;
+  const isQuiet = welcomeState.answers.sensory === "quiet";
+  if (motionBadge) {
+    motionBadge.textContent = isQuiet ? "Animații: Oprite (Calm)" : "Animații: Active";
   }
 
-  // Update sample card content based on format & text amount
+  const isEn = welcomeState.answers.language === "en";
+  if (langBadge) {
+    langBadge.textContent = isEn ? "Language: English 🇬🇧" : "Limbă: Română 🇷🇴";
+  }
+
+  const isNeedMoreTime = welcomeState.answers.timeToDecide === "need-more-time";
+  if (timeBadge) {
+    timeBadge.textContent = isNeedMoreTime ? "Timp: Fără grabă ⏱️" : "Timp: Standard";
+  }
+
+  // Highlight active step badge
+  const allBadges = document.querySelectorAll(".pref-badge");
+  allBadges.forEach(b => b.classList.remove("is-active-step"));
+  const stepIndex = welcomeState.currentStep;
+  if (stepIndex === 0) {
+    if (textBadge) textBadge.classList.add("is-active-step");
+    if (spacingBadge) spacingBadge.classList.add("is-active-step");
+  } else if (stepIndex === 1) {
+    if (densityBadge) densityBadge.classList.add("is-active-step");
+  } else if (stepIndex === 2) {
+    if (formatBadge) formatBadge.classList.add("is-active-step");
+  } else if (stepIndex === 3) {
+    if (contrastBadge) contrastBadge.classList.add("is-active-step");
+  } else if (stepIndex === 4) {
+    if (motionBadge) motionBadge.classList.add("is-active-step");
+  } else if (stepIndex === 5) {
+    if (langBadge) langBadge.classList.add("is-active-step");
+  } else if (stepIndex === 6) {
+    if (timeBadge) timeBadge.classList.add("is-active-step");
+  }
+
+  // Update sample card title & content
+  const titleEl = document.getElementById("preview-sample-title");
+  if (titleEl) {
+    titleEl.textContent = isEn ? "Day 1 Guide: Essential Actions" : "Ghid de primă zi: Pași esențiali";
+  }
+
   const contentEl = document.getElementById("preview-sample-content");
   if (contentEl) {
-    const isSteps = welcomeState.answers.stepByStep;
-    const isShort = welcomeState.answers.textAmount === "short";
+    const amt = welcomeState.answers.textAmount;
 
     if (isSteps) {
-      contentEl.innerHTML = `
-        <ol class="steps-list" style="margin: 0; padding-left: var(--space-lg);">
-          <li><strong>Prezentarea la birou:</strong> Luni la 09:00 primești ecusonul și laptopul.</li>
-          <li><strong>Documente administrative:</strong> Transmiți buletinul și formularul F-12 completat.</li>
-          ${!isShort ? `<li><strong>Mentorul alocat:</strong> Marți configurezi mediul de lucru și conturile.</li>` : ""}
-        </ol>
-      `;
+      if (isEn) {
+        if (amt === "short") {
+          contentEl.innerHTML = `
+            <ol class="preview-steps-list">
+              <li><strong>Office Arrival:</strong> Monday at 09:00 at reception for badge and work laptop.</li>
+              <li><strong>HR Documents:</strong> Submit national ID and completed onboarding form.</li>
+            </ol>
+          `;
+        } else if (amt === "full") {
+          contentEl.innerHTML = `
+            <ol class="preview-steps-list">
+              <li><strong>Office Arrival:</strong> Monday at 09:00 at reception for badge, security card, and laptop.</li>
+              <li><strong>HR Documents:</strong> Submit ID, paperwork, and signed employment agreements.</li>
+              <li><strong>Mentor Meeting:</strong> Tuesday at 11:00 set up dev environment, credentials, and week 1 roadmap.</li>
+              <li><strong>Team Intro:</strong> Wednesday at 14:00 meet teammates and review operational rhythm.</li>
+            </ol>
+          `;
+        } else {
+          contentEl.innerHTML = `
+            <ol class="preview-steps-list">
+              <li><strong>Office Arrival:</strong> Monday at 09:00 at reception for badge and work laptop.</li>
+              <li><strong>HR Documents:</strong> Submit national ID and completed onboarding form.</li>
+              <li><strong>Mentor Meeting:</strong> Tuesday at 11:00 set up accounts and first milestones.</li>
+            </ol>
+          `;
+        }
+      } else {
+        if (amt === "short") {
+          contentEl.innerHTML = `
+            <ol class="preview-steps-list">
+              <li><strong>Prezentarea la birou:</strong> Luni la ora 09:00 te prezinți la recepție pentru ecuson și laptop.</li>
+              <li><strong>Documente HR:</strong> Transmiți buletinul și formularul F-12 completat.</li>
+            </ol>
+          `;
+        } else if (amt === "full") {
+          contentEl.innerHTML = `
+            <ol class="preview-steps-list">
+              <li><strong>Prezentarea la birou:</strong> Luni la ora 09:00 te prezinți la recepție pentru ecuson, cartelă și laptopul de lucru.</li>
+              <li><strong>Documente HR:</strong> Transmiți buletinul și formularul F-12 semnat către departamentul de personal.</li>
+              <li><strong>Întâlnirea cu mentorul:</strong> Marți la 11:00 configurezi mediul tehnic și discutați obiectivele din prima lună.</li>
+              <li><strong>Sesiunea cu echipa:</strong> Miercuri la 14:00 faci cunoștință cu colegii din departament.</li>
+            </ol>
+          `;
+        } else {
+          contentEl.innerHTML = `
+            <ol class="preview-steps-list">
+              <li><strong>Prezentarea la birou:</strong> Luni la ora 09:00 te prezinți la recepție pentru ecuson și laptop.</li>
+              <li><strong>Documente HR:</strong> Transmiți buletinul și formularul F-12 completat.</li>
+              <li><strong>Întâlnirea cu mentorul:</strong> Marți la 11:00 configurezi conturile de lucru și primele sarcini.</li>
+            </ol>
+          `;
+        }
+      }
     } else {
-      contentEl.innerHTML = `
-        <p style="margin: 0 0 var(--space-xs) 0;">
-          În prima zi (luni, ora 09:00), te prezinți la recepție pentru ecuson și echipamente.
-        </p>
-        <p style="margin: 0;">
-          Până miercuri transmiți documentele scanate la HR, iar marți configurezi conturile cu mentorul tău.
-        </p>
-      `;
+      if (isEn) {
+        if (amt === "short") {
+          contentEl.innerHTML = `
+            <p class="preview-paragraph">
+              On your first day (Monday at 09:00), report to reception to collect your badge and laptop. Submit your ID and paperwork to HR by end of day.
+            </p>
+          `;
+        } else if (amt === "full") {
+          contentEl.innerHTML = `
+            <p class="preview-paragraph">
+              On your first day (Monday at 09:00), collect your badge, security card, and laptop from the main reception.
+            </p>
+            <p class="preview-paragraph">
+              Submit your ID and signed administrative documents to HR by Wednesday.
+            </p>
+            <p class="preview-paragraph">
+              On Tuesday at 11:00, join your dedicated 1-on-1 mentor session to configure accounts, communication channels, and first-month goals.
+            </p>
+          `;
+        } else {
+          contentEl.innerHTML = `
+            <p class="preview-paragraph">
+              On your first day (Monday at 09:00), arrive at reception to collect your badge and work computer.
+            </p>
+            <p class="preview-paragraph">
+              Submit administrative documents to HR, and meet your mentor Tuesday at 11:00 to configure your accounts.
+            </p>
+          `;
+        }
+      } else {
+        if (amt === "short") {
+          contentEl.innerHTML = `
+            <p class="preview-paragraph">
+              În prima zi (luni, ora 09:00), te prezinți la recepție pentru ecuson și laptop. Până la sfârșitul zilei transmiți buletinul și formularul F-12 la HR.
+            </p>
+          `;
+        } else if (amt === "full") {
+          contentEl.innerHTML = `
+            <p class="preview-paragraph">
+              În prima zi (luni, ora 09:00), te prezinți la recepție pentru preluarea ecusonului, cartelei de acces și laptopului.
+            </p>
+            <p class="preview-paragraph">
+              Până miercuri finalizezi transmiterea cărții de identitate și a formularelor administrative către departamentul HR.
+            </p>
+            <p class="preview-paragraph">
+              Marți la 11:00 are loc sesiunea dedicată de acomodare cu mentorul tău pentru configurarea conturilor și a obiectivelor din prima lună.
+            </p>
+          `;
+        } else {
+          contentEl.innerHTML = `
+            <p class="preview-paragraph">
+              În prima zi (luni, ora 09:00), te prezinți la recepție pentru ecuson și laptopul de lucru.
+            </p>
+            <p class="preview-paragraph">
+              Transmiți documentele la HR, iar marți la 11:00 ai prima întâlnire cu mentorul tău pentru configurarea conturilor și priorităților.
+            </p>
+          `;
+        }
+      }
+    }
+  }
+
+  // Update preview hint
+  const hintEl = document.getElementById("preview-hint");
+  if (hintEl) {
+    if (isNeedMoreTime) {
+      hintEl.innerHTML = isEn
+        ? "⏱️ <strong>Unlimited Pace Active:</strong> Automatic continuous saving with no countdowns or expiration timers. Your data stays safe on this device."
+        : "⏱️ <strong>Mod fără grabă activat:</strong> Salvare automată continuă, fără cronometre sau limite de timp. Progresul tău este salvat pe acest dispozitiv.";
+    } else {
+      hintEl.innerHTML = isEn
+        ? "💡 <em>Tip:</em> You can adjust these visual and cognitive comfort options at any time from the Comfort Settings button."
+        : "💡 <em>Sfat:</em> Poți schimba oricând aceste setări ulterior din butonul „Setări confort”.";
     }
   }
 }
@@ -166,7 +342,7 @@ export function renderStep(stepIndex) {
       const optId = `opt-${question.id}-${idx}`;
 
       html += `
-        <label for="${optId}" class="radio-card ${isSelected ? 'is-selected' : ''}">
+        <label for="${optId}" class="radio-card ${isSelected ? 'is-selected' : ''}" tabindex="0">
           <input type="radio" id="${optId}" name="${question.id}" value="${escapeHtml(String(opt.value))}" ${isSelected ? 'checked' : ''} class="radio-input">
           <div class="radio-label-group">
             <span class="radio-title">${escapeHtml(opt.label)}</span>
@@ -179,14 +355,42 @@ export function renderStep(stepIndex) {
     optionsContainer.innerHTML = html;
 
     // Attach click and change listeners
-    const inputs = optionsContainer.querySelectorAll("input[type='radio']");
-    inputs.forEach((input, idx) => {
-      input.addEventListener("change", (e) => {
-        let val = e.target.value;
-        if (val === "true") val = true;
-        else if (val === "false") val = false;
-        selectOption(question.id, val);
+    const cards = optionsContainer.querySelectorAll(".radio-card");
+    cards.forEach((card) => {
+      card.addEventListener("click", (e) => {
+        const input = card.querySelector("input[type='radio']");
+        if (input) {
+          input.checked = true;
+          let val = input.value;
+          if (val === "true") val = true;
+          else if (val === "false") val = false;
+          selectOption(question.id, val);
+        }
       });
+
+      card.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          const input = card.querySelector("input[type='radio']");
+          if (input) {
+            input.checked = true;
+            let val = input.value;
+            if (val === "true") val = true;
+            else if (val === "false") val = false;
+            selectOption(question.id, val);
+          }
+        }
+      });
+
+      const input = card.querySelector("input[type='radio']");
+      if (input) {
+        input.addEventListener("change", (e) => {
+          let val = e.target.value;
+          if (val === "true") val = true;
+          else if (val === "false") val = false;
+          selectOption(question.id, val);
+        });
+      }
     });
   }
 
@@ -200,6 +404,9 @@ export function renderStep(stepIndex) {
   const isLast = (stepIndex === welcomeState.totalSteps - 1);
   if (nextBtn) nextBtn.style.display = isLast ? "none" : "inline-flex";
   if (saveBtn) saveBtn.style.display = isLast ? "inline-flex" : "none";
+
+  // Re-sync live preview to highlight active step badge and refresh display
+  updateLivePreview();
 
   announce(`Întrebarea ${stepIndex + 1}: ${question.prompt}`);
 }
@@ -232,19 +439,26 @@ export function prevStep() {
 export function saveAndContinue() {
   const loaded = loadPrefs();
   const currentTheme = document.documentElement.getAttribute("data-theme") || (loaded && loaded.prefs && loaded.prefs.theme) || "light";
-  const derived = derivePrefs(welcomeState.answers, loaded ? loaded.prefs : {}, loaded ? loaded.overrides : []);
+  
+  // Directly derive preferences from user's explicit questionnaire answers
+  const derived = derivePrefs(welcomeState.answers, loaded ? loaded.prefs : {}, []);
   derived.theme = currentTheme;
-  const overrides = Array.from(new Set([...(loaded && loaded.overrides ? loaded.overrides : []), "theme"]));
+  if (loaded && loaded.prefs && loaded.prefs.sidebar) {
+    derived.sidebar = loaded.prefs.sidebar;
+  }
 
   const state = {
     version: 1,
     updatedAt: new Date().toISOString(),
     answers: { ...welcomeState.answers },
     prefs: derived,
-    overrides: overrides
+    overrides: ["theme"] // keep theme override so user's light/dark choice stays preserved
   };
 
   savePrefs(state);
+  applyPrefs(derived, document.documentElement);
+  document.documentElement.setAttribute("data-theme", currentTheme);
+
   announce("Preferințele tale au fost salvate. Te redirecționăm...");
   setTimeout(() => {
     window.location.href = "/";
@@ -263,10 +477,7 @@ export function initWelcome() {
   const currentTheme = (loaded && loaded.prefs && loaded.prefs.theme) || document.documentElement.getAttribute("data-theme") || "light";
   document.documentElement.setAttribute("data-theme", currentTheme);
 
-  // Initial live preview sync
-  updateLivePreview();
-
-  // Render question 1
+  // Render question 1 (which automatically triggers initial updateLivePreview)
   renderStep(0);
 
   // Wire buttons
@@ -279,6 +490,42 @@ export function initWelcome() {
   if (prevBtn) prevBtn.addEventListener("click", prevStep);
   if (saveBtn) saveBtn.addEventListener("click", saveAndContinue);
   if (saveNowBtn) saveNowBtn.addEventListener("click", saveAndContinue);
+
+  // Wire interactive live preview badges to jump directly to questions
+  const badgeMap = [
+    { id: "badge-pref-text", step: 0 },
+    { id: "badge-pref-spacing", step: 0 },
+    { id: "badge-pref-density", step: 1 },
+    { id: "badge-pref-format", step: 2 },
+    { id: "badge-pref-contrast", step: 3 },
+    { id: "badge-pref-motion", step: 4 },
+    { id: "badge-pref-lang", step: 5 },
+    { id: "badge-pref-time", step: 6 },
+  ];
+
+  badgeMap.forEach(({ id, step }) => {
+    const badge = document.getElementById(id);
+    if (badge) {
+      badge.addEventListener("click", () => {
+        renderStep(step);
+        const legend = document.getElementById("question-prompt");
+        if (legend) legend.focus();
+      });
+    }
+  });
+
+  // Re-sync live preview whenever topbar header controls change preferences
+  window.addEventListener("primazi:pref-changed", () => {
+    updateLivePreview();
+  });
+
+  const btnContrast = document.getElementById("btn-header-contrast");
+  const btnText = document.getElementById("btn-header-text");
+  const btnDyslexia = document.getElementById("btn-header-dyslexia");
+
+  if (btnContrast) btnContrast.addEventListener("click", () => setTimeout(updateLivePreview, 50));
+  if (btnText) btnText.addEventListener("click", () => setTimeout(updateLivePreview, 50));
+  if (btnDyslexia) btnDyslexia.addEventListener("click", () => setTimeout(updateLivePreview, 50));
 }
 
 // Auto-init

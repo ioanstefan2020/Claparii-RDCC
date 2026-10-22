@@ -305,6 +305,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       updatePref("theme", nextTheme);
       updatePref("contrast", "normal");
+      window.dispatchEvent(new CustomEvent("primazi:pref-changed", { detail: { key: "theme", value: nextTheme } }));
       announce(
         isDark
           ? "Tema luminoasă relaxantă a fost activată."
@@ -354,6 +355,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const span = btnText.querySelector("span");
       if (span) span.textContent = label;
       updatePref("textSize", nextSize);
+      window.dispatchEvent(new CustomEvent("primazi:pref-changed", { detail: { key: "textSize", value: nextSize } }));
       announce(`Dimensiunea textului a fost setată la ${label}.`);
     });
   }
@@ -399,11 +401,34 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         // Find readable content on current page
         let textToRead = "";
+        const questionPrompt = document.getElementById("question-prompt");
         const resultBody = document.getElementById("home-result-body");
         const summaryCard = document.querySelector(".summary-card, .results-content, .card-summary, .results-body, .output-card");
         const mainEl = document.getElementById("main");
 
-        if (resultBody && resultBody.offsetParent !== null && resultBody.innerText.trim()) {
+        if (questionPrompt && questionPrompt.innerText.trim()) {
+          const parts = [];
+          const stepCounter = document.getElementById("wizard-step-counter");
+          if (stepCounter && stepCounter.innerText.trim()) {
+            parts.push(stepCounter.innerText.trim());
+          }
+          parts.push(questionPrompt.innerText.trim());
+          const help = document.getElementById("question-help");
+          if (help && help.innerText.trim()) {
+            parts.push(help.innerText.trim());
+          }
+          const options = document.querySelectorAll("#question-options .radio-card");
+          options.forEach((opt, idx) => {
+            const title = opt.querySelector(".radio-title");
+            const desc = opt.querySelector(".radio-desc");
+            const isSel = opt.classList.contains("is-selected") || Boolean(opt.querySelector("input:checked"));
+            const prefix = isSel ? "Opțiunea selectată" : `Opțiunea ${idx + 1}`;
+            const tText = title ? title.innerText.trim() : "";
+            const dText = desc ? desc.innerText.trim() : "";
+            parts.push(`${prefix}: ${tText}. ${dText}`);
+          });
+          textToRead = parts.join(". ");
+        } else if (resultBody && resultBody.offsetParent !== null && resultBody.innerText.trim()) {
           textToRead = resultBody.innerText.trim();
         } else if (summaryCard && summaryCard.innerText.trim()) {
           textToRead = summaryCard.innerText.trim();
@@ -457,6 +482,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (span) span.textContent = label;
       btnDyslexia.setAttribute("aria-pressed", isDyslexic ? "false" : "true");
       updatePref("font", nextFont);
+      window.dispatchEvent(new CustomEvent("primazi:pref-changed", { detail: { key: "font", value: nextFont } }));
       announce(
         isDyslexic
           ? "Fontul pentru dislexie a fost dezactivat."

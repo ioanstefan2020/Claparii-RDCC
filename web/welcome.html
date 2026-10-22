@@ -111,7 +111,7 @@
           <section id="wizard-card" class="wizard-card" aria-labelledby="question-prompt">
             <form id="wizard-form" novalidate onsubmit="return false;">
               <fieldset id="question-fieldset" class="question-fieldset">
-                <legend id="question-prompt" class="question-prompt">Se încarcă întrebarea...</legend>
+                <legend id="question-prompt" class="question-prompt" tabindex="-1">Se încarcă întrebarea...</legend>
                 <p id="question-help" class="question-help"></p>
 
                 <!-- Radio Options Group -->
@@ -156,15 +156,19 @@
 
             <!-- Preference Badges -->
             <div id="preview-badges" class="preview-badges-container" aria-label="Preferințe active">
-              <span id="badge-pref-text" class="pref-badge">Text: Standard (18px)</span>
-              <span id="badge-pref-spacing" class="pref-badge">Spațiere: Confortabilă</span>
-              <span id="badge-pref-contrast" class="pref-badge">Contrast: Normal</span>
-              <span id="badge-pref-format" class="pref-badge">Format: Pași</span>
+              <button type="button" id="badge-pref-text" class="pref-badge" aria-label="Mergi la setarea mărimii textului" title="Apasă pentru a configura mărimea textului">Text: Standard</button>
+              <button type="button" id="badge-pref-spacing" class="pref-badge" aria-label="Mergi la setarea spațierii" title="Apasă pentru a configura spațierea">Spațiere: Confortabilă</button>
+              <button type="button" id="badge-pref-density" class="pref-badge" aria-label="Mergi la setarea nivelului de detaliu" title="Apasă pentru a configura nivelul de detaliu">Conținut: Echilibrat</button>
+              <button type="button" id="badge-pref-format" class="pref-badge" aria-label="Mergi la setarea formatului instrucțiunilor" title="Apasă pentru a configura formatul">Format: Pași</button>
+              <button type="button" id="badge-pref-contrast" class="pref-badge" aria-label="Mergi la setarea contrastului" title="Apasă pentru a configura contrastul">Contrast: Normal</button>
+              <button type="button" id="badge-pref-motion" class="pref-badge" aria-label="Mergi la setarea animațiilor" title="Apasă pentru a configura animațiile">Animații: Active</button>
+              <button type="button" id="badge-pref-lang" class="pref-badge" aria-label="Mergi la setarea limbii" title="Apasă pentru a configura limba">Limbă: Română 🇷🇴</button>
+              <button type="button" id="badge-pref-time" class="pref-badge" aria-label="Mergi la setarea ritmului de lucru" title="Apasă pentru a configura ritmul de lucru">Timp: Fără grabă ⏱️</button>
             </div>
 
             <!-- Sample Document Card -->
-            <article id="preview-sample-card" class="preview-sample-card">
-              <h3 id="preview-sample-title" class="preview-sample-title">Ghid de primă zi: 3 pași esențiali</h3>
+            <article id="preview-sample-card" class="preview-sample-card" aria-live="polite">
+              <h3 id="preview-sample-title" class="preview-sample-title">Ghid de primă zi: Pași esențiali</h3>
               <div id="preview-sample-content" class="preview-sample-content">
                 <p>1. <strong>Prezentarea la birou:</strong> Luni la ora 09:00 te prezinți la recepție pentru ecuson și laptop.</p>
                 <p>2. <strong>Documente HR:</strong> Trimiți cartea de identitate și formularul F-12 completat.</p>
@@ -172,7 +176,7 @@
               </div>
             </article>
 
-            <div class="preview-hint" role="note">
+            <div id="preview-hint" class="preview-hint" role="note">
               💡 <em>Sfat:</em> Poți schimba oricând aceste setări ulterior din butonul „Setări confort”.
             </div>
           </div>

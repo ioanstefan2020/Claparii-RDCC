@@ -370,16 +370,30 @@ def test_smoke_welcome_page_elements(client: TestClient) -> None:
     assert 'id="wizard-step-counter"' in html
     assert 'id="wizard-progress-bar"' in html
     assert 'id="question-prompt"' in html
+    assert 'tabindex="-1"' in html
     assert 'id="question-options"' in html
     assert 'id="btn-wizard-prev"' in html
     assert 'id="btn-wizard-next"' in html
     assert 'id="btn-wizard-save"' in html
     assert 'id="btn-wizard-save-now"' in html
 
-    # Live preview container
+    # Live preview container & all 8 comfort badges
     assert 'id="welcome-live-preview"' in html
     assert 'id="preview-badges"' in html
+    assert 'id="badge-pref-text"' in html
+    assert 'id="badge-pref-spacing"' in html
+    assert 'id="badge-pref-density"' in html
+    assert 'id="badge-pref-format"' in html
+    assert 'id="badge-pref-contrast"' in html
+    assert 'id="badge-pref-motion"' in html
+    assert 'id="badge-pref-lang"' in html
+    assert 'id="badge-pref-time"' in html
+
+    # Sample card & hint
     assert 'id="preview-sample-card"' in html
+    assert 'id="preview-sample-title"' in html
+    assert 'id="preview-sample-content"' in html
+    assert 'id="preview-hint"' in html
 
     # Module script
     assert 'src="/js/welcome.js"' in html
