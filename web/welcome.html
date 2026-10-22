@@ -2,7 +2,7 @@
 <html lang="ro">
 <head>
   <meta charset="utf-8">
-  <title>PrimaZi — Configurare Confort și Accesibilitate</title>
+  <title>Limpede — Configurare Confort și Accesibilitate (PrimaZi)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Inline <head> loader script reading wp.prefs.v1 to eliminate FOUC -->
   <script>
@@ -47,9 +47,9 @@
     <!-- Top Header -->
     <header class="app-topbar" role="banner">
       <div class="topbar-left">
-        <a href="/" class="sidebar-brand" aria-label="PrimaZi Acasă">
-          <span class="brand-badge" aria-hidden="true">PZ</span>
-          <span class="sidebar-brand-text">PrimaZi</span>
+        <a href="/" class="sidebar-brand" aria-label="Limpede Acasă">
+          <span class="brand-badge" aria-hidden="true"><svg class="brand-drop-icon" viewBox="0 0 24 24" fill="currentColor" width="22" height="22" aria-hidden="true"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg></span>
+          <span class="sidebar-brand-text">Limpede</span>
         </a>
         <span class="topbar-title">Configurare Confort</span>
       </div>
@@ -110,6 +110,12 @@
           <!-- Wizard Card Section -->
           <section id="wizard-card" class="wizard-card" aria-labelledby="question-prompt">
             <form id="wizard-form" novalidate onsubmit="return false;">
+              <!-- User Name Group -->
+              <div class="welcome-user-name-group" style="margin-bottom: var(--space-md);">
+                <label for="wizard-user-name" class="field-label" data-i18n="welcome_name_label" style="font-weight: 600; display: block; margin-bottom: 6px;">Cum te numești? (opțional)</label>
+                <input type="text" id="wizard-user-name" class="form-input" placeholder="ex: Ana sau David" data-i18n-placeholder="welcome_name_placeholder" maxlength="50" style="width: 100%; max-width: 400px; padding: 10px 14px; border-radius: var(--radius-md); border: 1.5px solid var(--border-color, #d0d7de);">
+              </div>
+
               <fieldset id="question-fieldset" class="question-fieldset">
                 <legend id="question-prompt" class="question-prompt" tabindex="-1">Se încarcă întrebarea...</legend>
                 <p id="question-help" class="question-help"></p>
@@ -187,7 +193,7 @@
     <!-- Footer -->
     <footer class="app-footer" role="contentinfo">
       <p>
-        PrimaZi — AccessABILITY Hackathon 2026. Conform standardelor WCAG 2.2 AA. Date 100% confidențiale în browserul tău.
+        Limpede — AccessABILITY Hackathon 2026. Conform standardelor WCAG 2.2 AA. Date 100% confidențiale în browserul tău.
       </p>
     </footer>
   </div>

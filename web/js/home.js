@@ -143,6 +143,7 @@ export function setMode(mode) {
   const tabs = document.querySelectorAll(".mode-tab");
   tabs.forEach(tab => {
     const isActive = tab.getAttribute("data-mode") === mode;
+    tab.classList.toggle("is-selected", isActive);
     tab.classList.toggle("is-active", isActive);
     tab.setAttribute("aria-selected", isActive ? "true" : "false");
   });
@@ -152,10 +153,16 @@ export function setMode(mode) {
   const submitBtn = document.getElementById("btn-home-execute");
   const icsBtn = document.getElementById("btn-home-ics");
   const modeLabel = document.getElementById("current-mode-label");
+  const modeMenu = document.getElementById("mode-dropdown-menu");
+  const modeDropdownBtn = document.getElementById("btn-mode-dropdown");
 
   if (icsBtn) {
     icsBtn.style.display = mode === "plan" ? "inline-flex" : "none";
   }
+
+  // Close mode dropdown menu
+  if (modeMenu) modeMenu.style.display = "none";
+  if (modeDropdownBtn) modeDropdownBtn.setAttribute("aria-expanded", "false");
 
   if (mode === "simplify") {
     if (label) label.textContent = "Lipește documentul sau instrucțiunile de simplificat:";
@@ -973,6 +980,9 @@ export function initHomePage() {
       const mode = chip.getAttribute("data-mode");
       if (mode) setMode(mode);
       if (sample) loadSample(sample);
+      if (sample || mode) {
+        executeCurrentTask();
+      }
     });
   });
 
@@ -1034,10 +1044,16 @@ export function initHomePage() {
     }
   });
 
-  // Textarea input character counter
+  // Textarea input character counter and Enter-to-execute
   const textarea = document.getElementById("home-input-text");
   if (textarea) {
     textarea.addEventListener("input", updateCharCounter);
+    textarea.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        executeCurrentTask();
+      }
+    });
   }
 
   // Clear button
@@ -1058,6 +1074,15 @@ export function initHomePage() {
   const form = document.getElementById("home-input-form");
   if (form) {
     form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      executeCurrentTask();
+    });
+  }
+
+  // Submit / Send Arrow Button explicit click
+  const submitBtn = document.getElementById("btn-home-execute");
+  if (submitBtn) {
+    submitBtn.addEventListener("click", (e) => {
       e.preventDefault();
       executeCurrentTask();
     });
@@ -1094,7 +1119,25 @@ export function initHomePage() {
 
   if (planBtn) {
     planBtn.addEventListener("click", () => {
-      const tasksToSend = currentPlanTasks.length > 0 ? currentPlanTasks : (currentResultData && currentResultData.steps ? currentResultData.steps : []);
+      let tasksToSend = [];
+      if (currentPlanTasks && currentPlanTasks.length > 0) {
+        tasksToSend = currentPlanTasks;
+      } else if (currentResultData && Array.isArray(currentResultData.action_items) && currentResultData.action_items.length > 0) {
+        tasksToSend = currentResultData.action_items.map((item, idx) => ({
+          id: "task_" + Date.now() + "_" + idx,
+          title: item.task || "Sarcină din ședință",
+          due_iso: item.due_iso || null,
+          due_text: item.due_text || null,
+          needs_confirmation: Boolean(item.needs_confirmation),
+          priority: "normal",
+          steps: item.who ? ["Responsabil: " + item.who] : [],
+          source_quote: item.source_quote || null,
+          completed: false
+        }));
+      } else if (currentResultData && Array.isArray(currentResultData.steps) && currentResultData.steps.length > 0) {
+        tasksToSend = currentResultData.steps;
+      }
+
       if (tasksToSend.length > 0) {
         sendTasksToPlanner(tasksToSend);
         announceToLiveRegion("Sarcinile au fost salvate în Planificator.");

@@ -1,20 +1,26 @@
 /**
  * welcome.js - Interactive Welcome Questionnaire Wizard & Live Preview
- * Project: PrimaZi (AccessABILITY Hackathon 2026)
- * Owner: p3
- * Spec: docs/NEXT-STEPS.md (§1, §2) & docs/plan/p3.md (N3.3)
+ * Project: Limpede (formerly PrimaZi) (AccessABILITY Hackathon 2026)
+ * Owner: p2 / p3
+ * Spec: docs/NEXT-STEPS.md (§1, §2) & docs/TASKS-WAVE2.md (T2.L3 & T2.L4)
  */
 
-import { QUESTIONNAIRE_RO } from "./prefs/questionnaire.js";
+import { QUESTIONNAIRE_RO, getQuestionnaire } from "./prefs/questionnaire.js";
 import { derivePrefs } from "./prefs/derive.js";
 import { applyPrefs } from "./prefs/apply.js";
 import { loadPrefs, savePrefs } from "./prefs/storage.js";
-import { DEFAULT_ANSWERS, createDefaultState } from "./prefs/types.js";
+import { DEFAULT_ANSWERS } from "./prefs/types.js";
 
 // Wizard state
 export const welcomeState = {
   currentStep: 0,
-  totalSteps: QUESTIONNAIRE_RO.length,
+  lang: "ro",
+  get questionnaire() {
+    return getQuestionnaire(this.lang);
+  },
+  get totalSteps() {
+    return this.questionnaire.length;
+  },
   answers: { ...DEFAULT_ANSWERS },
   prefs: {}
 };
@@ -78,45 +84,65 @@ export function updateLivePreview() {
   const langBadge = document.getElementById("badge-pref-lang");
   const timeBadge = document.getElementById("badge-pref-time");
 
+  const isEn = welcomeState.lang === "en" || welcomeState.answers.language === "en";
   const pace = welcomeState.answers.readingPace;
+
   if (textBadge) {
-    const textLabel = pace === "slow" ? "Text: Mare (20px)" : (pace === "fast" ? "Text: Compact (17px)" : "Text: Standard (17px)");
-    textBadge.textContent = textLabel;
+    const textLabelRo = pace === "slow" ? "Text: Mare (20px)" : (pace === "fast" ? "Text: Compact (17px)" : "Text: Standard (17px)");
+    const textLabelEn = pace === "slow" ? "Text: Large (20px)" : (pace === "fast" ? "Text: Compact (17px)" : "Text: Standard (17px)");
+    textBadge.textContent = isEn ? textLabelEn : textLabelRo;
   }
 
   if (spacingBadge) {
-    const spacingLabel = pace === "slow" ? "Spațiere: Aerisită (1.9x)" : (pace === "fast" ? "Spațiere: Densă (1.5x)" : "Spațiere: Confortabilă (1.6x)");
-    spacingBadge.textContent = spacingLabel;
+    const spacingLabelRo = pace === "slow" ? "Spațiere: Aerisită (1.9x)" : (pace === "fast" ? "Spațiere: Densă (1.5x)" : "Spațiere: Confortabilă (1.6x)");
+    const spacingLabelEn = pace === "slow" ? "Spacing: Airy (1.9x)" : (pace === "fast" ? "Spacing: Dense (1.5x)" : "Spacing: Comfortable (1.6x)");
+    spacingBadge.textContent = isEn ? spacingLabelEn : spacingLabelRo;
   }
 
   if (densityBadge) {
     const amt = welcomeState.answers.textAmount;
-    const amtLabel = amt === "short" ? "Conținut: Esențial" : (amt === "full" ? "Conținut: Detaliat" : "Conținut: Echilibrat");
-    densityBadge.textContent = amtLabel;
+    const amtLabelRo = amt === "short" ? "Conținut: Esențial" : (amt === "full" ? "Conținut: Detaliat" : "Conținut: Echilibrat");
+    const amtLabelEn = amt === "short" ? "Content: Essential" : (amt === "full" ? "Content: Detailed" : "Content: Balanced");
+    densityBadge.textContent = isEn ? amtLabelEn : amtLabelRo;
   }
 
   const isSteps = Boolean(welcomeState.answers.stepByStep);
   if (formatBadge) {
-    formatBadge.textContent = isSteps ? "Format: Pași numerotați" : "Format: Text continuu";
+    if (isEn) {
+      formatBadge.textContent = isSteps ? "Format: Numbered steps" : "Format: Flowing text";
+    } else {
+      formatBadge.textContent = isSteps ? "Format: Pași numerotați" : "Format: Text continuu";
+    }
   }
 
   if (contrastBadge) {
-    contrastBadge.textContent = isLowNoise ? "Contrast: Ridicat (AAA)" : "Contrast: Normal";
+    if (isEn) {
+      contrastBadge.textContent = isLowNoise ? "Contrast: High (AAA)" : "Contrast: Normal";
+    } else {
+      contrastBadge.textContent = isLowNoise ? "Contrast: Ridicat (AAA)" : "Contrast: Normal";
+    }
   }
 
   const isQuiet = welcomeState.answers.sensory === "quiet";
   if (motionBadge) {
-    motionBadge.textContent = isQuiet ? "Animații: Oprite (Calm)" : "Animații: Active";
+    if (isEn) {
+      motionBadge.textContent = isQuiet ? "Animations: Off (Calm)" : "Animations: Active";
+    } else {
+      motionBadge.textContent = isQuiet ? "Animații: Oprite (Calm)" : "Animații: Active";
+    }
   }
 
-  const isEn = welcomeState.answers.language === "en";
   if (langBadge) {
     langBadge.textContent = isEn ? "Language: English 🇬🇧" : "Limbă: Română 🇷🇴";
   }
 
   const isNeedMoreTime = welcomeState.answers.timeToDecide === "need-more-time";
   if (timeBadge) {
-    timeBadge.textContent = isNeedMoreTime ? "Timp: Fără grabă ⏱️" : "Timp: Standard";
+    if (isEn) {
+      timeBadge.textContent = isNeedMoreTime ? "Time: Unlimited pace ⏱️" : "Time: Standard";
+    } else {
+      timeBadge.textContent = isNeedMoreTime ? "Timp: Fără grabă ⏱️" : "Timp: Standard";
+    }
   }
 
   // Highlight active step badge
@@ -287,6 +313,17 @@ export function updateLivePreview() {
  */
 export function selectOption(questionId, value) {
   welcomeState.answers[questionId] = value;
+
+  // Language toggle handling
+  if (questionId === "language") {
+    const newLang = value === "en" ? "en" : "ro";
+    welcomeState.lang = newLang;
+    try {
+      localStorage.setItem("limpede_lang", newLang);
+    } catch (e) {}
+    document.documentElement.setAttribute("data-lang", newLang);
+  }
+
   updateLivePreview();
 
   // Highlight selected card visually
@@ -300,28 +337,41 @@ export function selectOption(questionId, value) {
     }
   });
 
-  const question = QUESTIONNAIRE_RO[welcomeState.currentStep];
+  const question = welcomeState.questionnaire[welcomeState.currentStep];
   const selectedOpt = question && question.options ? question.options.find(o => String(o.value) === String(value)) : null;
   const label = selectedOpt ? selectedOpt.label : String(value);
-  announce(`Opțiunea „${label}” a fost selectată. Previzualizarea s-a actualizat.`);
+  const isEn = welcomeState.lang === "en";
+  announce(isEn ? `Option "${label}" selected. Live preview updated.` : `Opțiunea „${label}” a fost selectată. Previzualizarea s-a actualizat.`);
+
+  // If language was just changed, re-render step to update bilingual labels & prompts immediately
+  if (questionId === "language") {
+    renderStep(welcomeState.currentStep);
+  }
 }
 
 /**
  * Renders the wizard question at the given step index.
  */
 export function renderStep(stepIndex) {
-  if (stepIndex < 0 || stepIndex >= welcomeState.totalSteps) return;
+  const qList = welcomeState.questionnaire;
+  if (stepIndex < 0 || stepIndex >= qList.length) return;
   welcomeState.currentStep = stepIndex;
 
-  const question = QUESTIONNAIRE_RO[stepIndex];
+  const question = qList[stepIndex];
   if (!question) return;
+
+  const isEn = welcomeState.lang === "en";
 
   // Update step badge & progress bar
   const counterEl = document.getElementById("wizard-step-counter");
   const progressEl = document.getElementById("wizard-progress-bar");
-  if (counterEl) counterEl.textContent = `Întrebarea ${stepIndex + 1} din ${welcomeState.totalSteps}`;
+  if (counterEl) {
+    counterEl.textContent = isEn
+      ? `Question ${stepIndex + 1} of ${qList.length}`
+      : `Întrebarea ${stepIndex + 1} din ${qList.length}`;
+  }
   if (progressEl) {
-    const percent = Math.round(((stepIndex + 1) / welcomeState.totalSteps) * 100);
+    const percent = Math.round(((stepIndex + 1) / qList.length) * 100);
     progressEl.style.width = `${percent}%`;
   }
 
@@ -392,23 +442,75 @@ export function renderStep(stepIndex) {
         });
       }
     });
+
+      card.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          const input = card.querySelector("input[type='radio']");
+          if (input) {
+            input.checked = true;
+            let val = input.value;
+            if (val === "true") val = true;
+            else if (val === "false") val = false;
+            selectOption(question.id, val);
+          }
+        }
+      });
+
+      const input = card.querySelector("input[type='radio']");
+      if (input) {
+        input.addEventListener("change", (e) => {
+          let val = e.target.value;
+          if (val === "true") val = true;
+          else if (val === "false") val = false;
+          selectOption(question.id, val);
+        });
+      }
+    });
   }
 
-  // Update action buttons
+  // Update action buttons text & state
   const prevBtn = document.getElementById("btn-wizard-prev");
   const nextBtn = document.getElementById("btn-wizard-next");
   const saveBtn = document.getElementById("btn-wizard-save");
+  const saveNowBtn = document.getElementById("btn-wizard-save-now");
+  const skipBtn = document.getElementById("btn-wizard-skip");
 
-  if (prevBtn) prevBtn.disabled = (stepIndex === 0);
+  if (prevBtn) {
+    prevBtn.disabled = (stepIndex === 0);
+    prevBtn.textContent = isEn ? "← Back" : "← Înapoi";
+  }
 
-  const isLast = (stepIndex === welcomeState.totalSteps - 1);
-  if (nextBtn) nextBtn.style.display = isLast ? "none" : "inline-flex";
-  if (saveBtn) saveBtn.style.display = isLast ? "inline-flex" : "none";
+  const isLast = (stepIndex === qList.length - 1);
+  if (nextBtn) {
+    nextBtn.style.display = isLast ? "none" : "inline-flex";
+    nextBtn.textContent = isEn ? "Next →" : "Următoarea →";
+  }
+  if (saveBtn) {
+    saveBtn.style.display = isLast ? "inline-flex" : "none";
+    saveBtn.textContent = isEn ? "Save and continue ✓" : "Salvează și continuă ✓";
+  }
+  if (saveNowBtn) {
+    saveNowBtn.textContent = isEn ? "Finish now with these settings" : "Finalizează acum cu aceste setări";
+  }
+  if (skipBtn) {
+    skipBtn.textContent = isEn ? "Skip questionnaire" : "Sari peste chestionar";
+  }
+
+  // Update user name field label if present
+  const nameLabel = document.querySelector('label[for="wizard-user-name"]');
+  const nameInput = document.getElementById("wizard-user-name");
+  if (nameLabel) {
+    nameLabel.textContent = isEn ? "What's your name? (optional)" : "Cum te numești? (opțional)";
+  }
+  if (nameInput) {
+    nameInput.placeholder = isEn ? "e.g. Alex or Taylor" : "ex: Ana sau David";
+  }
 
   // Re-sync live preview to highlight active step badge and refresh display
   updateLivePreview();
 
-  announce(`Întrebarea ${stepIndex + 1}: ${question.prompt}`);
+  announce(isEn ? `Question ${stepIndex + 1}: ${question.prompt}` : `Întrebarea ${stepIndex + 1}: ${question.prompt}`);
 }
 
 /**
@@ -437,6 +539,24 @@ export function prevStep() {
  * Saves current preferences state and redirects to Home.
  */
 export function saveAndContinue() {
+  // Read and persist user name
+  const nameInput = document.getElementById("wizard-user-name");
+  const rawName = nameInput ? nameInput.value : "";
+  const trimmedName = rawName.trim();
+  try {
+    if (trimmedName) {
+      localStorage.setItem("limpede_user_name", trimmedName);
+    }
+    localStorage.setItem("limpede.welcome.completed", "true");
+    if (welcomeState.lang) {
+      localStorage.setItem("limpede_lang", welcomeState.lang);
+    }
+  } catch (e) {}
+
+  if (typeof window !== "undefined" && typeof CustomEvent === "function") {
+    window.dispatchEvent(new CustomEvent("limpede:user-name-changed", { detail: { name: trimmedName } }));
+  }
+
   const loaded = loadPrefs();
   const currentTheme = document.documentElement.getAttribute("data-theme") || (loaded && loaded.prefs && loaded.prefs.theme) || "light";
   
@@ -459,20 +579,53 @@ export function saveAndContinue() {
   applyPrefs(derived, document.documentElement);
   document.documentElement.setAttribute("data-theme", currentTheme);
 
-  announce("Preferințele tale au fost salvate. Te redirecționăm...");
+  const isEn = welcomeState.lang === "en" || welcomeState.answers.language === "en";
+  announce(isEn ? "Your preferences have been saved. Redirecting..." : "Preferințele tale au fost salvate. Te redirecționăm...");
   setTimeout(() => {
     window.location.href = "/";
   }, 250);
 }
 
 /**
+ * Record welcome completed when skipping questionnaire.
+ */
+export function handleSkip() {
+  try {
+    localStorage.setItem("limpede.welcome.completed", "true");
+  } catch (e) {}
+}
+
+/**
  * Initializes the Welcome Questionnaire page.
  */
 export function initWelcome() {
+  // Check language preference
+  try {
+    const savedLang = localStorage.getItem("limpede_lang");
+    if (savedLang === "en") {
+      welcomeState.lang = "en";
+      welcomeState.answers.language = "en";
+      document.documentElement.setAttribute("data-lang", "en");
+    }
+  } catch (e) {}
+
+  // Populate user name if previously saved
+  try {
+    const savedName = localStorage.getItem("limpede_user_name");
+    const nameInput = document.getElementById("wizard-user-name");
+    if (savedName && nameInput) {
+      nameInput.value = savedName;
+    }
+  } catch (e) {}
+
   // Load saved state or create default
   const loaded = loadPrefs();
   if (loaded && loaded.answers) {
     welcomeState.answers = { ...welcomeState.answers, ...loaded.answers };
+    if (loaded.answers.language === "en") {
+      welcomeState.lang = "en";
+      document.documentElement.setAttribute("data-lang", "en");
+    }
   }
   const currentTheme = (loaded && loaded.prefs && loaded.prefs.theme) || document.documentElement.getAttribute("data-theme") || "light";
   document.documentElement.setAttribute("data-theme", currentTheme);
@@ -485,11 +638,15 @@ export function initWelcome() {
   const prevBtn = document.getElementById("btn-wizard-prev");
   const saveBtn = document.getElementById("btn-wizard-save");
   const saveNowBtn = document.getElementById("btn-wizard-save-now");
+  const skipBtn = document.getElementById("btn-wizard-skip");
+  const topSkipLinks = document.querySelectorAll('a[href="/"].btn-comfort');
 
   if (nextBtn) nextBtn.addEventListener("click", nextStep);
   if (prevBtn) prevBtn.addEventListener("click", prevStep);
   if (saveBtn) saveBtn.addEventListener("click", saveAndContinue);
   if (saveNowBtn) saveNowBtn.addEventListener("click", saveAndContinue);
+  if (skipBtn) skipBtn.addEventListener("click", handleSkip);
+  topSkipLinks.forEach(link => link.addEventListener("click", handleSkip));
 
   // Wire interactive live preview badges to jump directly to questions
   const badgeMap = [

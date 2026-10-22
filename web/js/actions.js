@@ -1,6 +1,6 @@
 /**
  * actions.js - Result Action Bar and Content Transformation Engine
- * Project: PrimaZi (AccessABILITY Hackathon 2026)
+ * Project: Limpede (formerly PrimaZi) (AccessABILITY Hackathon 2026)
  * Owner: p3
  *
  * Implements Task F3 per docs/TASKS-WAVE2.md:
@@ -10,7 +10,6 @@
  * - Transfer of action items into the Planner
  */
 
-import { escapeHtml } from "/js/home.js";
 
 /**
  * Calls POST /api/transform with graceful offline fallback.
@@ -137,28 +136,53 @@ function fallbackTransform(text, mode) {
 
 /**
  * Stores tasks from current analysis in localStorage and navigates to the planner.
- * @param {Array<{text: string, deadline?: string, source_quote?: string}>} tasks
+ * Normalizes all tasks to canonical schema and saves to both primazi_planner_tasks and wp.planner.tasks.
+ * @param {Array<object>} tasks
+ * @returns {boolean}
  */
 export function sendTasksToPlanner(tasks) {
   if (!Array.isArray(tasks) || tasks.length === 0) return false;
 
   try {
-    const existing = JSON.parse(localStorage.getItem("wp.planner.tasks") || "[]");
-    const newItems = tasks.map((t, i) => ({
-      id: `task_${Date.now()}_${i}`,
-      title: t.text || t.title || "Sarcină extrasă",
-      deadline: t.deadline || null,
+    let existing = [];
+    if (typeof localStorage !== "undefined") {
+      const rawPrimazi = localStorage.getItem("primazi_planner_tasks");
+      const rawWp = localStorage.getItem("wp.planner.tasks");
+      if (rawPrimazi) {
+        try {
+          const parsed = JSON.parse(rawPrimazi);
+          if (Array.isArray(parsed)) existing = parsed;
+        } catch {}
+      } else if (rawWp) {
+        try {
+          const parsed = JSON.parse(rawWp);
+          if (Array.isArray(parsed)) existing = parsed;
+        } catch {}
+      }
+    }
+
+    const newItems = tasks.filter(Boolean).map((t, i) => ({
+      id: t.id || `task_${Date.now()}_${i}`,
+      title: (t.title || t.text || t.task || "Sarcină").trim(),
+      due_iso: t.due_iso || null,
+      due_text: t.due_text || t.deadline || null,
+      needs_confirmation: Boolean(t.needs_confirmation),
+      priority: t.priority || "normal",
+      steps: Array.isArray(t.steps) ? t.steps : [],
       source_quote: t.source_quote || null,
-      completed: false,
-      created_at: new Date().toISOString()
+      completed: Boolean(t.completed)
     }));
 
-    const combined = [...newItems, ...existing].slice(0, 30);
-    localStorage.setItem("wp.planner.tasks", JSON.stringify(combined));
+    const combined = [...newItems, ...existing].slice(0, 50);
+
+    if (typeof localStorage !== "undefined") {
+      const serialized = JSON.stringify(combined);
+      localStorage.setItem("primazi_planner_tasks", serialized);
+      localStorage.setItem("wp.planner.tasks", serialized);
+    }
     return true;
   } catch (err) {
     console.error("Nu s-au putut salva sarcinile în planificator:", err);
     return false;
   }
 }
-

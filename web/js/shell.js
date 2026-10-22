@@ -1,6 +1,6 @@
 /**
  * shell.js - Accessible App Shell Interactive Behavior & Header A11y Toolbar
- * Project: PrimaZi (AccessABILITY Hackathon 2026)
+ * Project: Limpede (formerly PrimaZi) (AccessABILITY Hackathon 2026)
  *
  * Handles:
  * - Desktop sidebar collapse/expand with persistence to wp.prefs.v1
@@ -12,6 +12,8 @@
  *   4. Dyslexia Switch (OpenDyslexic font toggle)
  * - In-Browser Reminders / Task Deadlines Notification System
  * - Reading Ruler & Saccade Assist Initialization
+ * - Internationalization (i18n) bootstrapping
+ * - Dynamic User Profile Name & Avatar Binding
  */
 
 import {
@@ -26,6 +28,88 @@ import { toggleReadingRuler } from "../shared/a11y-text.js";
 
 const STORAGE_KEY = "wp.prefs.v1";
 const PLANNER_STORAGE_KEY = "primazi_planner_tasks";
+
+// Safe Internationalization Bootstrap
+let applyI18n = null;
+let getLanguage = () => {
+  if (typeof document !== "undefined" && document.documentElement && document.documentElement.lang) {
+    return document.documentElement.lang;
+  }
+  return "ro";
+};
+
+(async () => {
+  try {
+    const i18n = await import("../shared/i18n.js");
+    if (i18n) {
+      if (typeof i18n.applyI18n === "function") applyI18n = i18n.applyI18n;
+      if (typeof i18n.getLanguage === "function") getLanguage = i18n.getLanguage;
+      if (typeof document !== "undefined" && document.body && typeof applyI18n === "function") {
+        applyI18n(document.body, getLanguage());
+      }
+      updateUserDisplay();
+    }
+  } catch (e) {
+    // Graceful fallback when i18n is optional or in headless environment
+  }
+})();
+
+/**
+ * Updates all .user-name and .user-avatar-circle elements based on
+ * localStorage("limpede_user_name") or default based on language.
+ */
+export function updateUserDisplay() {
+  if (typeof document === "undefined") return;
+
+  let userName = null;
+  try {
+    userName = localStorage.getItem("limpede_user_name");
+  } catch (e) {}
+
+  const currentLang = typeof getLanguage === "function" ? getLanguage() : (document.documentElement.lang || "ro");
+  const isEn = String(currentLang).toLowerCase().startsWith("en");
+
+  let displayName = "";
+  let avatarChar = "L";
+
+  if (userName && userName.trim()) {
+    displayName = userName.trim();
+    avatarChar = displayName.charAt(0).toUpperCase() || "L";
+  } else {
+    displayName = isEn ? "Limpede User" : "Utilizator Limpede";
+    avatarChar = "L";
+  }
+
+  const nameEls = document.querySelectorAll(".user-name");
+  nameEls.forEach((el) => {
+    el.textContent = displayName;
+  });
+
+  const avatarEls = document.querySelectorAll(".user-avatar-circle");
+  avatarEls.forEach((el) => {
+    el.textContent = avatarChar;
+  });
+}
+
+// Storage listener & custom event listener for dynamic user name changes
+if (typeof window !== "undefined") {
+  window.addEventListener("storage", (e) => {
+    if (!e.key || e.key === "limpede_user_name" || e.key === "limpede_lang") {
+      updateUserDisplay();
+    }
+  });
+
+  window.addEventListener("limpede:user-name-changed", () => {
+    updateUserDisplay();
+  });
+
+  window.addEventListener("limpede:lang-changed", (e) => {
+    if (typeof applyI18n === "function" && document.body) {
+      applyI18n(document.body, e.detail && e.detail.lang);
+    }
+    updateUserDisplay();
+  });
+}
 
 function readPrefs() {
   try {
@@ -81,7 +165,7 @@ function startTaskReminderRunner(announce) {
           const banner =
             document.getElementById("status-banner") ||
             document.getElementById("status-toast");
-          const msg = `Memento PrimaZi: Ai o sarcină cu termen astăzi: „${task.title}”!`;
+          const msg = `Memento Limpede: Ai o sarcină cu termen astăzi: „${task.title}”!`;
 
           if (banner) {
             banner.className = "status-message status-warning";
@@ -96,7 +180,7 @@ function startTaskReminderRunner(announce) {
             Notification.permission === "granted"
           ) {
             try {
-              new Notification("PrimaZi: Memento sarcină", {
+              new Notification("Limpede: Memento sarcină", {
                 body: `${task.title} are termen astăzi!`,
                 icon: "/favicon.ico",
               });
@@ -116,7 +200,8 @@ function startTaskReminderRunner(announce) {
   setInterval(checkDeadlines, 60000);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+if (typeof document !== "undefined") {
+  document.addEventListener("DOMContentLoaded", () => {
   const root = document.documentElement;
   const menuToggle = document.getElementById("btn-menu-toggle");
   const sidebarCollapseButtons = document.querySelectorAll(
@@ -134,6 +219,14 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 50);
     }
   }
+
+  // 0. Apply i18n & User Profile display
+  if (typeof applyI18n === "function" && document.body) {
+    try {
+      applyI18n(document.body, getLanguage());
+    } catch (e) {}
+  }
+  updateUserDisplay();
 
   // Apply stored reading ruler, theme and cognitive attributes
   const currentPrefs = readPrefs().prefs || {};
@@ -490,7 +583,8 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     });
   }
-});
+  });
+}
 
 // Global focus mode tracking: eliminate outlines on mouse clicks everywhere, preserve for keyboard
 if (typeof document !== "undefined") {
@@ -511,4 +605,3 @@ if (typeof document !== "undefined") {
     true,
   );
 }
-
