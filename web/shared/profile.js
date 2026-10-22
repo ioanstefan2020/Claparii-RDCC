@@ -15,7 +15,8 @@ export const DEFAULT_PROFILE = {
   reading_level: "simple", // "standard" | "simple" | "very_simple"
   format: "steps",         // "steps" | "short_paragraphs"
   needs_notes: "",         // Free text in user's own words (<= 500 chars)
-  max_sentence_words: 12
+  max_sentence_words: 12,  // integer between 6 and 30
+  read_aloud_default: false
 };
 
 export const DEFAULT_A11Y_PREFS = {
@@ -46,9 +47,12 @@ export function getProfile() {
       needs_notes: typeof parsed.needs_notes === "string"
         ? parsed.needs_notes.slice(0, 500)
         : "",
-      max_sentence_words: typeof parsed.max_sentence_words === "number"
-        ? Math.min(Math.max(parsed.max_sentence_words, 6), 30)
-        : DEFAULT_PROFILE.max_sentence_words
+      max_sentence_words: Number.isFinite(parsed.max_sentence_words)
+        ? Math.min(Math.max(Math.round(parsed.max_sentence_words), 6), 30)
+        : DEFAULT_PROFILE.max_sentence_words,
+      read_aloud_default: typeof parsed.read_aloud_default === "boolean"
+        ? parsed.read_aloud_default
+        : DEFAULT_PROFILE.read_aloud_default
     };
   } catch {
     return { ...DEFAULT_PROFILE };
@@ -58,16 +62,50 @@ export function getProfile() {
 /**
  * Saves profile updates to localStorage.
  */
-export function saveProfile(updates) {
-  if (typeof localStorage === "undefined") return;
+export function saveProfile(updates = {}) {
+  if (typeof localStorage === "undefined") return { ...DEFAULT_PROFILE, ...updates };
   const current = getProfile();
   const next = {
-    ...current,
-    ...updates,
-    needs_notes: updates.needs_notes ? String(updates.needs_notes).slice(0, 500) : current.needs_notes
+    reading_level: ["standard", "simple", "very_simple"].includes(updates.reading_level)
+      ? updates.reading_level
+      : current.reading_level,
+    format: ["steps", "short_paragraphs"].includes(updates.format)
+      ? updates.format
+      : current.format,
+    needs_notes: updates.needs_notes !== undefined
+      ? String(updates.needs_notes).slice(0, 500)
+      : current.needs_notes,
+    max_sentence_words: Number.isFinite(updates.max_sentence_words)
+      ? Math.min(Math.max(Math.round(updates.max_sentence_words), 6), 30)
+      : current.max_sentence_words,
+    read_aloud_default: updates.read_aloud_default !== undefined
+      ? Boolean(updates.read_aloud_default)
+      : current.read_aloud_default
   };
   localStorage.setItem(PROFILE_KEY, JSON.stringify(next));
   return next;
+}
+
+/**
+ * Formats profile payload specifically for API requests (CONTRACTS §1).
+ * Strips UI-only preferences like read_aloud_default.
+ */
+export function getApiProfile(profile = null) {
+  const p = profile || getProfile();
+  return {
+    reading_level: ["standard", "simple", "very_simple"].includes(p?.reading_level)
+      ? p.reading_level
+      : DEFAULT_PROFILE.reading_level,
+    format: ["steps", "short_paragraphs"].includes(p?.format)
+      ? p.format
+      : DEFAULT_PROFILE.format,
+    needs_notes: typeof p?.needs_notes === "string"
+      ? p.needs_notes.slice(0, 500)
+      : "",
+    max_sentence_words: Number.isFinite(p?.max_sentence_words)
+      ? Math.min(Math.max(Math.round(p.max_sentence_words), 6), 30)
+      : DEFAULT_PROFILE.max_sentence_words
+  };
 }
 
 /**
@@ -88,7 +126,7 @@ export function getA11yPrefs() {
  * Saves and applies accessibility preferences directly to DOM root attributes.
  */
 export function saveA11yPrefs(prefs) {
-  if (typeof localStorage === "undefined") return;
+  if (typeof localStorage === "undefined") return { ...DEFAULT_A11Y_PREFS, ...prefs };
   const next = { ...getA11yPrefs(), ...prefs };
   localStorage.setItem(A11Y_KEY, JSON.stringify(next));
   applyA11yPrefs(next);
