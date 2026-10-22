@@ -13,7 +13,7 @@
   /* Sizing and Touch Targets */
   --min-touch-target: 48px;
   --button-gap: 12px;
-  --max-content-width: 768px;
+  --max-content-width: 1180px;
   --sidebar-width-expanded: 260px;
   --sidebar-width-collapsed: 64px;
   --topbar-height: 64px;

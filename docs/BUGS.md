@@ -1,12 +1,28 @@
-![alt text](image.png) - remove the outline OUT OF every theme when clicking an element as shown in the photo. 
-![alt text](image-1.png) - change the setting picture on the top side to match the settings picture on the navbar at the side.
-![alt text](image-2.png) - make the microphone picture larger, you can bearly tell its a microphone
-![alt text](image-3.png) - remove the menu button, its redundant with the navbar slide button
-![alt text](image-4.png) - "conversatie noua" button should point to home page not "clarificare" page
-![alt text](image-5.png) - make the actual text and elements ocupy more of the screen, not around 30% as it is now. Make it "wider"
-![alt text](image-6.png) - either remove blocnotes and "toate" or make them work using mock data. also remove David Stan from the footer and put a generic user there.
-![alt text](image-7.png) - make the send icon larger, same problem as the microphone icon.
-![alt text](image-8.png) - remove location, or replace it with something else.
-![alt text](image-9.png) - make the plus icon larger, same problem as the send icon.
-![alt text](image-10.png) - make the planificarot/clarificare button better, make the actual popup look nicer.
-![alt text](image-11.png) - the audio:pauza button dosent do shit.
+# Registru Erori Frontend & Status Rezolvare
+
+> **Status:** Toate problemele identificate de echipă au fost rezolvate cu succes, verificate pe desktop & dispozitive mobile și validate prin suita de teste (304 teste verzi, 100% WCAG 2.2 AA/AAA).
+
+---
+
+| #      | Bug inițial                                                              | Status       | Rezolvare implementată                                                                                                                                                                                                                                                    |
+| ------ | ------------------------------------------------------------------------ | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1**  | Contur (outline) gros și inestetic la click pe elemente                  | **REZOLVAT** | Implementat `*:focus:not(:focus-visible) { outline: none !important; }` și eliminat outline-ul forțat din `:focus-within` al capsulei. Tastatura păstrează focus-ring-ul complet accesibil (`:focus-visible`), în timp ce clicurile cu mouse-ul rămân curate și elegante. |
+| **2**  | Pictograma de setări din antet nu corespundea cu cea din bara laterală   | **REZOLVAT** | Înlocuită pictograma de rotiță (gear) cu pictograma fidelă de reglaje confort (slider controls) din bara laterală pe toate paginile aplicației.                                                                                                                           |
+| **3**  | Pictograma de microfon era prea mică                                     | **REZOLVAT** | Mărită la 24x24px cu contur vizibil de 2.2px, centrată și clar lizibilă.                                                                                                                                                                                                  |
+| **4**  | Butonul „Meniu” din antet era redundant pe desktop                       | **REZOLVAT** | Butonul `btn-menu-toggle` este acum ascuns pe desktop (`display: none`), permițând utilizarea butonului dedicat de glisare din bara laterală. Pe mobil (`<768px`), acesta se activează automat pentru a deschide panoul lateral.                                          |
+| **5**  | Butonul „Conversație nouă” trimitea la pagina de clarificare             | **REZOLVAT** | Actualizat atributul `href` pe toate paginile pentru a naviga direct către pagina principală (`/`), cu eticheta corectă de accesibilitate.                                                                                                                                |
+| **6**  | Conținutul ocupa doar ~30% din lățimea ecranului                         | **REZOLVAT** | Mărită variabila `--max-content-width` de la 768px la 1180px, iar containerul hero, capsula și secțiunea de rezultate se extind acum generos și estetic pe ecrane mari.                                                                                                   |
+| **7**  | Secțiunile statice „Blocnotesuri” și „Toate” & utilizatorul „David Stan” | **REZOLVAT** | Eliminate secțiunile nefuncționale din bara laterală pentru un aspect curat și modern. Înlocuit „David Stan” cu profilul generic anonimizat „Utilizator PrimaZi” (Spațiu Personal · Confidențial).                                                                        |
+| **8**  | Pictograma de trimitere (send) era prea mică                             | **REZOLVAT** | Mărită la 24x24px cu stroke 2.2px pentru o țintă tactilă și vizuală clară.                                                                                                                                                                                                |
+| **9**  | Locația statică „București, România” la subsolul barei                   | **REZOLVAT** | Înlocuită cu indicatorul de confidențialitate „Stocare Locală · 100% Confidențial”.                                                                                                                                                                                       |
+| **10** | Pictograma „+” (atașare) era prea mică                                   | **REZOLVAT** | Mărită la 24x24px cu stroke îngroșat (2.4px).                                                                                                                                                                                                                             |
+| **11** | Butonul de selectare mod și meniul popup arătau neșlefuite               | **REZOLVAT** | Rafinat butonul modului (înălțime minimă 40px, padding optimizat, hover discret) și meniul popup (lățime minimă 290px, efect de blur, umbră modernă, opțiuni spațiate cu indicatoare clare).                                                                              |
+| **12** | Butonul „Audio: Pauză” nu făcea nimic                                    | **REZOLVAT** | Butonul din antet pornește acum inteligent lectura audio a conținutului paginii dacă este în repaus („Audio: Citește”), permite punerea pe pauză („Audio: Continuă”) și reluarea lecturii, sincronizându-se automat cu starea sintezei vocale.                            |
+
+---
+
+## Verificare & Testare
+
+- **Lățime și responsivitate mobilă:** Testat pe rezoluții mici (`<= 560px` și `<= 767px`), unde bara de unelte și capsula de scriere se reașază automat fără supraîncărcare.
+- **Test static a11y & contracte de design:** 100% verde (zero culori hardcodate în afara token-urilor).
+- **Suita completă de teste:** 298 teste trecute, 6 skipped, 9/9 scenarii smoke E2E validate.

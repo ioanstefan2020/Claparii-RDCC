@@ -15,6 +15,7 @@
  */
 
 import {
+  speakText,
   pauseSpeaking,
   resumeSpeaking,
   stopSpeaking,
@@ -306,26 +307,88 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Audio control: Pause / Resume / Stop via speech.js
+  // Audio control: Smart Read aloud / Pause / Resume / Stop via speech.js
   if (btnAudio) {
+    const span = btnAudio.querySelector("span");
+    if (span) span.textContent = "Audio: Citește";
+
+    window.addEventListener("primazi:speech-state", (e) => {
+      if (!span) return;
+      const state = e.detail && e.detail.state;
+      if (state === "speaking") {
+        span.textContent = "Audio: Pauză";
+        btnAudio.setAttribute("aria-label", "Pauză redare audio");
+        btnAudio.classList.add("is-speaking");
+      } else if (state === "paused") {
+        span.textContent = "Audio: Continuă";
+        btnAudio.setAttribute("aria-label", "Continuă redarea audio");
+        btnAudio.classList.remove("is-speaking");
+      } else {
+        span.textContent = "Audio: Citește";
+        btnAudio.setAttribute("aria-label", "Citește cu voce tare");
+        btnAudio.classList.remove("is-speaking");
+      }
+    });
+
     btnAudio.addEventListener("click", () => {
       if (isSpeaking()) {
         if (isPaused()) {
           resumeSpeaking();
-          const span = btnAudio.querySelector("span");
           if (span) span.textContent = "Audio: Pauză";
+          btnAudio.classList.add("is-speaking");
           announce("Redarea audio a continuat.");
+          window.dispatchEvent(new CustomEvent("primazi:speech-state", { detail: { state: "speaking" } }));
         } else {
           pauseSpeaking();
-          const span = btnAudio.querySelector("span");
           if (span) span.textContent = "Audio: Continuă";
+          btnAudio.classList.remove("is-speaking");
           announce("Redarea audio a fost pusă pe pauză.");
+          window.dispatchEvent(new CustomEvent("primazi:speech-state", { detail: { state: "paused" } }));
         }
       } else {
-        stopSpeaking();
-        announce(
-          "Niciun text în redare. Apasă pe «Ascultă» la orice secțiune pentru a porni lectura.",
-        );
+        // Find readable content on current page
+        let textToRead = "";
+        const resultBody = document.getElementById("home-result-body");
+        const summaryCard = document.querySelector(".summary-card, .results-content, .card-summary, .results-body, .output-card");
+        const mainEl = document.getElementById("main");
+
+        if (resultBody && resultBody.offsetParent !== null && resultBody.innerText.trim()) {
+          textToRead = resultBody.innerText.trim();
+        } else if (summaryCard && summaryCard.innerText.trim()) {
+          textToRead = summaryCard.innerText.trim();
+        } else if (mainEl) {
+          const h1 = mainEl.querySelector("h1");
+          const lead = mainEl.querySelector(".hero-lead, .gemini-greeting, p");
+          const parts = [];
+          if (h1 && h1.innerText) parts.push(h1.innerText.trim());
+          if (lead && lead.innerText) parts.push(lead.innerText.trim());
+          textToRead = parts.join(". ");
+        }
+
+        if (textToRead) {
+          speakText(textToRead, {
+            onStart: () => {
+              if (span) span.textContent = "Audio: Pauză";
+              btnAudio.classList.add("is-speaking");
+              announce("Lectura audio a pornit.");
+              window.dispatchEvent(new CustomEvent("primazi:speech-state", { detail: { state: "speaking" } }));
+            },
+            onEnd: () => {
+              if (span) span.textContent = "Audio: Citește";
+              btnAudio.classList.remove("is-speaking");
+              announce("Lectura audio s-a încheiat.");
+              window.dispatchEvent(new CustomEvent("primazi:speech-state", { detail: { state: "idle" } }));
+            },
+            onError: (err) => {
+              if (span) span.textContent = "Audio: Citește";
+              btnAudio.classList.remove("is-speaking");
+              announce(typeof err === "string" ? err : "Eroare la redarea audio.");
+              window.dispatchEvent(new CustomEvent("primazi:speech-state", { detail: { state: "idle" } }));
+            }
+          });
+        } else {
+          announce("Niciun text disponibil pentru citire audio pe această pagină.");
+        }
       }
     });
   }

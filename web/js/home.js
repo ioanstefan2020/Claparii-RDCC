@@ -680,6 +680,7 @@ export function toggleTTS() {
       ttsBtn.setAttribute("aria-pressed", "false");
     }
     announceToLiveRegion("Redarea audio a fost oprită.");
+    window.dispatchEvent(new CustomEvent("primazi:speech-state", { detail: { state: "idle" } }));
     return;
   }
 
@@ -698,6 +699,7 @@ export function toggleTTS() {
     ttsBtn.textContent = "Oprește audio";
     ttsBtn.setAttribute("aria-pressed", "true");
   }
+  window.dispatchEvent(new CustomEvent("primazi:speech-state", { detail: { state: "speaking" } }));
 
   speakText(currentSummaryForTTS, {
     onEnd: () => {
@@ -707,6 +709,7 @@ export function toggleTTS() {
         ttsBtn.setAttribute("aria-pressed", "false");
       }
       announceToLiveRegion("Redarea audio s-a finalizat.");
+      window.dispatchEvent(new CustomEvent("primazi:speech-state", { detail: { state: "idle" } }));
     },
     onError: () => {
       isSpeaking = false;
@@ -714,6 +717,7 @@ export function toggleTTS() {
         ttsBtn.textContent = "Ascultă rezumatul";
         ttsBtn.setAttribute("aria-pressed", "false");
       }
+      window.dispatchEvent(new CustomEvent("primazi:speech-state", { detail: { state: "idle" } }));
     }
   });
 }
