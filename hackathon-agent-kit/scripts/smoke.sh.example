@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Copy to scripts/smoke.sh and adapt. It must FAIL (non-zero exit) when the demo path is really broken.
+# Example for an HTTP app: start it in the background, send one realistic request, check the response.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+# 1) start the app in test mode
+# python -m app.main --test-mode & APP_PID=$!
+# trap 'kill $APP_PID 2>/dev/null || true' EXIT
+# sleep 2
+
+# 2) exercise the demo path
+# RESP=$(curl -sf -X POST localhost:8000/analyze -H 'content-type: application/json' -d '{"text":"hello"}')
+
+# 3) assert on the realistic output
+# echo "$RESP" | grep -q '"result"' || { echo "smoke: unexpected response: $RESP"; exit 1; }
+echo "smoke: replace this example with a real check"; exit 1
