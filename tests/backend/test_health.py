@@ -1,6 +1,7 @@
 import pytest
-from app.main import app
 from httpx import ASGITransport, AsyncClient
+
+from app.main import app
 
 
 @pytest.mark.anyio
@@ -12,6 +13,8 @@ async def test_health_endpoint():
         assert response.status_code == 200
         data = response.json()
         assert data == {"ok": True, "provider": "mock"}
+        # Verify metrics header added by middleware
+        assert "x-response-time" in response.headers
 
 
 @pytest.mark.anyio

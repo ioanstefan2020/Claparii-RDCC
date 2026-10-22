@@ -1,6 +1,8 @@
 import importlib
+import logging
 import os
 import pkgutil
+import time
 from pathlib import Path
 
 from fastapi import FastAPI, Request
@@ -15,7 +17,33 @@ from app.schemas.common import AppError
 ROOT_DIR = Path(__file__).resolve().parent.parent
 WEB_DIR = ROOT_DIR / "web"
 
+logger = logging.getLogger("primazi.api")
+logging.basicConfig(level=logging.INFO, format="%(message)s")
+
 app = FastAPI(title="Accesibilitate Workplace API")
+
+
+# Request Metrics & Privacy-Safe Logging Middleware (Task N1.7)
+@app.middleware("http")
+async def metrics_middleware(request: Request, call_next):
+    start_time = time.perf_counter()
+    method = request.method
+    path = request.url.path
+
+    try:
+        response = await call_next(request)
+        duration = time.perf_counter() - start_time
+        status = response.status_code
+        # Add latency header for UI & client diagnostics
+        response.headers["X-Response-Time"] = f"{duration:.3f}s"
+        logger.info(f"[METRICS] {method} {path} -> {status} ({duration:.3f}s)")
+        return response
+    except Exception as exc:
+        duration = time.perf_counter() - start_time
+        logger.info(
+            f"[METRICS] {method} {path} -> ERROR: {type(exc).__name__} ({duration:.3f}s)"
+        )
+        raise exc
 
 
 # Auto-discover routers from app/routers/
