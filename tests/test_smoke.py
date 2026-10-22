@@ -299,6 +299,7 @@ def test_smoke_not_found_envelope(client: TestClient) -> None:
         "/",
         "/index.html",
         "/welcome.html",
+        "/settings.html",
         "/employee/profile.html",
         "/employee/clarify.html",
         "/employee/plan.html",
@@ -341,6 +342,7 @@ def test_smoke_static_assets_served(client: TestClient) -> None:
         ("/js/shell.js", "javascript"),
         ("/js/home.js", "javascript"),
         ("/js/welcome.js", "javascript"),
+        ("/js/settings.js", "javascript"),
         ("/employer/fixture.json", "application/json"),
         ("/i18n/ro.employer.json", "application/json"),
         ("/employer/employer.js", "javascript"),
@@ -377,6 +379,76 @@ def test_smoke_welcome_page_elements(client: TestClient) -> None:
 
     # Module script
     assert 'src="/js/welcome.js"' in html
+
+
+def test_smoke_settings_page_elements(client: TestClient) -> None:
+    """Verifies that /settings.html contains all 9 preference controls, dual resets, export/import, and live preview."""
+    res = client.get("/settings.html")
+    assert res.status_code == 200
+    html = res.text
+
+    # 9 preference selects
+    for pref_id in [
+        "pref-theme",
+        "pref-contrast",
+        "pref-text-size",
+        "pref-spacing",
+        "pref-font",
+        "pref-motion",
+        "pref-density",
+        "pref-language",
+        "pref-sidebar",
+    ]:
+        assert f'id="{pref_id}"' in html, f"Missing select {pref_id}"
+
+    # Resets & Confirmation dialog
+    assert 'id="btn-reset-answers"' in html
+    assert 'id="btn-reset-all"' in html
+    assert 'id="confirm-reset-box"' in html
+    assert 'id="btn-confirm-reset"' in html
+    assert 'id="btn-cancel-reset"' in html
+
+    # Backup & Transfer (JSON)
+    assert 'id="btn-export-json"' in html
+    assert 'id="btn-import-json-trigger"' in html
+    assert 'id="input-import-json"' in html
+
+    # Live Preview Aside
+    assert 'id="settings-live-preview"' in html
+    assert 'id="preview-overrides-badge"' in html
+    assert 'id="preview-sample-card"' in html
+
+    # Module scripts
+    assert 'src="/js/settings.js"' in html
+    assert 'src="/js/shell.js"' in html
+
+
+def test_smoke_settings_select_options_match_schema(client: TestClient) -> None:
+    """Verifies that all 9 <select> inputs in /settings.html define options exactly matching VALID_PREFS."""
+    res = client.get("/settings.html")
+    assert res.status_code == 200
+    html = res.text
+
+    expected_options = {
+        "pref-theme": ["system", "light", "dark"],
+        "pref-contrast": ["normal", "high"],
+        "pref-text-size": ["m", "l", "xl"],
+        "pref-spacing": ["comfortable", "roomy"],
+        "pref-font": ["default", "readable"],
+        "pref-motion": ["full", "reduced"],
+        "pref-density": ["full", "focused"],
+        "pref-language": ["ro", "en"],
+        "pref-sidebar": ["open", "collapsed"],
+    }
+    for select_id, values in expected_options.items():
+        assert f'id="{select_id}"' in html, f"Missing select {select_id}"
+        for val in values:
+            assert f'value="{val}"' in html, f"Missing option value {val} in select {select_id}"
+
+    # Also verify fallback, live announcement, and toast containers
+    assert 'id="memory-fallback-notice"' in html
+    assert 'id="status-live"' in html
+    assert 'id="status-toast"' in html
 
 
 def test_smoke_home_screen_interactive_elements(client: TestClient) -> None:
