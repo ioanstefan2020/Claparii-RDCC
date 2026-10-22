@@ -252,6 +252,20 @@ body {
   outline-offset: var(--focus-ring-offset) !important;
 }
 
+/* Eliminate outline on mouse clicks across the entire application */
+[data-focus-mode="mouse"] *:focus,
+[data-focus-mode="mouse"] *:focus-visible,
+[data-focus-mode="mouse"] :focus-within,
+*:focus:not(:focus-visible) {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+[data-focus-mode="keyboard"] :focus-visible {
+  outline: 3px solid var(--focus-ring) !important;
+  outline-offset: var(--focus-ring-offset) !important;
+}
+
 /* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

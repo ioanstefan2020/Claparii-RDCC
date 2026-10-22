@@ -414,3 +414,24 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+// Global focus mode tracking: eliminate outlines on mouse clicks everywhere, preserve for keyboard
+if (typeof document !== "undefined") {
+  document.addEventListener(
+    "pointerdown",
+    () => {
+      document.documentElement.setAttribute("data-focus-mode", "mouse");
+    },
+    true,
+  );
+  document.addEventListener(
+    "keydown",
+    (e) => {
+      if (e.key === "Tab" || (e.key && e.key.startsWith("Arrow"))) {
+        document.documentElement.setAttribute("data-focus-mode", "keyboard");
+      }
+    },
+    true,
+  );
+}
+

@@ -23,6 +23,16 @@
           if (p.sidebar) root.setAttribute('data-sidebar', p.sidebar);
         }
       } catch (e) {}
+      try {
+        document.addEventListener('pointerdown', function() {
+          document.documentElement.setAttribute('data-focus-mode', 'mouse');
+        }, true);
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Tab' || (e.key && e.key.indexOf('Arrow') === 0)) {
+            document.documentElement.setAttribute('data-focus-mode', 'keyboard');
+          }
+        }, true);
+      } catch (e) {}
     })();
   </script>
   <link rel="stylesheet" href="/shared/a11y.css">
@@ -30,15 +40,21 @@
   <link rel="stylesheet" href="/css/shell.css">
   <style>
     .clarify-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: var(--space-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xl);
       margin-top: var(--space-md);
+      width: 100%;
     }
-    @media (min-width: 900px) {
-      .clarify-grid {
-        grid-template-columns: 1.05fr 1fr;
-      }
+    .clarify-input-section {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+    }
+    #clarify-form {
+      width: 100%;
+      box-sizing: border-box;
     }
     mark.quote-highlight {
       background-color: #fef08a;
@@ -214,10 +230,10 @@
         <!-- Error Banner (announced via aria-live and role=alert) -->
         <div id="error-banner" class="status-message status-error" role="alert" style="display: none;"></div>
 
-        <!-- 2-Column Responsive Layout -->
+        <!-- Clarify Form & Results (Full-Width Responsive Layout) -->
         <div class="clarify-grid">
-          <!-- Left Column: Input Form & Source Text Viewer -->
-          <section aria-labelledby="input-section-heading">
+          <!-- Input Form & Source Text Viewer -->
+          <section aria-labelledby="input-section-heading" class="clarify-input-section">
             <h2 id="input-section-heading" class="sr-only">Introducere text document</h2>
 
             <form id="clarify-form" class="feature-card">

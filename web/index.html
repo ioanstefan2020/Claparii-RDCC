@@ -23,6 +23,16 @@
           if (p.sidebar) root.setAttribute('data-sidebar', p.sidebar);
         }
       } catch (e) {}
+      try {
+        document.addEventListener('pointerdown', function() {
+          document.documentElement.setAttribute('data-focus-mode', 'mouse');
+        }, true);
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Tab' || (e.key && e.key.indexOf('Arrow') === 0)) {
+            document.documentElement.setAttribute('data-focus-mode', 'keyboard');
+          }
+        }, true);
+      } catch (e) {}
     })();
   </script>
   <link rel="stylesheet" href="/shared/a11y.css">
@@ -197,7 +207,7 @@
               <!-- Left: Attachment / Quick Samples Dropdown Button -->
               <div class="capsule-left">
                 <button type="button" id="btn-capsule-attach" class="capsule-circle-btn" aria-label="Atașează document sau alege un exemplu demonstrativ" aria-expanded="false" aria-haspopup="menu">
-                  <svg class="capsule-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  <svg class="capsule-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="3" x2="12" y2="21"></line><line x1="3" y1="12" x2="21" y2="12"></line></svg>
                 </button>
 
                 <!-- Floating Dropdown for Samples -->
@@ -278,7 +288,7 @@
 
                 <!-- Submit / Send Arrow Button -->
                 <button type="submit" id="btn-home-execute" class="capsule-send-btn" aria-label="Clarifică documentul" title="Trimite">
-                  <svg class="send-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                  <svg class="send-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
                 </button>
               </div>
             </form>

@@ -19,10 +19,14 @@
 | **11** | Butonul de selectare mod și meniul popup arătau neșlefuite               | **REZOLVAT** | Rafinat butonul modului (înălțime minimă 40px, padding optimizat, hover discret) și meniul popup (lățime minimă 290px, efect de blur, umbră modernă, opțiuni spațiate cu indicatoare clare).                                                                              |
 | **12** | Butonul „Audio: Pauză” nu făcea nimic                                    | **REZOLVAT** | Butonul din antet pornește acum inteligent lectura audio a conținutului paginii dacă este în repaus („Audio: Citește”), permite punerea pe pauză („Audio: Continuă”) și reluarea lecturii, sincronizându-se automat cu starea sintezei vocale.                            |
 
+| **13** | Caseta de încărcare/lipire document din fila Clarificare era îngustată la jumătate de ecran | **REZOLVAT** | Ajustat `.clarify-grid` la lățime completă (flex column, 100%), astfel încât formularul și caseta de text să aibă exact aceeași lățime generoasă ca și textul introductiv de deasupra pe toate rezoluțiile. |
+| **14** | Pictogramele de acțiune din capsulă (+, microfon, trimitere) erau prea mici | **REZOLVAT** | Mărite la 26x26px cu grosime accentuată (stroke 2.4px), iar pictograma de trimitere a fost înlocuită cu o săgeată plină, modernă și clar vizibilă. |
+| **15** | Contur (outline) vizibil la click cu mouse-ul pe elemente și contur dublu în capsulă | **REZOLVAT** | Implementat sistem global de detecție mod interacțiune (`data-focus-mode="mouse"` vs `"keyboard"`). La click cu mouse-ul, contururile sunt complet eliminate (`outline: none !important`), în timp ce navigarea cu tastatura (Tab) păstrează focus ring-ul accesibil WCAG 2.2 AA. |
+
 ---
 
 ## Verificare & Testare
 
-- **Lățime și responsivitate mobilă:** Testat pe rezoluții mici (`<= 560px` și `<= 767px`), unde bara de unelte și capsula de scriere se reașază automat fără supraîncărcare.
+- **Lățime și responsivitate mobilă & tabletă:** Adaptare completă pe mobil (`<= 640px`), tablete (`<= 767px` și `<= 1024px`) și desktop, cu prevenirea scrollului orizontal (`overflow-x: hidden`).
 - **Test static a11y & contracte de design:** 100% verde (zero culori hardcodate în afara token-urilor).
 - **Suita completă de teste:** 298 teste trecute, 6 skipped, 9/9 scenarii smoke E2E validate.

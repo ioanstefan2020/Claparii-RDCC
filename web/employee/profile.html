@@ -39,6 +39,16 @@
                             );
                     }
                 } catch (e) {}
+                try {
+                    document.addEventListener('pointerdown', function() {
+                        document.documentElement.setAttribute('data-focus-mode', 'mouse');
+                    }, true);
+                    document.addEventListener('keydown', function(e) {
+                        if (e.key === 'Tab' || (e.key && e.key.indexOf('Arrow') === 0)) {
+                            document.documentElement.setAttribute('data-focus-mode', 'keyboard');
+                        }
+                    }, true);
+                } catch (e) {}
             })();
         </script>
         <link rel="stylesheet" href="/shared/a11y.css" />
