@@ -406,7 +406,7 @@ export function renderSimplifyResult(data, meta = {}) {
           <div class="step-content">
             <span class="step-number">${step.n || idx + 1}.</span>
             <span class="step-text">${formatTextWithHighlights(step.text, data.key_terms, needsProminence)}</span>
-          </div>`
+          </div>
           ${stepQuote ? `
             <div class="step-quote-action">
               <button type="button" class="btn-quote" data-quote="${stepQuote}" aria-label="Arată citatul pentru pasul ${step.n || idx + 1} în textul original">
