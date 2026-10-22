@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <title>PrimaZi — Configurare Confort și Accesibilitate</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Inline <head> loader script reading wp.prefs.v1 to eliminate FOUC -->
+  <script>
+    (function() {
+      try {
+        var raw = localStorage.getItem('wp.prefs.v1');
+        if (raw) {
+          var data = JSON.parse(raw);
+          var p = data && data.prefs ? data.prefs : {};
+          var root = document.documentElement;
+          if (p.theme) root.setAttribute('data-theme', p.theme);
+          if (p.textSize) root.setAttribute('data-text', p.textSize);
+          if (p.spacing) root.setAttribute('data-spacing', p.spacing);
+          if (p.contrast) root.setAttribute('data-contrast', p.contrast);
+          if (p.motion) root.setAttribute('data-motion', p.motion);
+          if (p.font) root.setAttribute('data-font', p.font);
+          if (p.density) root.setAttribute('data-density', p.density);
+          if (p.sidebar) root.setAttribute('data-sidebar', p.sidebar);
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="/shared/a11y.css">
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/shell.css">
+</head>
+<body>
+  <!-- Skip link for keyboard navigation -->
+  <a href="#main" class="skip-link">Sari la conținutul principal</a>
+
+  <div class="welcome-page-wrapper">
+    <!-- Top Header -->
+    <header class="app-topbar" role="banner">
+      <div class="topbar-left">
+        <a href="/" class="sidebar-brand" aria-label="PrimaZi Acasă">
+          <span class="brand-badge" aria-hidden="true">PZ</span>
+          <span class="sidebar-brand-text">PrimaZi</span>
+        </a>
+        <span class="topbar-title">Configurare Confort</span>
+      </div>
+      <div class="topbar-right">
+        <a href="/" class="btn-comfort" aria-label="Sari peste chestionar și mergi direct la Acasă">
+          <span>Sari peste (Acasă)</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main" class="welcome-main">
+      <!-- Live region for accessibility announcements -->
+      <div id="status-live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+      <!-- Welcome Hero Section with single <h1> -->
+      <section class="welcome-hero" aria-labelledby="welcome-title">
+        <h1 id="welcome-title" class="hero-title">Cum preferi să lucrezi?</h1>
+        <p class="hero-lead">
+          Răspunde la 7 întrebări simple pentru a adapta mărimea textului, contrastul, spațierea și ritmul de lucru.
+          Toate opțiunile sunt salvate exclusiv pe acest dispozitiv, fără întrebări sau date medicale.
+        </p>
+      </section>
+
+      <!-- Two-Column Split Layout -->
+      <div class="welcome-split-layout">
+        <!-- Left Column: Wizard Card -->
+        <div class="wizard-column">
+          <!-- Wizard Progress -->
+          <div class="wizard-header">
+            <span id="wizard-step-counter" class="step-badge">Întrebarea 1 din 7</span>
+            <div class="progress-track" aria-hidden="true">
+              <div id="wizard-progress-bar" class="progress-fill" style="width: 14%;"></div>
+            </div>
+          </div>
+
+          <!-- Wizard Card Section -->
+          <section id="wizard-card" class="wizard-card" aria-labelledby="question-prompt">
+            <form id="wizard-form" novalidate onsubmit="return false;">
+              <fieldset id="question-fieldset" class="question-fieldset">
+                <legend id="question-prompt" class="question-prompt">Se încarcă întrebarea...</legend>
+                <p id="question-help" class="question-help"></p>
+
+                <!-- Radio Options Group -->
+                <div id="question-options" class="radio-group" role="radiogroup" aria-labelledby="question-prompt">
+                  <!-- Dynamically generated options -->
+                </div>
+              </fieldset>
+
+              <!-- Wizard Primary Navigation Actions -->
+              <div class="wizard-actions">
+                <button type="button" id="btn-wizard-prev" class="btn btn-secondary" aria-label="Mergi la întrebarea anterioară" disabled>
+                  ← Înapoi
+                </button>
+                <button type="button" id="btn-wizard-next" class="btn btn-primary" aria-label="Mergi la următoarea întrebare">
+                  Următoarea →
+                </button>
+                <button type="button" id="btn-wizard-save" class="btn btn-primary" style="display: none;" aria-label="Salvează preferințele și mergi la pagina principală">
+                  Salvează și continuă ✓
+                </button>
+              </div>
+
+              <!-- Wizard Secondary Actions -->
+              <div class="wizard-secondary-actions">
+                <button type="button" id="btn-wizard-save-now" class="btn btn-secondary" aria-label="Salvează acum cu setările actuale și finalizează">
+                  Finalizează acum cu aceste setări
+                </button>
+                <a href="/" id="btn-wizard-skip" class="btn-link" aria-label="Sari peste chestionar și folosește setările implicite">
+                  Sari peste chestionar
+                </a>
+              </div>
+            </form>
+          </section>
+        </div>
+
+        <!-- Right Column: Real-Time Live Preview Panel -->
+        <aside id="welcome-live-preview" class="welcome-preview-aside" aria-label="Previzualizare în timp real a confortului vizual">
+          <div class="preview-sticky-card">
+            <h2 id="preview-heading" class="preview-title">Previzualizare în timp real</h2>
+            <p class="preview-desc">
+              Modificările de font, mărime, spațiere și contrast se aplică instantaneu atât pe această mostră, cât și pe întreaga pagină.
+            </p>
+
+            <!-- Preference Badges -->
+            <div id="preview-badges" class="preview-badges-container" aria-label="Preferințe active">
+              <span id="badge-pref-text" class="pref-badge">Text: Standard (18px)</span>
+              <span id="badge-pref-spacing" class="pref-badge">Spațiere: Confortabilă</span>
+              <span id="badge-pref-contrast" class="pref-badge">Contrast: Normal</span>
+              <span id="badge-pref-format" class="pref-badge">Format: Pași</span>
+            </div>
+
+            <!-- Sample Document Card -->
+            <article id="preview-sample-card" class="preview-sample-card">
+              <h3 id="preview-sample-title" class="preview-sample-title">Ghid de primă zi: 3 pași esențiali</h3>
+              <div id="preview-sample-content" class="preview-sample-content">
+                <p>1. <strong>Prezentarea la birou:</strong> Luni la ora 09:00 te prezinți la recepție pentru ecuson și laptop.</p>
+                <p>2. <strong>Documente HR:</strong> Trimiți cartea de identitate și formularul F-12 completat.</p>
+                <p>3. <strong>Întâlnirea cu mentorul:</strong> Marți la 11:00 configurezi conturile de lucru și obiectivele.</p>
+              </div>
+            </article>
+
+            <div class="preview-hint" role="note">
+              💡 <em>Sfat:</em> Poți schimba oricând aceste setări ulterior din butonul „Setări confort”.
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer" role="contentinfo">
+      <p>
+        PrimaZi — AccessABILITY Hackathon 2026. Conform standardelor WCAG 2.2 AA. Date 100% confidențiale în browserul tău.
+      </p>
+    </footer>
+  </div>
+
+  <script type="module" src="/js/welcome.js"></script>
+</body>
+</html>

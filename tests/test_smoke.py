@@ -298,6 +298,7 @@ def test_smoke_not_found_envelope(client: TestClient) -> None:
     [
         "/",
         "/index.html",
+        "/welcome.html",
         "/employee/profile.html",
         "/employee/clarify.html",
         "/employee/plan.html",
@@ -339,6 +340,7 @@ def test_smoke_static_assets_served(client: TestClient) -> None:
         ("/css/shell.css", "text/css"),
         ("/js/shell.js", "javascript"),
         ("/js/home.js", "javascript"),
+        ("/js/welcome.js", "javascript"),
         ("/employer/fixture.json", "application/json"),
         ("/i18n/ro.employer.json", "application/json"),
         ("/employer/employer.js", "javascript"),
@@ -349,6 +351,32 @@ def test_smoke_static_assets_served(client: TestClient) -> None:
         assert mime_substr in res.headers.get("content-type", ""), (
             f"Expected {mime_substr} for {url}, got {res.headers.get('content-type')}"
         )
+
+
+def test_smoke_welcome_page_elements(client: TestClient) -> None:
+    """Verifies that /welcome.html contains all wizard & live preview elements for Task N3.3."""
+    res = client.get("/welcome.html")
+    assert res.status_code == 200
+    html = res.text
+
+    # Wizard card and controls
+    assert 'id="wizard-card"' in html
+    assert 'id="wizard-step-counter"' in html
+    assert 'id="wizard-progress-bar"' in html
+    assert 'id="question-prompt"' in html
+    assert 'id="question-options"' in html
+    assert 'id="btn-wizard-prev"' in html
+    assert 'id="btn-wizard-next"' in html
+    assert 'id="btn-wizard-save"' in html
+    assert 'id="btn-wizard-save-now"' in html
+
+    # Live preview container
+    assert 'id="welcome-live-preview"' in html
+    assert 'id="preview-badges"' in html
+    assert 'id="preview-sample-card"' in html
+
+    # Module script
+    assert 'src="/js/welcome.js"' in html
 
 
 def test_smoke_home_screen_interactive_elements(client: TestClient) -> None:

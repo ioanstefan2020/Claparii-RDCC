@@ -769,3 +769,4 @@ export function initHomePage() {
 if (typeof document !== "undefined") {
   document.addEventListener("DOMContentLoaded", initHomePage);
 }
+
