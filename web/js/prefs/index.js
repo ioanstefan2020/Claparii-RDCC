@@ -37,3 +37,9 @@ export {
   getInlineHeadScript,
 } from "./apply.js";
 
+export {
+  QUESTIONNAIRE_RO,
+  QUESTIONNAIRE_EN,
+  getQuestionnaire,
+} from "./questionnaire.js";
+

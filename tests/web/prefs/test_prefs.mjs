@@ -11,6 +11,7 @@ import {
   SCHEMA_VERSION,
   DEFAULT_ANSWERS,
   DEFAULT_PREFS,
+  VALID_ANSWERS,
   createDefaultState,
   derivePrefs,
   migrate,
@@ -24,6 +25,9 @@ import {
   importPrefsJson,
   applyPrefs,
   getInlineHeadScript,
+  QUESTIONNAIRE_RO,
+  QUESTIONNAIRE_EN,
+  getQuestionnaire,
 } from "../../../web/js/prefs/index.js";
 
 // Helper to create a fake localStorage
@@ -332,5 +336,53 @@ test("test_storage_corrupt_json: heals corrupt JSON without permanently disablin
   assert.ok(store.getItem(STORAGE_KEY).includes('"version":1'));
 
   clearPrefs();
+});
+
+test("test_questionnaire_structure: validates all 7 questions and options against VALID_ANSWERS", () => {
+  assert.ok(Array.isArray(QUESTIONNAIRE_RO), "QUESTIONNAIRE_RO must be an array");
+  assert.equal(QUESTIONNAIRE_RO.length, 7, "Must have exactly 7 questions");
+
+  const expectedIds = Object.keys(DEFAULT_ANSWERS);
+  for (const q of QUESTIONNAIRE_RO) {
+    assert.ok(expectedIds.includes(q.id), `Unexpected question id: ${q.id}`);
+    assert.ok(typeof q.prompt === "string" && q.prompt.length > 5, `Question ${q.id} prompt too short`);
+    assert.ok(typeof q.helpText === "string", `Question ${q.id} missing helpText`);
+    assert.ok(Array.isArray(q.options) && q.options.length >= 2, `Question ${q.id} must have >= 2 options`);
+
+    const allowed = VALID_ANSWERS[q.id];
+    for (const opt of q.options) {
+      assert.ok(allowed.includes(opt.value), `Invalid option value '${opt.value}' for question ${q.id}`);
+      assert.ok(typeof opt.label === "string" && opt.label.length > 0, "Option label missing");
+      assert.ok(typeof opt.description === "string", "Option description missing");
+    }
+  }
+});
+
+test("test_questionnaire_bilingual: ensures EN questions match RO IDs and getQuestionnaire works", () => {
+  assert.ok(Array.isArray(QUESTIONNAIRE_EN), "QUESTIONNAIRE_EN must be an array");
+  assert.equal(QUESTIONNAIRE_EN.length, 7, "Must have 7 English questions");
+
+  const roIds = QUESTIONNAIRE_RO.map((q) => q.id);
+  const enIds = QUESTIONNAIRE_EN.map((q) => q.id);
+  assert.deepEqual(roIds, enIds, "RO and EN questionnaire IDs must match in order");
+
+  assert.equal(getQuestionnaire("ro"), QUESTIONNAIRE_RO);
+  assert.equal(getQuestionnaire("en"), QUESTIONNAIRE_EN);
+  assert.equal(getQuestionnaire("unknown"), QUESTIONNAIRE_RO);
+});
+
+test("test_questionnaire_zero_diagnosis: strictly no medical/diagnosis terms in questions", () => {
+  const bannedTerms = [
+    "diagnostic", "boală", "afecțiune", "handicap", "medical",
+    "disease", "disability", "disorder", "syndrome", "illness", "pacient", "tratament"
+  ];
+
+  const fullTextRo = JSON.stringify(QUESTIONNAIRE_RO).toLowerCase();
+  const fullTextEn = JSON.stringify(QUESTIONNAIRE_EN).toLowerCase();
+
+  for (const term of bannedTerms) {
+    assert.ok(!fullTextRo.includes(term), `Banned medical term '${term}' found in Romanian questionnaire`);
+    assert.ok(!fullTextEn.includes(term), `Banned medical term '${term}' found in English questionnaire`);
+  }
 });
 
