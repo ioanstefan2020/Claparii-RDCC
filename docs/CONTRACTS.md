@@ -413,3 +413,99 @@ Returns: `{"status": "ok", "provider": "mock", "version": "v2"}`
   }
 }
 ```
+
+
+### 5.10 `POST /api/profile/recommend-adaptations` (P1)
+
+Maps user's freeform workplace needs and preferences ("nevoile de lucru în cuvintele tale") into concrete UI accommodations and workplace catalog adjustments.
+Follows strict Responsible-AI guidelines: scrubs all medical diagnoses/clinical labels, maps strictly to functional ergonomics.
+
+**Request:**
+
+```json
+{
+  "freeform_needs": "Am ADHD și anxietate când am multe taskuri. Îmi pierd concentrarea la texte lungi și prefer instrucțiuni scrise pas cu pas cu font mare.",
+  "workplace_role": "Junior Analyst",
+  "current_prefs": {
+    "theme": "light",
+    "textSize": "m"
+  }
+}
+```
+
+**Response:**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "ui_prefs": {
+      "textSize": "xl",
+      "font": "opendyslexic",
+      "contrast": "high",
+      "spacing": "roomy",
+      "bionic": true,
+      "highlightKeyTerms": true,
+      "motion": "reduced",
+      "readingLevel": "very_simple",
+      "format": "steps",
+      "audioSupport": true
+    },
+    "workplace_adjustments": [
+      {
+        "id": "written_instructions",
+        "title": "Instrucțiuni scrise, pas cu pas",
+        "reason_ro": "Reduce încărcarea memoriei de lucru și clarifică fiecare etapă."
+      },
+      {
+        "id": "task_breakdown",
+        "title": "Împărțirea sarcinilor complexe în pași scurți",
+        "reason_ro": "Ajută la menținerea concentrării și previne senzația de copleșire."
+      }
+    ],
+    "explanation_ro": "Am configurat interfața cu text mărit, evidențiere bionică și instrucțiuni pas cu pas pentru claritate maximă.",
+    "privacy_notice_ro": "Nevoile tale sunt procesate confidențial și stocate doar în browserul tău (localStorage). Nu salvăm diagnostice medicale pe server."
+  },
+  "meta": {
+    "provider": "mock",
+    "cached": false,
+    "warnings": []
+  }
+}
+```
+
+### 5.11 `POST /api/plan/calendar-link` (P1)
+
+Generates a 1-click Google Calendar web link and standard RFC 5545 iCalendar (`.ics`) file data for scheduling tasks and meeting follow-ups directly.
+
+**Request:**
+
+```json
+{
+  "title": "Completează formularul F-12",
+  "due_iso": "2026-10-28",
+  "due_time": "14:00",
+  "duration_minutes": 30,
+  "description": "Deschide portalul intern și completează datele personale.",
+  "location": "Online / Portal intern"
+}
+```
+
+**Response:**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "google_calendar_url": "https://calendar.google.com/calendar/render?action=TEMPLATE&text=Completeaz%C4%83+formularul+F-12&dates=20261028T140000/20261028T143000&details=Deschide+portalul+intern...&location=Online",
+    "ics_filename": "task_20261028.ics",
+    "ics_content": "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//PrimaZi//Calendar Export//RO\r\nBEGIN:VEVENT\r\nSUMMARY:Completează formularul F-12\r\nDTSTART:20261028T140000Z\r\nDTEND:20261028T143000Z\r\nDESCRIPTION:Deschide portalul intern...\r\nEND:VEVENT\r\nEND:VCALENDAR",
+    "title": "Completează formularul F-12",
+    "due_iso": "2026-10-28",
+    "start_iso": "2026-10-28T14:00:00"
+  },
+  "meta": {
+    "provider": "code"
+  }
+}
+```

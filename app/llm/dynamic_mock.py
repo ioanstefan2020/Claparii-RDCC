@@ -48,6 +48,7 @@ def parse_ro_date_iso(matched_text: str) -> str | None:
 def extract_document_from_prompt(user_prompt: str) -> str:
     """Extracts raw user document text from structured prompt boundaries."""
     patterns = [
+        r"---\s*NEVOILE EXPRIMATE DE UTILIZATOR.*?---\s*\n(.*?)\n\s*---\s*SFÂRȘIT MESAJ",
         r"---\s*ÎNCEPUT DOCUMENT.*?---\s*\n(.*?)\n\s*---\s*SFÂRȘIT DOCUMENT",
         r"---\s*DOCUMENT.*?---\s*\n(.*?)\n\s*---\s*SFÂRȘIT DOCUMENT",
         r"---\s*E-MAIL CU SARCINI.*?---\s*\n(.*?)\n\s*---\s*SFÂRȘIT E-MAIL",
@@ -428,5 +429,13 @@ def generate_dynamic_response(
                 "Cum sunt transmise sarcinile zilnice către echipă (tichete, email, ședințe)?",
             ],
         }
+
+    # 6. PROFILE NEEDS RECOMMENDATION
+    from app.schemas.profile import ProfileNeedsRecommendation
+
+    if schema is ProfileNeedsRecommendation:
+        from app.routers.profile import build_heuristic_profile_recommendation
+
+        return build_heuristic_profile_recommendation(doc_text).model_dump()
 
     return canned_mock
