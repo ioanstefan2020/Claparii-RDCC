@@ -300,6 +300,7 @@ def test_smoke_not_found_envelope(client: TestClient) -> None:
         "/index.html",
         "/welcome.html",
         "/settings.html",
+        "/library.html",
         "/employee/profile.html",
         "/employee/clarify.html",
         "/employee/plan.html",
@@ -343,6 +344,8 @@ def test_smoke_static_assets_served(client: TestClient) -> None:
         ("/js/home.js", "javascript"),
         ("/js/welcome.js", "javascript"),
         ("/js/settings.js", "javascript"),
+        ("/js/library.js", "javascript"),
+        ("/js/library-storage.js", "javascript"),
         ("/employer/fixture.json", "application/json"),
         ("/i18n/ro.employer.json", "application/json"),
         ("/employer/employer.js", "javascript"),
@@ -493,5 +496,74 @@ def test_smoke_adjustments_draft_unknown_id_400(client: TestClient) -> None:
     body = res.json()
     assert body["ok"] is False
     assert body["error"]["code"] == "bad_request"
+
+
+def test_smoke_library_page_elements(client: TestClient) -> None:
+    """Verifies that /library.html is served and contains all required UI elements for Task N3.5."""
+    res = client.get("/library.html")
+    assert res.status_code == 200, f"Expected 200, got {res.status_code}"
+    html = res.text
+
+    # Basic accessibility markers
+    assert '<html lang="ro">' in html
+    assert '<main id="main"' in html
+    assert 'class="skip-link"' in html
+    assert '<h1 class="page-title">Biblioteca ta de lucru</h1>' in html
+
+    # Toolbar and search controls
+    assert 'id="library-search"' in html
+    assert 'id="library-filter-mode"' in html
+    assert 'id="library-count-badge"' in html
+    assert 'id="btn-library-clear-all"' in html
+    assert 'id="confirm-clear-box"' in html
+    assert 'id="btn-confirm-clear"' in html
+    assert 'id="btn-cancel-clear"' in html
+
+    # Cards list and empty state
+    assert 'id="library-items-list"' in html
+    assert 'id="library-empty-state"' in html
+
+    # Detail modal dialog
+    assert 'id="library-detail-modal"' in html
+    assert 'id="detail-modal-title"' in html
+    assert 'id="btn-close-detail"' in html
+    assert 'id="btn-detail-copy"' in html
+    assert 'id="btn-detail-tts"' in html
+    assert 'id="btn-detail-ics"' in html
+    assert 'id="btn-detail-delete"' in html
+    assert 'id="detail-content-body"' in html
+    assert 'id="detail-source-viewer"' in html
+
+    # Undo toast
+    assert 'id="library-undo-toast"' in html
+    assert 'id="undo-toast-message"' in html
+    assert 'id="btn-undo-delete"' in html
+
+    # Screen reader live region
+    assert 'id="status-live"' in html
+
+    # Module script imports
+    assert 'src="/js/shell.js"' in html
+    assert 'src="/js/library.js"' in html
+
+
+def test_smoke_home_save_library_button(client: TestClient) -> None:
+    """Verifies that /index.html contains #btn-home-save-library in results section and library nav link."""
+    res = client.get("/index.html")
+    assert res.status_code == 200
+    html = res.text
+    assert 'id="btn-home-save-library"' in html
+    assert 'href="/library.html"' in html
+
+
+def test_smoke_library_filter_mode_options(client: TestClient) -> None:
+    """Verifies that #library-filter-mode in /library.html defines all 4 required mode options."""
+    res = client.get("/library.html")
+    assert res.status_code == 200
+    html = res.text
+    for val in ["all", "simplify", "plan", "meeting"]:
+        assert f'value="{val}"' in html, f"Missing mode option {val} in #library-filter-mode"
+
+
 
 

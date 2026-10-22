@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <title>PrimaZi — Biblioteca ta de lucru</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Inline <head> loader script reading wp.prefs.v1 to eliminate FOUC -->
+  <script>
+    (function() {
+      try {
+        var raw = localStorage.getItem('wp.prefs.v1');
+        if (raw) {
+          var data = JSON.parse(raw);
+          var p = data && data.prefs ? data.prefs : {};
+          var root = document.documentElement;
+          if (p.theme) root.setAttribute('data-theme', p.theme);
+          if (p.textSize) root.setAttribute('data-text', p.textSize);
+          if (p.spacing) root.setAttribute('data-spacing', p.spacing);
+          if (p.contrast) root.setAttribute('data-contrast', p.contrast);
+          if (p.motion) root.setAttribute('data-motion', p.motion);
+          if (p.font) root.setAttribute('data-font', p.font);
+          if (p.density) root.setAttribute('data-density', p.density);
+          if (p.sidebar) root.setAttribute('data-sidebar', p.sidebar);
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="/shared/a11y.css">
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/shell.css">
+</head>
+<body>
+  <!-- Skip link for keyboard navigation -->
+  <a href="#main" class="skip-link">Sari la conținutul principal</a>
+
+  <div class="app-container">
+    <!-- Mobile Backdrop -->
+    <div id="sidebar-backdrop" class="sidebar-backdrop" tabindex="-1" aria-hidden="true"></div>
+
+    <!-- Collapsible Sidebar -->
+    <aside id="app-sidebar" class="app-sidebar" aria-label="Bara laterală de navigare">
+      <div class="sidebar-header">
+        <a href="/" class="sidebar-brand" aria-label="PrimaZi Acasă">
+          <span class="brand-badge" aria-hidden="true">PZ</span>
+          <span class="sidebar-brand-text">PrimaZi</span>
+        </a>
+      </div>
+
+      <div class="sidebar-content">
+        <a href="/employee/clarify.html" class="btn-new" aria-label="Pornește o clarificare nouă">
+          <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <span class="btn-new-text">Conversație nouă</span>
+        </a>
+
+        <!-- Main Navigation Landmark with all required links -->
+        <nav aria-label="Navigare principală">
+          <ul class="sidebar-nav">
+            <li>
+              <a href="/" class="nav-link">
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                <span class="nav-text">Acasă</span>
+              </a>
+            </li>
+            <li>
+              <a href="/library.html" class="nav-link" aria-current="page">
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                <span class="nav-text">Bibliotecă</span>
+              </a>
+            </li>
+            <li>
+              <a href="/employee/clarify.html" class="nav-link">
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                <span class="nav-text">Clarificare</span>
+              </a>
+            </li>
+            <li>
+              <a href="/employee/plan.html" class="nav-link">
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <span class="nav-text">Planificator</span>
+              </a>
+            </li>
+            <li>
+              <a href="/employee/meeting.html" class="nav-link">
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                <span class="nav-text">Ședințe</span>
+              </a>
+            </li>
+            <li>
+              <a href="/employee/adjustments.html" class="nav-link">
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <span class="nav-text">Adaptări</span>
+              </a>
+            </li>
+            <li>
+              <a href="/employee/profile.html" class="nav-link">
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <span class="nav-text">Profil &amp; Nevoi</span>
+              </a>
+            </li>
+            <li>
+              <a href="/employer/index.html" class="nav-link">
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                <span class="nav-text">Zona Angajator</span>
+              </a>
+            </li>
+            <li>
+              <a href="/settings.html" class="nav-link">
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <span class="nav-text">Setări Confort</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      <div class="sidebar-footer">
+        <button type="button" id="btn-sidebar-collapse" class="btn-sidebar-toggle" aria-expanded="true" aria-label="Restrânge bara laterală">
+          <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          <span class="collapse-text">Restrânge meniul</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="app-main-area">
+      <!-- Top Bar -->
+      <header class="app-topbar" role="banner">
+        <div class="topbar-left">
+          <button type="button" id="btn-menu-toggle" class="btn-menu-toggle" aria-expanded="false" aria-controls="app-sidebar" aria-label="Deschide meniul de navigare">
+            <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            <span>Meniu</span>
+          </button>
+          <span class="topbar-title">Bibliotecă</span>
+        </div>
+        <div class="topbar-right">
+          <a href="/welcome.html" class="btn-comfort" aria-label="Deschide chestionarul de configurare confort">
+            <span>Chestionar confort</span>
+          </a>
+          <a href="/settings.html" class="btn-comfort" aria-label="Deschide setările de confort și personalizare">
+            <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <span>Setări confort</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- Main Landmark (max 720px centered) -->
+      <main id="main" class="app-main-content">
+        <section class="hero-section">
+          <h1 class="page-title">Biblioteca ta de lucru</h1>
+          <p class="page-lead">
+            Toate documentele, planurile de sarcini și sintezele salvate local în browser. 100% confidențial — datele tale nu părăsesc niciodată acest dispozitiv.
+          </p>
+        </section>
+
+        <!-- Private Browsing Warning -->
+        <div id="memory-fallback-notice" class="status-message status-warning" style="display: none;" role="note">
+          Navighezi în mod privat: documentele salvate rămân disponibile doar pe durata acestei sesiuni de navigare.
+        </div>
+
+        <!-- Search & Filter Toolbar -->
+        <section class="library-toolbar-section" aria-label="Instrumente de căutare și filtrare">
+          <div class="library-toolbar">
+            <div class="toolbar-search-group">
+              <label for="library-search" class="sr-only">Caută în documentele salvate</label>
+              <input type="search" id="library-search" class="library-search-input" placeholder="Caută după titlu, conținut sau cuvinte cheie..." aria-label="Caută în documentele salvate">
+            </div>
+
+            <div class="toolbar-filter-group">
+              <label for="library-filter-mode" class="sr-only">Filtrează după tipul documentului</label>
+              <select id="library-filter-mode" class="library-filter-select" aria-label="Filtrează după tipul documentului">
+                <option value="all">Toate tipurile</option>
+                <option value="simplify">Clarificări documente</option>
+                <option value="plan">Planuri de sarcini</option>
+                <option value="meeting">Sinteze ședințe</option>
+              </select>
+            </div>
+
+            <span id="library-count-badge" class="library-count-badge" aria-live="polite">0 documente</span>
+
+            <button type="button" id="btn-library-clear-all" class="btn btn-secondary">Golește biblioteca</button>
+          </div>
+
+          <!-- Inline Clear Confirmation Alertdialog -->
+          <div id="confirm-clear-box" class="confirm-box" role="alertdialog" aria-modal="true" aria-labelledby="confirm-clear-title" style="display: none;">
+            <h2 id="confirm-clear-title" class="confirm-title">Sigur vrei să golești toată biblioteca?</h2>
+            <p class="confirm-desc">
+              Această acțiune va șterge ireversibil toate documentele salvate local. Datele nu sunt stocate pe server și nu pot fi recuperate.
+            </p>
+            <div class="confirm-actions">
+              <button type="button" id="btn-confirm-clear" class="btn btn-danger">Da, golește tot</button>
+              <button type="button" id="btn-cancel-clear" class="btn btn-secondary">Anulează</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Library Items List Container -->
+        <div id="library-items-list" class="library-items-list" role="region" aria-label="Listă documente salvate"></div>
+
+        <!-- Empty State Card -->
+        <div id="library-empty-state" class="library-empty-card" style="display: none;">
+          <svg class="empty-card-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+          <h2 class="empty-card-title">Nu ai documente salvate încă</h2>
+          <p class="empty-card-desc">
+            După ce clarifici un document, extragi un plan de sarcini sau rezumi o ședință pe pagina Acasă, apasă pe «Salvează în bibliotecă» pentru a-l regăsi oricând aici.
+          </p>
+          <a href="/" class="btn btn-primary">Mergi la pagina Acasă</a>
+        </div>
+
+        <!-- Floating Undo Toast (7-second timer) -->
+        <div id="library-undo-toast" class="undo-toast" role="status" style="display: none;">
+          <span id="undo-toast-message">Documentul a fost șters.</span>
+          <button type="button" id="btn-undo-delete" class="btn btn-undo">Anulează ștergerea</button>
+        </div>
+
+        <!-- Detail Modal Dialog -->
+        <div id="library-detail-modal" class="library-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="detail-modal-title" style="display: none;">
+          <div class="library-modal-dialog">
+            <div class="library-modal-header">
+              <h2 id="detail-modal-title" class="modal-title">Detaliu Document</h2>
+              <button type="button" id="btn-close-detail" class="btn-close-modal" aria-label="Închide detaliile documentului">×</button>
+            </div>
+
+            <div id="detail-meta-bar" class="detail-meta-bar"></div>
+
+            <div class="library-modal-actions">
+              <button type="button" id="btn-detail-copy" class="btn btn-secondary">Copiază rezultatul</button>
+              <button type="button" id="btn-detail-tts" class="btn btn-secondary" aria-pressed="false">Ascultă rezumatul</button>
+              <button type="button" id="btn-detail-ics" class="btn btn-secondary" style="display: none;">Descarcă calendar (.ics)</button>
+              <button type="button" id="btn-detail-delete" class="btn btn-danger">Șterge documentul</button>
+            </div>
+
+            <div class="library-modal-body">
+              <div id="detail-content-body" class="detail-body"></div>
+
+              <section class="source-viewer-section" aria-labelledby="detail-source-heading">
+                <h3 id="detail-source-heading" class="source-heading">Text original cu evidențiere citate</h3>
+                <p class="source-desc">Apasă pe butonul «Arată în text» de la oricare pas sau sarcină pentru a verifica citatul exact în textul original.</p>
+                <div id="detail-source-viewer" class="source-viewer" tabindex="0" role="region" aria-label="Text original cu evidențiere citate"></div>
+              </section>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen reader live announcement region -->
+        <div id="status-live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+      </main>
+
+      <!-- Footer -->
+      <footer class="app-footer" role="contentinfo">
+        <p>
+          PrimaZi — AccessABILITY Hackathon 2026. Conform standardelor WCAG 2.2 AA. Fără conturi, fără stocare pe server.
+        </p>
+      </footer>
+    </div>
+  </div>
+
+  <script type="module" src="/js/shell.js"></script>
+  <script type="module" src="/js/library.js"></script>
+</body>
+</html>
+

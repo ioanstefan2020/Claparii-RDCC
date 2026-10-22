@@ -16,6 +16,7 @@
 import { simplifyDocument, extractPlan, summarizeMeeting } from "/shared/api.js";
 import { speakText, stopSpeaking, isSynthesisSupported } from "/shared/speech.js";
 import { generateIcs, downloadIcsFile } from "/shared/ics.js";
+import { saveLibraryItem } from "/js/library-storage.js";
 
 // Embedded sample texts for instant, offline-safe execution
 export const SAMPLES = {
@@ -82,6 +83,7 @@ Ioana: În ceea ce privește atelierul de onboarding de luna viitoare, încă nu
 // State variables
 let currentMode = "simplify";
 let currentOriginalText = "";
+let currentResultData = null;
 let currentPlanTasks = [];
 let currentSummaryForTTS = "";
 let isSpeaking = false;
@@ -570,6 +572,16 @@ export async function executeCurrentTask() {
       return;
     }
 
+    currentResultData = res.data;
+
+    // Reset save to library button state
+    const saveBtn = document.getElementById("btn-home-save-library");
+    if (saveBtn) {
+      saveBtn.textContent = "Salvează în bibliotecă";
+      saveBtn.classList.remove("btn-success");
+      saveBtn.disabled = false;
+    }
+
     // Display AI notice and warnings
     const noticeEl = document.getElementById("home-ai-notice");
     if (noticeEl && res.meta && res.meta.ai_notice_ro) {
@@ -703,6 +715,52 @@ export function downloadPlanIcs() {
 }
 
 /**
+ * Saves the current result and source text into browser-only storage (wp.library.v1).
+ */
+export function saveCurrentResultToLibrary() {
+  if (!currentResultData) {
+    showError("Nu există un rezultat disponibil pentru salvare.");
+    return;
+  }
+
+  // Derive title from text or summary
+  let title = "";
+  if (currentOriginalText) {
+    const firstLine = currentOriginalText.split("\n")[0].trim();
+    if (firstLine.length > 5) {
+      title = firstLine.slice(0, 80);
+    }
+  }
+  if (!title && currentResultData.summary) {
+    title = currentResultData.summary.slice(0, 80);
+  }
+  if (!title) {
+    title = currentMode === "simplify" ? "Clarificare document" : currentMode === "plan" ? "Plan de sarcini" : "Sinteză ședință";
+  }
+
+  const itemToSave = {
+    mode: currentMode,
+    title: title,
+    createdAt: new Date().toISOString(),
+    sourceText: currentOriginalText,
+    resultData: currentResultData,
+    tags: [currentMode]
+  };
+
+  try {
+    saveLibraryItem(itemToSave);
+    const saveBtn = document.getElementById("btn-home-save-library");
+    if (saveBtn) {
+      saveBtn.textContent = "Salvat în bibliotecă! ✓";
+      saveBtn.classList.add("btn-success");
+    }
+    announceToLiveRegion("Documentul a fost salvat în biblioteca locală.");
+  } catch {
+    showError("Nu s-a putut salva documentul în bibliotecă.");
+  }
+}
+
+/**
  * Initializes the Home page interactions.
  */
 export function initHomePage() {
@@ -754,11 +812,13 @@ export function initHomePage() {
   }
 
   // Action buttons
+  const saveLibraryBtn = document.getElementById("btn-home-save-library");
   const copyBtn = document.getElementById("btn-home-copy");
   const ttsBtn = document.getElementById("btn-home-tts");
   const icsBtn = document.getElementById("btn-home-ics");
   const retryBtn = document.getElementById("btn-home-retry");
 
+  if (saveLibraryBtn) saveLibraryBtn.addEventListener("click", saveCurrentResultToLibrary);
   if (copyBtn) copyBtn.addEventListener("click", copyResultToClipboard);
   if (ttsBtn) ttsBtn.addEventListener("click", toggleTTS);
   if (icsBtn) icsBtn.addEventListener("click", downloadPlanIcs);
