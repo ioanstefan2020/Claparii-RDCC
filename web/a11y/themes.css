@@ -1,0 +1,222 @@
+/**
+ * PrimaZi — Measured High-Contrast Themes (Wave 2)
+ * Meets WCAG 2.2 AAA (>= 7:1 for normal text, >= 4.5:1 for controls, >= 3:1 for focus).
+ * All color pairs measured and verified.
+ * Ref: docs/DESIGN.md §2, docs/SETTINGS-SPEC.md §1
+ */
+
+/* 1. Theme: Soft (Default Warm Institutional Cream & Deep Charcoal) */
+:root,
+html[data-theme="soft"] {
+  --bg-app: #f9f9f7;
+  --bg-surface: #ffffff;
+  --bg-surface-alt: #f0efe9;
+  --bg-surface-hover: #e6e5dd;
+
+  --text-main: #1e2022;
+  --text-muted: #4a4f55;
+  --text-inverse: #ffffff;
+
+  --primary: #1e40af;
+  --primary-hover: #172554;
+  --primary-contrast: #ffffff;
+
+  --border-color: #6b7075;
+  --border-subtle: #d8d6ce;
+  --border-strong: #1e2022;
+
+  --focus-ring: #005fb8;
+  --focus-ring-offset: 2px;
+
+  --success-bg: #ecfdf5;
+  --success-text: #065f46;
+  --success-border: #059669;
+
+  --warning-bg: #fffbeb;
+  --warning-text: #7a4b00;
+  --warning-border: #b45309;
+
+  --error-bg: #fef2f2;
+  --error-text: #9b1c1c;
+  --error-border: #dc2626;
+}
+
+/* 2. Theme: Amber (Warm, Low Glare, Photophobia & Eye Strain Relief) */
+html[data-theme="amber"] {
+  --bg-app: #fdf6e3;
+  --bg-surface: #fffbef;
+  --bg-surface-alt: #f4ecdc;
+  --bg-surface-hover: #ebe1ce;
+
+  --text-main: #433422;
+  --text-muted: #5c4a32;
+  --text-inverse: #ffffff;
+
+  --primary: #8a3b00;
+  --primary-hover: #672d00;
+  --primary-contrast: #ffffff;
+
+  --border-color: #7a6a55;
+  --border-subtle: #d9cfba;
+  --border-strong: #433422;
+
+  --focus-ring: #005fb8;
+  --focus-ring-offset: 2px;
+
+  --success-bg: #eaf6ea;
+  --success-text: #235623;
+  --success-border: #2e7d32;
+
+  --warning-bg: #fef8e7;
+  --warning-text: #704800;
+  --warning-border: #996500;
+
+  --error-bg: #fbeae8;
+  --error-text: #8b1f16;
+  --error-border: #b71c1c;
+}
+
+/* 3. Theme: Sapphire (Calm Deep Navy & Indigo) */
+html[data-theme="sapphire"] {
+  --bg-app: #0b132b;
+  --bg-surface: #131c3d;
+  --bg-surface-alt: #1c2752;
+  --bg-surface-hover: #26346b;
+
+  --text-main: #e0e7ff;
+  --text-muted: #b4c0e8;
+  --text-inverse: #0b132b;
+
+  --primary: #93b4ff;
+  --primary-hover: #b9cfff;
+  --primary-contrast: #0b132b;
+
+  --border-color: #6f7db0;
+  --border-subtle: #2b396b;
+  --border-strong: #93b4ff;
+
+  --focus-ring: #ffd166;
+  --focus-ring-offset: 2px;
+
+  --success-bg: #064e3b;
+  --success-text: #a7f3d0;
+  --success-border: #34d399;
+
+  --warning-bg: #451a03;
+  --warning-text: #fde68a;
+  --warning-border: #f59e0b;
+
+  --error-bg: #450a0a;
+  --error-text: #fecaca;
+  --error-border: #f87171;
+}
+
+/* 4. Theme: High-Contrast Dark (#121212 with Pure White & AAA Yellow) */
+html[data-theme="hc-dark"] {
+  --bg-app: #121212;
+  --bg-surface: #1b1b1b;
+  --bg-surface-alt: #282828;
+  --bg-surface-hover: #363636;
+
+  --text-main: #ffffff;
+  --text-muted: #ffe600;
+  --text-inverse: #000000;
+
+  --primary: #ffe600;
+  --primary-hover: #ffff4d;
+  --primary-contrast: #000000;
+
+  --border-color: #ffffff;
+  --border-subtle: #ffffff;
+  --border-strong: #ffe600;
+
+  --focus-ring: #ffe600;
+  --focus-ring-offset: 3px;
+
+  --success-bg: #000000;
+  --success-text: #00ff66;
+  --success-border: #00ff66;
+
+  --warning-bg: #000000;
+  --warning-text: #ffff00;
+  --warning-border: #ffff00;
+
+  --error-bg: #000000;
+  --error-text: #ff6666;
+  --error-border: #ff6666;
+}
+
+/* 5. Theme: High-Contrast Light (Pure White with Deep Black & Royal Blue) */
+html[data-theme="hc-light"] {
+  --bg-app: #ffffff;
+  --bg-surface: #ffffff;
+  --bg-surface-alt: #f0f0f0;
+  --bg-surface-hover: #e0e0e0;
+
+  --text-main: #000000;
+  --text-muted: #1a1a1a;
+  --text-inverse: #ffffff;
+
+  --primary: #0000cc;
+  --primary-hover: #000099;
+  --primary-contrast: #ffffff;
+
+  --border-color: #000000;
+  --border-subtle: #000000;
+  --border-strong: #000000;
+
+  --focus-ring: #0000cc;
+  --focus-ring-offset: 3px;
+
+  --success-bg: #ffffff;
+  --success-text: #006600;
+  --success-border: #000000;
+
+  --warning-bg: #ffffff;
+  --warning-text: #804000;
+  --warning-border: #000000;
+
+  --error-bg: #ffffff;
+  --error-text: #990000;
+  --error-border: #000000;
+}
+
+/* 6. Theme: Mono (Grayscale Mode) */
+html[data-theme="mono"] {
+  filter: grayscale(1);
+}
+
+/* 7. Theme: Night (Warm Dark, Reduced Blue Light) */
+html[data-theme="night"] {
+  --bg-app: #1a1410;
+  --bg-surface: #241c17;
+  --bg-surface-alt: #302620;
+  --bg-surface-hover: #3d3029;
+
+  --text-main: #f2e6d5;
+  --text-muted: #d1bea8;
+  --text-inverse: #1a1410;
+
+  --primary: #e89250;
+  --primary-hover: #f0a266;
+  --primary-contrast: #1a1410;
+
+  --border-color: #8a6b53;
+  --border-subtle: #4a3a2e;
+  --border-strong: #e89250;
+
+  --focus-ring: #e89250;
+  --focus-ring-offset: 2px;
+
+  --success-bg: #1c2b18;
+  --success-text: #c0e0b5;
+  --success-border: #6aa85d;
+
+  --warning-bg: #3d2610;
+  --warning-text: #f5d096;
+  --warning-border: #d48c3b;
+
+  --error-bg: #381412;
+  --error-text: #f0b2af;
+  --error-border: #c44e47;
+}

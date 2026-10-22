@@ -137,3 +137,145 @@ async def test_plan_calendar_link_all_day_event():
         ics = data["ics_content"]
         assert "DTSTART;VALUE=DATE:20261030" in ics
         assert "END:VCALENDAR" in ics
+
+
+@pytest.mark.anyio
+async def test_recommend_adaptations_wave2_schema(monkeypatch):
+    """Verifies settings, reasons, adaptations presence and types per docs/CONTRACTS-WAVE2.md."""
+    monkeypatch.setenv("LLM_PROVIDER", "mock")
+
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as client:
+        resp = await client.post(
+            "/api/profile/recommend-adaptations",
+            json={"needs_notes": "Am nevoie de ecran cald și instrucțiuni scrise clar."},
+        )
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["ok"] is True
+        data = body["data"]
+
+        # Wave 2 fields
+        assert "settings" in data
+        assert isinstance(data["settings"], dict)
+        assert "theme" in data["settings"]
+        assert "font_scale" in data["settings"]
+        assert "format" in data["settings"]
+
+        assert "reasons" in data
+        assert isinstance(data["reasons"], list)
+        assert len(data["reasons"]) > 0
+        for item in data["reasons"]:
+            assert "key" in item
+            assert "reason_ro" in item
+
+        assert "adaptations" in data
+        assert isinstance(data["adaptations"], list)
+        assert len(data["adaptations"]) > 0
+        assert all(isinstance(a, str) for a in data["adaptations"])
+
+        # Backwards-compatible fields
+        assert "ui_prefs" in data
+        assert "recommended_adjustments" in data
+        assert "summary_ro" in data
+        assert "disclaimer_ro" in data
+
+
+@pytest.mark.anyio
+async def test_recommend_adaptations_acceptance_scenario(monkeypatch):
+    """Acceptance test: 'obosesc la lumină tare și uit instrucțiunile verbale' ->
+    warm theme/dim, steps format, written-instructions adaptation, with reasons.
+    """
+    monkeypatch.setenv("LLM_PROVIDER", "mock")
+
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as client:
+        resp = await client.post(
+            "/api/profile/recommend-adaptations",
+            json={"needs_notes": "obosesc la lumină tare și uit instrucțiunile verbale"},
+        )
+        assert resp.status_code == 200
+        data = resp.json()["data"]
+
+        # Warm theme / dim
+        assert data["settings"]["theme"] in ("amber", "soft")
+        assert data["settings"]["dim_overlay"] > 0
+
+        # Steps format
+        assert data["settings"]["format"] == "steps"
+
+        # Written instructions adaptation
+        assert "written_instructions" in data["adaptations"]
+
+        # Reasons present
+        reasons_keys = [r["key"] for r in data["reasons"]]
+        assert "theme" in reasons_keys or "dim_overlay" in reasons_keys
+        assert "format" in reasons_keys
+
+
+@pytest.mark.anyio
+async def test_recommend_adaptations_chips_input(monkeypatch):
+    """Verifies request with chips=['text_mare', 'pasi_scurti'] without user_words."""
+    monkeypatch.setenv("LLM_PROVIDER", "mock")
+
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as client:
+        resp = await client.post(
+            "/api/profile/recommend-adaptations",
+            json={"chips": ["text_mare", "pasi_scurti"]},
+        )
+        assert resp.status_code == 200
+        data = resp.json()["data"]
+
+        # Scale >= 125 and steps format
+        assert data["settings"]["font_scale"] >= 125 or data["settings"]["scale"] >= 125
+        assert data["settings"]["format"] == "steps"
+        assert "written_instructions" in data["adaptations"]
+
+
+@pytest.mark.anyio
+async def test_recommend_adaptations_scrubs_diagnosis_input(monkeypatch):
+    """Tests clinical diagnosis words are scrubbed and never echoed."""
+    monkeypatch.setenv("LLM_PROVIDER", "mock")
+
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as client:
+        resp = await client.post(
+            "/api/profile/recommend-adaptations",
+            json={
+                "needs_notes": "Am fost diagnosticat cu autism, adhd, sindrom asperger și depresie clinică."
+            },
+        )
+        assert resp.status_code == 200
+        data = resp.json()["data"]
+
+        forbidden = ["autism", "adhd", "asperger", "depresie", "diagnosticat", "sindrom"]
+        summary_low = data["summary_ro"].lower()
+        for word in forbidden:
+            assert word not in summary_low
+        for r in data["reasons"]:
+            for word in forbidden:
+                assert word not in r["reason_ro"].lower()
+
+
+@pytest.mark.anyio
+async def test_recommend_adaptations_garbage_input_safe_defaults(monkeypatch):
+    """Garbage input returns safe defaults, never HTTP 422."""
+    monkeypatch.setenv("LLM_PROVIDER", "mock")
+
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as client:
+        resp = await client.post(
+            "/api/profile/recommend-adaptations",
+            json={"needs_notes": "asdf1234!@#$ ??? ... ---"},
+        )
+        assert resp.status_code == 200
+        data = resp.json()["data"]
+        assert "settings" in data
+        assert data["settings"]["version"] == 2
+        assert data["settings"]["theme"] in ("soft", "amber", "sapphire", "hc-dark", "hc-light", "mono", "night")

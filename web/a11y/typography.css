@@ -1,0 +1,120 @@
+/**
+ * PrimaZi — Typography, Spacing, and Ergonomics System (Wave 2)
+ * Scales rem, line height, letter/word/paragraph spacing, measure, cursor, and focus.
+ * Ref: docs/DESIGN.md §3, docs/SETTINGS-SPEC.md §1
+ */
+
+/* Font Family Selection */
+html,
+html[data-font="atkinson"] {
+  font-family: 'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+html[data-font="system"] {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+html[data-font="dyslexia"] {
+  font-family: 'OpenDyslexic', system-ui, sans-serif;
+}
+
+html[data-font="serif-readable"] {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+/* Scaling Root Variables */
+:root {
+  --font-scale: 100%;
+  --lh: 1.6;
+  --ls: 0.02em;
+  --ws: 0.05em;
+  --ps: 1.0em;
+  --measure: 68ch;
+  --fw: 400;
+  --sat: 100%;
+  --dim: 0%;
+  --focus-w: 3px;
+  --target: 48px;
+  --gap: 12px;
+}
+
+body {
+  font-size: calc(1rem * (var(--font-scale) / 100));
+  line-height: var(--lh);
+  letter-spacing: var(--ls);
+  word-spacing: var(--ws);
+  font-weight: var(--fw);
+  filter: saturate(var(--sat));
+}
+
+p, li, dd {
+  max-width: var(--measure);
+  margin-bottom: var(--ps);
+}
+
+/* Photophobia Soft Dimming Layer */
+html::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-color: #000000;
+  opacity: calc(var(--dim) / 100);
+  pointer-events: none;
+  z-index: 99999;
+}
+
+/* Focus Indicator Styling */
+:focus-visible {
+  outline: var(--focus-w) solid var(--focus-ring) !important;
+  outline-offset: var(--focus-ring-offset, 2px) !important;
+}
+
+/* Cursor Sizing */
+html[data-cursor="large"] * {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="black" stroke="white" stroke-width="1.5"><polygon points="0,0 0,20 6,15 11,24 15,22 10,13 18,13"/></svg>'), auto !important;
+}
+
+html[data-cursor="xlarge"] * {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="black" stroke="white" stroke-width="1.5"><polygon points="0,0 0,20 6,15 11,24 15,22 10,13 18,13"/></svg>'), auto !important;
+}
+
+/* Reduced Motion Override */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+html[data-motion="on"] *,
+html[data-motion="on"] *::before,
+html[data-motion="on"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Flat Transparency */
+html[data-flat="true"] * {
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+/* Target Sizes & Gaps */
+button,
+input,
+select,
+textarea,
+.btn,
+.nav-link {
+  min-height: var(--target);
+}
+
+.btn-group,
+.nav-list,
+.actions-row {
+  gap: var(--gap);
+}

@@ -1,0 +1,345 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PrimaZiSettingsV2",
+  "description": "JSON schema for PrimaZi unified accessibility and cognitive comfort settings (primazi.settings.v2).",
+  "type": "object",
+  "required": ["version"],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 2,
+      "default": 2
+    },
+    "theme": {
+      "type": "string",
+      "enum": ["soft", "amber", "sapphire", "hc-dark", "hc-light", "mono", "night"],
+      "default": "soft"
+    },
+    "font_family": {
+      "type": "string",
+      "enum": ["atkinson", "system", "dyslexia", "serif-readable"],
+      "default": "atkinson"
+    },
+    "font_scale": {
+      "type": "integer",
+      "minimum": 70,
+      "maximum": 200,
+      "default": 100
+    },
+    "line_height": {
+      "type": "number",
+      "minimum": 1.2,
+      "maximum": 2.4,
+      "default": 1.6
+    },
+    "letter_spacing": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 0.2,
+      "default": 0.02
+    },
+    "word_spacing": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 0.5,
+      "default": 0.05
+    },
+    "paragraph_spacing": {
+      "type": "number",
+      "minimum": 0.5,
+      "maximum": 3.0,
+      "default": 1.0
+    },
+    "measure": {
+      "type": "integer",
+      "minimum": 40,
+      "maximum": 100,
+      "default": 68
+    },
+    "font_weight": {
+      "type": "integer",
+      "enum": [400, 500, 600, 700],
+      "default": 400
+    },
+    "link_style": {
+      "type": "string",
+      "default": "underline-always"
+    },
+    "saturation": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 100
+    },
+    "color_vision": {
+      "type": "string",
+      "enum": ["none", "protan", "deutan", "tritan"],
+      "default": "none"
+    },
+    "focus_ring": {
+      "type": "string",
+      "enum": ["normal", "large", "xlarge"],
+      "default": "normal"
+    },
+    "cursor_size": {
+      "type": "string",
+      "enum": ["normal", "large", "xlarge"],
+      "default": "normal"
+    },
+    "dim_overlay": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 60,
+      "default": 0
+    },
+    "reduce_motion": {
+      "type": "string",
+      "enum": ["auto", "on"],
+      "default": "auto"
+    },
+    "reduce_transparency": {
+      "type": "boolean",
+      "default": false
+    },
+    "focus_level": {
+      "type": "integer",
+      "enum": [0, 1, 2, 3],
+      "default": 0
+    },
+    "density": {
+      "type": "string",
+      "enum": ["compact", "comfortable", "spacious"],
+      "default": "comfortable"
+    },
+    "layout": {
+      "type": "string",
+      "enum": ["overview", "guided", "card"],
+      "default": "overview"
+    },
+    "sidebar": {
+      "type": "string",
+      "enum": ["expanded", "collapsed", "auto-hide"],
+      "default": "expanded"
+    },
+    "summary_first": {
+      "type": "boolean",
+      "default": true
+    },
+    "chunk_size": {
+      "type": "string",
+      "enum": ["3", "5", "7", "all"],
+      "default": "all"
+    },
+    "progressive_disclosure": {
+      "type": "boolean",
+      "default": false
+    },
+    "glossary_inline": {
+      "type": "string",
+      "enum": ["off", "hover/tap", "always"],
+      "default": "hover/tap"
+    },
+    "reading_ruler": {
+      "type": "string",
+      "enum": ["off", "line", "band"],
+      "default": "off"
+    },
+    "ruler_height": {
+      "type": "integer",
+      "minimum": 16,
+      "maximum": 120,
+      "default": 32
+    },
+    "ruler_color": {
+      "type": "string",
+      "default": "rgba(255, 235, 59, 0.25)"
+    },
+    "focus_paragraph": {
+      "type": "boolean",
+      "default": false
+    },
+    "bionic": {
+      "type": "boolean",
+      "default": false
+    },
+    "reading_level": {
+      "type": "string",
+      "enum": ["standard", "simple", "very_simple"],
+      "default": "simple"
+    },
+    "format": {
+      "type": "string",
+      "enum": ["steps", "short_paragraphs", "bullets"],
+      "default": "steps"
+    },
+    "tone_notes": {
+      "type": "string",
+      "enum": ["off", "on"],
+      "default": "off"
+    },
+    "break_reminders": {
+      "type": "string",
+      "enum": ["off", "25", "45"],
+      "default": "off"
+    },
+    "confirm_actions": {
+      "type": "boolean",
+      "default": true
+    },
+    "calm_mode": {
+      "type": "boolean",
+      "default": false
+    },
+    "tts_engine": {
+      "type": "string",
+      "enum": ["auto", "browser", "server"],
+      "default": "auto"
+    },
+    "tts_voice": {
+      "type": "string",
+      "default": "auto"
+    },
+    "tts_rate": {
+      "type": "number",
+      "minimum": 0.5,
+      "maximum": 2.0,
+      "default": 0.95
+    },
+    "tts_pitch": {
+      "type": "number",
+      "minimum": 0.8,
+      "maximum": 1.2,
+      "default": 1.0
+    },
+    "tts_volume": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "default": 1.0
+    },
+    "tts_pause_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1500,
+      "default": 350
+    },
+    "tts_follow": {
+      "type": "string",
+      "enum": ["none", "sentence", "word"],
+      "default": "sentence"
+    },
+    "tts_autoread": {
+      "type": "string",
+      "enum": ["off", "result", "page"],
+      "default": "off"
+    },
+    "tts_spoken_numbers": {
+      "type": "boolean",
+      "default": true
+    },
+    "captions_default": {
+      "type": "boolean",
+      "default": true
+    },
+    "transcript_always": {
+      "type": "boolean",
+      "default": true
+    },
+    "visual_alerts": {
+      "type": "boolean",
+      "default": true
+    },
+    "vibration_alerts": {
+      "type": "boolean",
+      "default": false
+    },
+    "sound_effects": {
+      "type": "string",
+      "enum": ["off", "on"],
+      "default": "off"
+    },
+    "highlight_mode": {
+      "type": "string",
+      "enum": ["off", "light", "medium", "strong"],
+      "default": "light"
+    },
+    "highlight_categories": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["action", "deadline", "person", "number", "warning", "term"]
+      },
+      "default": ["action", "deadline", "warning"]
+    },
+    "highlight_style": {
+      "type": "string",
+      "enum": ["combo", "background", "underline", "bold", "larger"],
+      "default": "combo"
+    },
+    "highlight_scale": {
+      "type": "integer",
+      "minimum": 100,
+      "maximum": 140,
+      "default": 110
+    },
+    "highlight_palette": {
+      "type": "string",
+      "enum": ["yellow", "multi", "mono"],
+      "default": "multi"
+    },
+    "target_size": {
+      "type": "integer",
+      "enum": [44, 48, 56, 64],
+      "default": 48
+    },
+    "target_gap": {
+      "type": "integer",
+      "enum": [8, 12, 16, 24],
+      "default": 12
+    },
+    "keyboard_shortcuts": {
+      "type": "boolean",
+      "default": true
+    },
+    "single_key_shortcuts": {
+      "type": "boolean",
+      "default": false
+    },
+    "voice_commands": {
+      "type": "boolean",
+      "default": false
+    },
+    "tooltips_on_focus_click": {
+      "type": "boolean",
+      "default": true
+    },
+    "no_drag": {
+      "type": "boolean",
+      "default": true
+    },
+    "sr_mode": {
+      "type": "boolean",
+      "default": false
+    },
+    "announce_level": {
+      "type": "string",
+      "enum": ["minimal", "polite", "assertive"],
+      "default": "polite"
+    },
+    "describe_images": {
+      "type": "string",
+      "enum": ["auto", "ask", "off"],
+      "default": "ask"
+    },
+    "magnify_focus": {
+      "type": "boolean",
+      "default": false
+    },
+    "ui_language": {
+      "type": "string",
+      "enum": ["ro", "en"],
+      "default": "ro"
+    }
+  },
+  "additionalProperties": false
+}

@@ -6,28 +6,50 @@ from pydantic import BaseModel, Field, model_validator
 
 
 class ProfileNeedsRequest(BaseModel):
+    model_config = {"extra": "ignore"}
+
+    needs_notes: str | None = Field(
+        None,
+        description="Descrierea nevoilor de lucru în cuvintele proprii ale utilizatorului (Wave 2)",
+    )
+    chips: list[str] | None = Field(
+        default=None,
+        description="Selecție opțională de etichete rapide de preferințe sau nevoi",
+    )
     user_words: str | None = Field(
         None,
-        description="Descrierea nevoilor de lucru în cuvintele proprii ale utilizatorului",
-        max_length=4000,
+        description="Alias compatibil pentru needs_notes",
     )
     freeform_needs: str | None = Field(
         None,
-        description="Alias compatibil pentru user_words",
-        max_length=4000,
+        description="Alias compatibil pentru needs_notes",
     )
     workplace_role: str | None = None
     current_prefs: dict[str, Any] | None = None
 
     @model_validator(mode="after")
     def validate_content(self) -> ProfileNeedsRequest:
-        text = (self.user_words or self.freeform_needs or "").strip()
-        if not self.user_words and self.freeform_needs:
-            self.user_words = self.freeform_needs
+        text = (self.needs_notes or self.user_words or self.freeform_needs or "").strip()
+        if not text and self.chips:
+            # If no text is provided, format prompt from chips so it succeeds
+            text = ", ".join(str(c).strip() for c in self.chips if str(c).strip())
+
+        self.needs_notes = text or None
+        self.user_words = text or None
+        self.freeform_needs = text or None
         return self
 
 
+class SettingReasonItem(BaseModel):
+    model_config = {"extra": "ignore"}
+
+    key: str = Field(..., description="Cheia setării din primazi.settings.v2")
+    reason_ro: str = Field(..., description="Explicația prietenoasă în limba română")
+
+
 class RecommendedAdjustmentItem(BaseModel):
+    model_config = {"extra": "ignore"}
+
     id: str
     title: str
     description: str
@@ -43,6 +65,8 @@ class RecommendedAdjustmentItem(BaseModel):
 
 
 class RecommendedUIPrefs(BaseModel):
+    model_config = {"extra": "ignore"}
+
     textSize: str = "standard"  # standard | large | extra-large | m | l | xl | xxl
     font: str = (
         "system"  # system | opendyslexic | atkinson | lexend | readable | default
@@ -58,10 +82,26 @@ class RecommendedUIPrefs(BaseModel):
 
 
 class ProfileNeedsRecommendation(BaseModel):
+    model_config = {"extra": "ignore"}
+
+    settings: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Dicționar de setări conforme cu docs/settings.schema.json",
+    )
+    reasons: list[SettingReasonItem] = Field(
+        default_factory=list,
+        description="Motivele recomandării pentru fiecare setare configurată",
+    )
+    adaptations: list[str] = Field(
+        default_factory=list,
+        description="Listă cu ID-urile adaptărilor funcționale recomandate la locul de muncă",
+    )
     summary_ro: str
     explanation_ro: str | None = None
-    ui_prefs: RecommendedUIPrefs
-    recommended_adjustments: list[RecommendedAdjustmentItem]
+    ui_prefs: RecommendedUIPrefs = Field(default_factory=RecommendedUIPrefs)
+    recommended_adjustments: list[RecommendedAdjustmentItem] = Field(
+        default_factory=list
+    )
     workplace_adjustments: list[RecommendedAdjustmentItem] | None = None
     disclaimer_ro: str = (
         "Informativ: PrimaZi nu stochează pe server nevoile tale și nu formulează "
@@ -78,4 +118,6 @@ class ProfileNeedsRecommendation(BaseModel):
             self.explanation_ro = self.summary_ro
         if not self.workplace_adjustments:
             self.workplace_adjustments = self.recommended_adjustments
+        if not self.adaptations and self.recommended_adjustments:
+            self.adaptations = [adj.id for adj in self.recommended_adjustments]
         return self

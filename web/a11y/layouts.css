@@ -1,0 +1,235 @@
+/**
+ * PrimaZi — A11y Layouts, Highlights & Reading Assistant Styles (Wave 2)
+ * Highlighting categories with multi-modal cues (never color alone),
+ * reading ruler, focused step guided layout, and TTS sentence follow-along.
+ * Ref: docs/DESIGN.md §4, docs/SETTINGS-SPEC.md §3, §5
+ */
+
+/* 1. Category Highlights (Multi-modal non-color cues) */
+.a11y-highlight {
+  border-radius: 4px;
+  padding: 0.1em 0.25em;
+  font-weight: 500;
+  text-decoration-skip-ink: none;
+}
+
+/* Action: Bold + Solid Underline */
+.a11y-cat-action {
+  background-color: transparent;
+  color: inherit;
+  font-weight: 700;
+  text-decoration: underline 2.5px solid var(--primary, #1e40af);
+}
+
+/* Deadline: Warm Yellow Highlight + Clock Badge */
+.a11y-cat-deadline {
+  background-color: #fff0a0;
+  color: #1e2022;
+  font-weight: 600;
+}
+html[data-theme="sapphire"] .a11y-cat-deadline,
+html[data-theme="hc-dark"] .a11y-cat-deadline,
+html[data-theme="night"] .a11y-cat-deadline {
+  background-color: #5c4b00;
+  color: #ffffff;
+}
+
+/* Warning: Red Tint / Marker + Bold */
+.a11y-cat-warning {
+  background-color: #ffd9b3;
+  color: #1e2022;
+  font-weight: 700;
+  border-left: 3px solid #b45309;
+}
+html[data-theme="sapphire"] .a11y-cat-warning,
+html[data-theme="hc-dark"] .a11y-cat-warning,
+html[data-theme="night"] .a11y-cat-warning {
+  background-color: #451a03;
+  color: #fde68a;
+  border-left: 3px solid #f59e0b;
+}
+
+/* Person: Dotted Underline */
+.a11y-cat-person {
+  background-color: transparent;
+  color: inherit;
+  text-decoration: underline 2px dotted var(--text-muted, #4a4f55);
+}
+
+/* Number: Tabular Figures + Bold */
+.a11y-cat-number {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+/* Term: Dashed Underline */
+.a11y-cat-term {
+  text-decoration: underline 1.5px dashed var(--primary, #1e40af);
+}
+
+/* 2. Tentative Tone Notes (Inline in Parentheses, Muted) */
+.a11y-tone-note {
+  font-size: 0.88em;
+  color: var(--text-muted, #4a4f55);
+  font-style: italic;
+  margin-left: 0.25em;
+  opacity: 0.9;
+}
+
+/* 3. Inline Glossary Terms & Tooltips */
+.a11y-glossary-term {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+  text-decoration: underline 1.5px dotted var(--primary, #1e40af);
+  border-radius: 2px;
+}
+
+.a11y-glossary-term:focus-visible {
+  outline: 2px solid var(--focus-ring, #005fb8);
+}
+
+.a11y-glossary-tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 200px;
+  max-width: 320px;
+  padding: 0.5rem 0.75rem;
+  background-color: var(--bg-surface, #ffffff);
+  color: var(--text-main, #1e2022);
+  border: 1.5px solid var(--border-color, #6b7075);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.a11y-glossary-term:hover .a11y-glossary-tooltip,
+.a11y-glossary-term:focus .a11y-glossary-tooltip {
+  display: block;
+}
+
+/* 4. Reading Ruler / Visual Guide */
+.a11y-reading-ruler {
+  position: fixed;
+  left: 0;
+  width: 100vw;
+  pointer-events: none;
+  z-index: 99990;
+  transition: top 50ms ease-out;
+}
+
+/* 5. TTS Sentence Reading Highlight */
+.tts-reading-sentence {
+  background-color: rgba(30, 64, 175, 0.12) !important;
+  border-radius: 4px;
+  outline: 2px solid var(--primary, #1e40af);
+}
+html[data-theme="sapphire"] .tts-reading-sentence,
+html[data-theme="hc-dark"] .tts-reading-sentence {
+  background-color: rgba(255, 230, 0, 0.18) !important;
+  outline: 2px solid var(--focus-ring, #ffe600);
+}
+
+/* 6. Guided and Card Focus Layouts */
+.a11y-guided-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.a11y-progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.a11y-step-counter {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+.a11y-progress-bar {
+  flex: 1;
+  height: 8px;
+  border-radius: 4px;
+  appearance: none;
+  border: none;
+  background-color: var(--bg-surface-alt, #e6e5dd);
+}
+
+.a11y-progress-bar::-webkit-progress-bar {
+  background-color: var(--bg-surface-alt, #e6e5dd);
+  border-radius: 4px;
+}
+
+.a11y-progress-bar::-webkit-progress-value {
+  background-color: var(--primary, #1e40af);
+  border-radius: 4px;
+}
+
+.a11y-focused-step {
+  padding: 1.5rem;
+  border-width: 2px;
+  border-color: var(--primary, #1e40af);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.a11y-nav-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.a11y-card-fullscreen-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.a11y-max-card {
+  width: 100%;
+  padding: 2.5rem;
+  text-align: center;
+}
+
+.a11y-max-badge {
+  display: inline-block;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 0.25rem 0.75rem;
+  background-color: var(--bg-surface-alt);
+  border-radius: 999px;
+  margin-bottom: 1rem;
+}
+
+.a11y-max-text {
+  font-size: 1.4rem;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+.a11y-max-controls {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.btn-large {
+  padding: 0.75rem 1.75rem;
+  font-size: 1.15rem;
+}
