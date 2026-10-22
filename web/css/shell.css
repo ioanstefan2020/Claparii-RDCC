@@ -3275,6 +3275,16 @@ mark.quote-highlight {
   .results-actions .btn {
     width: 100%;
   }
+
+  .audio-actions-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .audio-actions-row .btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 /* -------------------------------------------------- */
@@ -3363,6 +3373,12 @@ mark.quote-highlight {
 }
 
 /* Tactile Audio Dropzone */
+.audio-upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
 .audio-dropzone {
   display: flex;
   flex-direction: column;
@@ -3503,9 +3519,20 @@ mark.quote-highlight {
 /* Action Rows & Buttons */
 .audio-actions-row {
   display: flex;
-  gap: var(--space-sm);
+  gap: var(--space-md);
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
+  margin-top: var(--space-xs);
+}
+
+.audio-actions-row .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: var(--space-sm) var(--space-lg);
+  font-size: 0.95rem;
 }
 
 .btn-lg {
