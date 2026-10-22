@@ -4,238 +4,230 @@
   <meta charset="utf-8">
   <title>PrimaZi — Asistent Accesibil pentru Primul Loc de Muncă</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Inline <head> loader script reading wp.prefs.v1 to eliminate FOUC -->
+  <script>
+    (function() {
+      try {
+        var raw = localStorage.getItem('wp.prefs.v1');
+        if (raw) {
+          var data = JSON.parse(raw);
+          var p = data && data.prefs ? data.prefs : {};
+          var root = document.documentElement;
+          if (p.theme) root.setAttribute('data-theme', p.theme);
+          if (p.textSize) root.setAttribute('data-text', p.textSize);
+          if (p.spacing) root.setAttribute('data-spacing', p.spacing);
+          if (p.contrast) root.setAttribute('data-contrast', p.contrast);
+          if (p.motion) root.setAttribute('data-motion', p.motion);
+          if (p.font) root.setAttribute('data-font', p.font);
+          if (p.density) root.setAttribute('data-density', p.density);
+          if (p.sidebar) root.setAttribute('data-sidebar', p.sidebar);
+        }
+      } catch (e) {}
+    })();
+  </script>
   <link rel="stylesheet" href="/shared/a11y.css">
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/shell.css">
 </head>
 <body>
   <!-- Skip link for keyboard navigation -->
   <a href="#main" class="skip-link">Sari la conținutul principal</a>
 
-  <!-- Header & Navigation -->
-  <header role="banner">
-    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-      <div>
-        <span style="font-size: 1.5rem; font-weight: 800; color: var(--primary);">PrimaZi</span>
-        <span class="meta-secondary" style="margin-left: 0.5rem; color: var(--text-muted); font-size: 0.95rem;">
-          — AI pentru un start incluziv la muncă
-        </span>
+  <div class="app-container">
+    <!-- Mobile Backdrop -->
+    <div id="sidebar-backdrop" class="sidebar-backdrop" tabindex="-1" aria-hidden="true"></div>
+
+    <!-- Collapsible Sidebar -->
+    <aside id="app-sidebar" class="app-sidebar" aria-label="Bara laterală de navigare">
+      <div class="sidebar-header">
+        <a href="/" class="sidebar-brand" aria-label="PrimaZi Acasă">
+          <span class="brand-badge" aria-hidden="true">PZ</span>
+          <span class="sidebar-brand-text">PrimaZi</span>
+        </a>
       </div>
-      <nav aria-label="Navigare principală">
-        <ul style="list-style: none; display: flex; gap: 1rem; margin: 0; padding: 0; flex-wrap: wrap;">
-          <li><a href="#main" aria-current="page">Acasă</a></li>
-          <li><a href="/employee/profile.html">Profil &amp; Nevoi</a></li>
-          <li><a href="/employee/clarify.html">Clarificare</a></li>
-          <li><a href="/employee/plan.html">Planificator</a></li>
-          <li><a href="/employee/meeting.html">Ședințe</a></li>
-          <li><a href="/employee/adjustments.html">Adaptări</a></li>
-          <li><a href="/employer/index.html">Zona Angajator</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
 
-  <!-- Main Content -->
-  <main id="main">
-    <!-- Live region for accessibility announcements -->
-    <div id="status-live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+      <div class="sidebar-content">
+        <a href="/employee/clarify.html" class="btn-new" aria-label="Pornește o clarificare nouă">
+          <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <span class="btn-new-text">Conversație nouă</span>
+        </a>
 
-    <!-- Accessibility Preferences Toolbar -->
-    <section class="a11y-toolbar" aria-labelledby="a11y-toolbar-heading">
-      <fieldset style="border: none; margin: 0; padding: 0; width: 100%;">
-        <legend id="a11y-toolbar-heading">Setări de accesibilitate și confort vizual</legend>
-        <div style="display: flex; flex-wrap: wrap; gap: 1.25rem; align-items: center; margin-top: 0.5rem;">
-          <div class="control-group">
-            <label for="theme-select">Temă:</label>
-            <select id="theme-select">
-              <option value="light">Luminoasă</option>
-              <option value="dark">Întunecată</option>
-              <option value="high-contrast">Contrast ridicat</option>
-            </select>
-          </div>
+        <!-- Main Navigation Landmark with all required links -->
+        <nav aria-label="Navigare principală">
+          <ul class="sidebar-nav">
+            <li>
+              <a href="/" class="nav-link" aria-current="page">
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                <span class="nav-text">Acasă</span>
+              </a>
+            </li>
+            <li>
+              <a href="/employee/clarify.html" class="nav-link">
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                <span class="nav-text">Clarificare</span>
+              </a>
+            </li>
+            <li>
+              <a href="/employee/plan.html" class="nav-link">
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <span class="nav-text">Planificator</span>
+              </a>
+            </li>
+            <li>
+              <a href="/employee/meeting.html" class="nav-link">
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                <span class="nav-text">Ședințe</span>
+              </a>
+            </li>
+            <li>
+              <a href="/employee/adjustments.html" class="nav-link">
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <span class="nav-text">Adaptări</span>
+              </a>
+            </li>
+            <li>
+              <a href="/employee/profile.html" class="nav-link">
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <span class="nav-text">Profil &amp; Nevoi</span>
+              </a>
+            </li>
+            <li>
+              <a href="/employer/index.html" class="nav-link">
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                <span class="nav-text">Zona Angajator</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
 
-          <div class="control-group">
-            <label for="text-size-select">Dimensiune text:</label>
-            <select id="text-size-select">
-              <option value="normal">Standard</option>
-              <option value="large">Mare</option>
-              <option value="xlarge">Foarte mare</option>
-            </select>
-          </div>
+      <div class="sidebar-footer">
+        <button type="button" id="btn-sidebar-collapse" class="btn-sidebar-toggle" aria-expanded="true" aria-label="Restrânge bara laterală">
+          <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          <span class="collapse-text">Restrânge meniul</span>
+        </button>
+      </div>
+    </aside>
 
-          <div class="control-group">
-            <label for="spacing-toggle">
-              <input type="checkbox" id="spacing-toggle" style="width: auto; min-height: auto; margin-right: 0.35rem;">
-              Spațiere mărită
-            </label>
-          </div>
-
-          <div class="control-group">
-            <label for="simple-mode-toggle">
-              <input type="checkbox" id="simple-mode-toggle" style="width: auto; min-height: auto; margin-right: 0.35rem;">
-              Mod simplificat
-            </label>
-          </div>
-
-          <div class="control-group">
-            <label for="line-focus-toggle">
-              <input type="checkbox" id="line-focus-toggle" style="width: auto; min-height: auto; margin-right: 0.35rem;">
-              Ghidaj citire (linie)
-            </label>
-          </div>
-
-          <div class="control-group" style="margin-left: auto;">
-            <button type="button" id="btn-delete-data" class="btn btn-secondary" style="font-size: 0.9rem; padding: 0.4rem 0.8rem;">
-              Șterge datele mele
-            </button>
-          </div>
+    <!-- Main Content Area -->
+    <div class="app-main-area">
+      <!-- Top Bar -->
+      <header class="app-topbar" role="banner">
+        <div class="topbar-left">
+          <button type="button" id="btn-menu-toggle" class="btn-menu-toggle" aria-expanded="false" aria-controls="app-sidebar" aria-label="Deschide meniul de navigare">
+            <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            <span>Meniu</span>
+          </button>
+          <span class="topbar-title">Acasă</span>
         </div>
-      </fieldset>
-    </section>
+        <div class="topbar-right">
+          <a href="/employee/profile.html" class="btn-comfort" aria-label="Deschide setările de confort și accesibilitate">
+            <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <span>Setări confort</span>
+          </a>
+        </div>
+      </header>
 
-    <!-- Page Title & Introduction -->
-    <header style="border-bottom: none; background: transparent; padding: 0;">
-      <h1>Bine ai venit la PrimaZi</h1>
-      <p style="font-size: 1.15rem; max-width: 750px; color: var(--text-muted);">
-        Asistentul tău confidențial pentru un început sigur la locul de muncă. Înțelege clar sarcinile, organizează-ți termenele și solicită adaptările necesare fără a divulga vreun diagnostic medical.
-      </p>
-    </header>
+      <!-- Main Landmark (max 720px centered) -->
+      <main id="main">
+        <!-- Live region for accessibility announcements -->
+        <div id="status-live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
-    <!-- Responsible AI & Privacy Notice -->
-    <div class="status-message status-info" role="note">
-      <strong>Confidențialitate garantată:</strong> Preferințele și nevoile tale sunt salvate exclusiv pe acest dispozitiv (local în browser). Nu solicităm, nu stocăm și nu inferăm diagnostice de sănătate.
+        <!-- Hero Section with exactly one <h1> -->
+        <section class="hero-section" aria-labelledby="hero-title">
+          <h1 id="hero-title" class="hero-title">PrimaZi — Start incluziv la muncă</h1>
+          <p class="hero-lead">
+            Asistentul tău confidențial pentru primul loc de muncă. Înțelege documentele complexe, organizează-ți termenele și solicită adaptările necesare în ritmul tău.
+          </p>
+        </section>
+
+        <!-- Privacy & Responsible AI Notice -->
+        <div class="privacy-banner" role="note">
+          <strong>Confidențialitate garantată:</strong> Preferințele și nevoile tale sunt salvate exclusiv pe acest dispozitiv (local în browser). Nu solicităm, nu stocăm și nu inferăm date medicale sau diagnostice.
+        </div>
+
+        <!-- Airy Feature Cards Grid -->
+        <section aria-labelledby="features-title">
+          <h2 id="features-title" class="sr-only">Opțiuni de lucru disponibile</h2>
+
+          <div class="card-grid">
+            <!-- Primary Action Card: Clarify -->
+            <article class="feature-card primary-card">
+              <div>
+                <h3 class="card-title">Clarifică un document sau o sarcină</h3>
+                <p class="card-desc">
+                  Transformă proceduri stufoase sau mesaje neclare în pași simpli și prioritizați, fără limbaj de lemn.
+                </p>
+              </div>
+              <div class="card-action">
+                <a href="/employee/clarify.html" class="card-btn">Deschide Clarificarea</a>
+              </div>
+            </article>
+
+            <!-- Card: Planificator -->
+            <article class="feature-card">
+              <div>
+                <h3 class="card-title">Planificator &amp; Termene</h3>
+                <p class="card-desc">
+                  Extrage automat termenele și sarcinile dintr-un email sau document și descarcă-le în fișier calendar .ics.
+                </p>
+              </div>
+              <div class="card-action">
+                <a href="/employee/plan.html" class="card-btn">Deschide Planificatorul</a>
+              </div>
+            </article>
+
+            <!-- Card: Ședințe -->
+            <article class="feature-card">
+              <div>
+                <h3 class="card-title">Asistent Ședințe</h3>
+                <p class="card-desc">
+                  Extrage sinteza, deciziile cheie și lista de acțiuni dintr-o transcriere sau minute de ședință.
+                </p>
+              </div>
+              <div class="card-action">
+                <a href="/employee/meeting.html" class="card-btn">Sinteză Ședințe</a>
+              </div>
+            </article>
+
+            <!-- Card: Adaptări -->
+            <article class="feature-card">
+              <div>
+                <h3 class="card-title">Adaptări Rezonabile</h3>
+                <p class="card-desc">
+                  Explorează catalogul de acomodări și redactează o cerere profesională către manager, fără date medicale.
+                </p>
+              </div>
+              <div class="card-action">
+                <a href="/employee/adjustments.html" class="card-btn">Explorează Adaptări</a>
+              </div>
+            </article>
+
+            <!-- Card: Zona Angajator -->
+            <article class="feature-card">
+              <div>
+                <h3 class="card-title">Portalul Angajatorului</h3>
+                <p class="card-desc">
+                  Verifică scorul de lizibilitate al documentelor de onboarding și generează versiuni ușor de citit.
+                </p>
+              </div>
+              <div class="card-action">
+                <a href="/employer/index.html" class="card-btn">Zona Angajator</a>
+              </div>
+            </article>
+          </div>
+        </section>
+      </main>
+
+      <!-- Footer -->
+      <footer class="app-footer" role="contentinfo">
+        <p>
+          PrimaZi — AccessABILITY Hackathon 2026. Conform standardelor WCAG 2.2 AA. Fără conturi, fără stocare pe server.
+        </p>
+      </footer>
     </div>
+  </div>
 
-    <!-- Hub Navigation Entries -->
-    <section aria-labelledby="hub-sections-heading">
-      <h2 id="hub-sections-heading" class="sr-only">Secțiunile principale ale aplicației</h2>
-
-      <div class="card-grid">
-        <!-- Employee Entry Card -->
-        <article class="card">
-          <h2>Portalul Angajatului</h2>
-          <p>
-            Instrumente create pentru autonomia ta: clarifică sarcini complexe, extrage termenele în calendarul tău și compune cereri pentru adaptări la locul de muncă.
-          </p>
-          <ul style="margin-bottom: 1.5rem; padding-left: 1.25rem;">
-            <li><strong>Clarifică documente:</strong> Pași clari și explicații fără jargon.</li>
-            <li><strong>Planificator &amp; .ics:</strong> Termene sigure descărcabile în calendar.</li>
-            <li><strong>Asistent ședințe:</strong> Sinteză și decizii din transcrieri.</li>
-            <li><strong>Adaptări rezonabile:</strong> Cereri redactate fără date medicale.</li>
-          </ul>
-          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-            <a href="/employee/clarify.html" class="btn">Clarificare</a>
-            <a href="/employee/plan.html" class="btn btn-secondary">Planificator</a>
-            <a href="/employee/meeting.html" class="btn btn-secondary">Ședințe</a>
-            <a href="/employee/adjustments.html" class="btn btn-secondary">Adaptări</a>
-            <a href="/employee/profile.html" class="btn btn-secondary">Profil &amp; Nevoi</a>
-          </div>
-        </article>
-
-        <!-- Employer Entry Card -->
-        <article class="card">
-          <h2>Portalul Angajatorului / HR</h2>
-          <p>
-            Ghiduri și verificări automate pentru a transforma materialele de onboarding și anunțurile de angajare în conținut accesibil și incluziv.
-          </p>
-          <ul style="margin-bottom: 1.5rem; padding-left: 1.25rem;">
-            <li><strong>Verificare accesibilitate:</strong> Scor lizibilitate și fraze dense semnalate.</li>
-            <li><strong>Versiune ușor de citit:</strong> Rescriere adaptată pentru claritate.</li>
-            <li><strong>Listă de adaptări:</strong> Bune practici practice de integrare în echipă.</li>
-          </ul>
-          <div>
-            <a href="/employer/index.html" class="btn btn-secondary">Accesează Portalul HR</a>
-          </div>
-        </article>
-      </div>
-    </section>
-  </main>
-
-  <!-- Footer -->
-  <footer role="contentinfo">
-    <p>
-      PrimaZi — Proiect dezvoltat pentru <strong>AccessABILITY Hackathon 2026</strong>.
-      Conform standardelor WCAG 2.2 AA. Fără conturi, fără stocare pe server, 100% confidențial.
-    </p>
-  </footer>
-
-  <!-- Wiring Script -->
-  <script type="module">
-    import { getA11yPrefs, saveA11yPrefs, applyA11yPrefs, deleteAllUserData } from "/shared/profile.js";
-
-    // Initialize accessibility preferences on load
-    const prefs = getA11yPrefs();
-    applyA11yPrefs(prefs);
-
-    const themeSelect = document.getElementById("theme-select");
-    const textSizeSelect = document.getElementById("text-size-select");
-    const spacingToggle = document.getElementById("spacing-toggle");
-    const simpleModeToggle = document.getElementById("simple-mode-toggle");
-    const lineFocusToggle = document.getElementById("line-focus-toggle");
-    const btnDelete = document.getElementById("btn-delete-data");
-    const liveRegion = document.getElementById("status-live");
-
-    function announce(message) {
-      if (liveRegion) {
-        liveRegion.textContent = "";
-        setTimeout(() => { liveRegion.textContent = message; }, 50);
-      }
-    }
-
-    if (themeSelect) {
-      themeSelect.value = prefs.theme || "light";
-      themeSelect.addEventListener("change", (e) => {
-        saveA11yPrefs({ theme: e.target.value });
-        announce(`Tema a fost schimbată la ${e.target.options[e.target.selectedIndex].text}.`);
-      });
-    }
-
-    if (textSizeSelect) {
-      textSizeSelect.value = prefs.textSize || "normal";
-      textSizeSelect.addEventListener("change", (e) => {
-        saveA11yPrefs({ textSize: e.target.value });
-        announce(`Mărimea textului a fost setată la ${e.target.options[e.target.selectedIndex].text}.`);
-      });
-    }
-
-    if (spacingToggle) {
-      spacingToggle.checked = prefs.spacing === "wide";
-      spacingToggle.addEventListener("change", (e) => {
-        const spacing = e.target.checked ? "wide" : "normal";
-        saveA11yPrefs({ spacing });
-        announce(e.target.checked ? "Spațiere mărită activată." : "Spațiere standard restabilită.");
-      });
-    }
-
-    if (simpleModeToggle) {
-      simpleModeToggle.checked = Boolean(prefs.simpleMode);
-      simpleModeToggle.addEventListener("change", (e) => {
-        saveA11yPrefs({ simpleMode: e.target.checked });
-        announce(e.target.checked ? "Modul simplificat a fost activat." : "Modul complet a fost restabilit.");
-      });
-    }
-
-    if (lineFocusToggle) {
-      lineFocusToggle.checked = Boolean(prefs.lineFocus);
-      lineFocusToggle.addEventListener("change", (e) => {
-        saveA11yPrefs({ lineFocus: e.target.checked });
-        announce(e.target.checked ? "Ghidajul vizual de citire a fost activat." : "Ghidajul vizual de citire a fost dezactivat.");
-      });
-    }
-
-    if (btnDelete) {
-      btnDelete.addEventListener("click", () => {
-        const confirmed = window.confirm("Ești sigur că vrei să ștergi toate datele și preferințele locale de pe acest dispozitiv?");
-        if (confirmed) {
-          deleteAllUserData();
-          if (themeSelect) themeSelect.value = "light";
-          if (textSizeSelect) textSizeSelect.value = "normal";
-          if (spacingToggle) spacingToggle.checked = false;
-          if (simpleModeToggle) simpleModeToggle.checked = false;
-          if (lineFocusToggle) lineFocusToggle.checked = false;
-          announce("Toate datele locale au fost șterse cu succes.");
-          alert("Datele tale locale au fost șterse definitiv.");
-        }
-      });
-    }
-  </script>
+  <script type="module" src="/js/shell.js"></script>
 </body>
 </html>

@@ -1,0 +1,67 @@
+{
+  "app_name": "PrimaZi",
+  "app_tagline": "Asistent accesibil pentru primul tău loc de muncă",
+  "nav": {
+    "skip_link": "Sari la conținutul principal",
+    "home": "Acasă",
+    "employee_portal": "Portal Angajat",
+    "employer_portal": "Portal Angajator",
+    "profile": "Profil și Nevoi",
+    "clarify": "Clarifică Document",
+    "planner": "Planificator & Calendar",
+    "meeting": "Asistent Ședință",
+    "adjustments": "Solicită Adaptări"
+  },
+  "a11y_toolbar": {
+    "legend": "Setări de accesibilitate",
+    "theme_label": "Temă vizuală",
+    "theme_light": "Luminoasă",
+    "theme_dark": "Întunecată",
+    "theme_contrast": "Contrast ridicat",
+    "font_size_label": "Mărime text",
+    "font_size_normal": "Standard",
+    "font_size_large": "Mare",
+    "font_size_xlarge": "Foarte mare",
+    "spacing_label": "Spațiere mărită",
+    "simple_mode_label": "Mod simplificat (fără distrageri)"
+  },
+  "hub": {
+    "welcome_title": "Bine ai venit la PrimaZi",
+    "welcome_desc": "Te ajutăm să înțelegi clar sarcinile, să planifici termenele și să ceri adaptările necesare la noul loc de muncă, în siguranță și confidențialitate.",
+    "employee_card_title": "Zona Angajatului",
+    "employee_card_desc": "Simplifică documente, extrage pași clari, adaugă termenele în calendarul tău și generează cereri de adaptare fără divulgarea diagnosticului.",
+    "employee_card_btn": "Intră în Portalul Angajatului",
+    "employer_card_title": "Zona Angajatorului / HR",
+    "employer_card_desc": "Verifică accesibilitatea materialelor de onboarding, obține versiuni ușor de citit și explorează bune practici de incluziune.",
+    "employer_card_btn": "Intră în Portalul Angajatorului"
+  },
+  "profile": {
+    "title": "Profilul tău de lucru",
+    "privacy_banner": "Confidențialitate: Datele tale rămân doar în browserul tău. Nu colectăm și nu stocăm diagnostice medicale.",
+    "reading_level_label": "Nivel de detaliu și claritate",
+    "reading_level_standard": "Standard",
+    "reading_level_simple": "Simplu (recomandat)",
+    "reading_level_very_simple": "Foarte simplu (limbaj direct)",
+    "format_label": "Format preferat pentru sarcini",
+    "format_steps": "Pași numerotați",
+    "format_paragraphs": "Paragrafe scurte",
+    "needs_notes_label": "Nevoile tale exprimate în propriile cuvinte (fără diagnostic)",
+    "needs_notes_placeholder": "Exemplu: Mă ajută instrucțiunile primite în scris și defalcate pe pași mici...",
+    "btn_save": "Salvează preferințele",
+    "btn_clear": "Șterge toate datele mele de pe acest dispozitiv",
+    "saved_success": "Preferințele au fost salvate pe dispozitivul tău.",
+    "cleared_success": "Toate datele locale au fost șterse definitiv."
+  },
+  "common": {
+    "loading": "Se procesează, te rugăm să aștepți...",
+    "ai_badge": "Asistat de AI — verifică datele importante",
+    "copy": "Copiază în clipboard",
+    "copied": "Copiat cu succes!",
+    "download_ics": "Descarcă în Calendar (.ics)",
+    "speak": "Ascultă textul",
+    "stop_speaking": "Oprește citirea",
+    "source_quote_prefix": "Extras din textul original:",
+    "error_empty": "Te rugăm să introduci un text înainte de a continua.",
+    "error_generic": "A apărut o problemă. Te rugăm să încerci din nou."
+  }
+}

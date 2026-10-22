@@ -1,0 +1,104 @@
+{
+  "ok": true,
+  "data": {
+    "disclaimer_ro": "Informativ, nu reprezintă consultanță juridică.",
+    "items": [
+      {
+        "id": "written_instructions",
+        "title": "Instrucțiuni scrise, pas cu pas",
+        "description": "Sarcinile îți sunt date și în scris, în pași scurți și ordonați.",
+        "applies_to": ["cognitive", "hearing"],
+        "example_request": "Aș avea nevoie să primesc sarcinile și în format scris, pas cu pas.",
+        "source": "bună practică generală"
+      },
+      {
+        "id": "extra_time",
+        "title": "Timp suplimentar pentru sarcini noi",
+        "description": "Timp de adaptare extins la învățarea noilor proceduri de lucru.",
+        "applies_to": ["cognitive", "visual"],
+        "example_request": "Aș avea nevoie de puțin timp suplimentar pentru a asimila noile sarcini.",
+        "source": "bună practică generală"
+      },
+      {
+        "id": "quiet_space",
+        "title": "Spațiu de lucru liniștit",
+        "description": "Birou retras sau permisiunea de a folosi căști antifonice pentru reducerea zgomotului ambiental.",
+        "applies_to": ["cognitive"],
+        "example_request": "Aș dori să lucrez dintr-o zonă cu zgomot redus sau să pot folosi căști antifonice.",
+        "source": "bună practică generală"
+      },
+      {
+        "id": "flexible_schedule",
+        "title": "Program de lucru flexibil",
+        "description": "Posibilitatea de a ajusta intervalul orar de sosire și plecare sau de a lua pauze scurte.",
+        "applies_to": ["any"],
+        "example_request": "Aș dori să convenim un interval de lucru flexibil sau pauze scurte regulate.",
+        "source": "bună practică generală"
+      },
+      {
+        "id": "screen_reader_tools",
+        "title": "Compatibilitate cu cititoare de ecran",
+        "description": "Documente și aplicații interne compatibile cu tehnologii asistive (NVDA, JAWS, VoiceOver).",
+        "applies_to": ["visual"],
+        "example_request": "Aș avea nevoie ca documentele de lucru să fie accesibile prin cititor de ecran.",
+        "source": "bună practică generală"
+      },
+      {
+        "id": "captions_transcripts",
+        "title": "Subtitrări și transcrieri pentru ședințe",
+        "description": "Subtitrare automată activată sau sinteză scrisă a discuțiilor din ședințe.",
+        "applies_to": ["hearing"],
+        "example_request": "Aș avea nevoie de subtitrări activate în apelurile video sau de o sinteză scrisă.",
+        "source": "bună practică generală"
+      },
+      {
+        "id": "plain_language_docs",
+        "title": "Documente în limbaj clar și simplificat",
+        "description": "Ghiduri și regulamente redactate fără jargon tehnic inutil.",
+        "applies_to": ["cognitive"],
+        "example_request": "Aș aprecia dacă materialele de instruire ar fi formulate în limbaj direct și concis.",
+        "source": "bună practică generală"
+      },
+      {
+        "id": "regular_checkins",
+        "title": "Sesiuni scurte și periodice de feedback",
+        "description": "Discuție scurtă săptămânală cu coordonatorul pentru clarificarea priorităților.",
+        "applies_to": ["cognitive", "any"],
+        "example_request": "Aș dori o scurtă discuție săptămânală de 15 minute pentru clarificarea priorităților.",
+        "source": "bună practică generală"
+      },
+      {
+        "id": "task_breakdown",
+        "title": "Descompunerea sarcinilor complexe",
+        "description": "Împărțirea proiectelor mari în livrabile mici cu etape intermediare.",
+        "applies_to": ["cognitive"],
+        "example_request": "M-ar ajuta ca obiectivele mari să fie defalcate în etape mici cu termene clare.",
+        "source": "bună practică generală"
+      },
+      {
+        "id": "advance_agenda",
+        "title": "Agenda ședințelor transmisă în avans",
+        "description": "Trimiterea subiectelor și materialelor cu cel puțin 24 de ore înainte de întâlnire.",
+        "applies_to": ["cognitive", "hearing", "visual"],
+        "example_request": "Aș aprecia primirea agendei și a documentelor de ședință cu 24 de ore în avans.",
+        "source": "bună practică generală"
+      },
+      {
+        "id": "ergonomic_equipment",
+        "title": "Echipament ergonomic de birou",
+        "description": "Scaun ergonomic reglabil, tastatură adaptată sau suport reglabil pentru ecran.",
+        "applies_to": ["motor"],
+        "example_request": "Aș avea nevoie de un suport reglabil pentru ecran și o tastatură ergonomică.",
+        "source": "bună practică generală"
+      },
+      {
+        "id": "remote_option",
+        "title": "Opțiune de telemuncă parțială sau totală",
+        "description": "Posibilitatea de a lucra de acasă în zilele cu activitate concentrată sau tratament.",
+        "applies_to": ["any"],
+        "example_request": "Aș dori să pot lucra de acasă 1-2 zile pe săptămână pentru o concentrare mai bună.",
+        "source": "bună practică generală"
+      }
+    ]
+  }
+}

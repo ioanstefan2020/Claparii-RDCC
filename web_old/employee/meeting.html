@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <title>Asistent Ședințe de Lucru — PrimaZi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/shared/a11y.css">
+  <style>
+    .meeting-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+      margin-top: 1rem;
+    }
+    .action-item-card {
+      background-color: var(--bg-surface-alt);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      margin-bottom: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .action-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .action-who-badge {
+      display: inline-block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-sm);
+      background-color: var(--primary-light, #e0f2fe);
+      color: var(--primary-dark, #0369a1);
+      border: 1px solid var(--border-color);
+    }
+    [data-theme="dark"] .action-who-badge {
+      background-color: #075985;
+      color: #e0f2fe;
+    }
+    [data-theme="high-contrast"] .action-who-badge {
+      background-color: #000000;
+      color: #ffffff;
+      outline: 2px solid #ffffff;
+    }
+    .decision-item {
+      padding: 0.75rem 1rem;
+      border-left: 4px solid var(--primary);
+      background-color: var(--bg-surface-alt);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-bottom: 0.75rem;
+    }
+    .unclear-item {
+      padding: 0.75rem 1rem;
+      border-left: 4px solid #f59e0b;
+      background-color: var(--bg-surface-alt);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-bottom: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Skip link for keyboard navigation -->
+  <a href="#main" class="skip-link">Sari la conținutul principal</a>
+
+  <!-- Header & Navigation Landmark -->
+  <header role="banner">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <a href="/index.html" style="text-decoration: none;">
+          <span style="font-size: 1.5rem; font-weight: 800; color: var(--primary);">PrimaZi</span>
+        </a>
+        <span class="meta-secondary" style="margin-left: 0.5rem; color: var(--text-muted); font-size: 0.95rem;">
+          — Asistent Ședințe
+        </span>
+      </div>
+      <nav aria-label="Navigare principală">
+        <ul style="list-style: none; display: flex; gap: 1rem; margin: 0; padding: 0; flex-wrap: wrap;">
+          <li><a href="/index.html">Acasă</a></li>
+          <li><a href="/employee/profile.html">Profil &amp; Nevoi</a></li>
+          <li><a href="/employee/clarify.html">Clarificare</a></li>
+          <li><a href="/employee/plan.html">Planificator</a></li>
+          <li><a href="/employee/meeting.html" aria-current="page">Ședințe</a></li>
+          <li><a href="/employee/adjustments.html">Adaptări</a></li>
+          <li><a href="/employer/index.html">Zona Angajator</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content Landmark -->
+  <main id="main">
+    <!-- Live region for accessibility announcements -->
+    <div id="status-live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Page Title & Introduction -->
+    <header style="border-bottom: none; background: transparent; padding: 0; margin-bottom: 1.25rem;">
+      <h1>Asistent pentru ședințe de lucru și discuții de echipă</h1>
+      <p style="font-size: 1.15rem; color: var(--text-muted); max-width: 820px; margin-top: 0.5rem;">
+        Introdu sau dictează discuția dintr-o ședință pentru a extrage automat deciziile luate, sarcinile asumate cu responsabili și termene, și punctele rămase neclare. Sarcinile pot fi transferate direct în Planificator cu un singur clic.
+      </p>
+    </header>
+
+    <!-- Error Banner (announced via aria-live & role=alert) -->
+    <div id="error-banner" class="status-message status-error" role="alert" style="display: none;"></div>
+
+    <!-- Meeting Transcript Input Section -->
+    <section aria-labelledby="input-section-heading" class="card">
+      <h2 id="input-section-heading" style="font-size: 1.3rem; border-bottom: none; margin-bottom: 0.5rem;">
+        Transcriere sau notițe din ședință
+      </h2>
+      <p class="meta-secondary" style="font-size: 0.92rem; color: var(--text-muted); margin-bottom: 1rem;">
+        Lipește textul discuției sau folosește butonul de dictare vocală pentru a transcrie vorbirea direct în browser.
+      </p>
+
+      <form id="meeting-form">
+        <div style="margin-bottom: 0.75rem;">
+          <label for="transcript-text">Transcrierea sau notele ședinței:</label>
+          <textarea id="transcript-text" maxlength="12000" rows="9" placeholder="Exemplu: Andrei: Lansăm pagina de produs vineri. Ioana: Eu pregătesc textele finale..." aria-describedby="char-counter speech-support-note"></textarea>
+          <div id="char-counter" class="meta-secondary" style="font-size: 0.85rem; color: var(--text-muted); text-align: right; margin-top: 0.25rem;">
+            0 / 12.000 caractere
+          </div>
+        </div>
+
+        <!-- Speech recognition guidance note -->
+        <div id="speech-support-note" class="meta-secondary" style="font-size: 0.9rem; margin-bottom: 0.75rem; color: var(--text-muted);"></div>
+
+        <div class="meeting-toolbar">
+          <button type="submit" id="btn-submit" class="btn">
+            Sintetizează ședința
+          </button>
+          <button type="button" id="btn-toggle-speech" class="btn btn-secondary" aria-pressed="false">
+            Dictare vocală (Microfon)
+          </button>
+          <button type="button" id="btn-load-sample" class="btn btn-secondary">
+            Încarcă exemplu
+          </button>
+          <button type="button" id="btn-clear-transcript" class="btn btn-secondary" style="margin-left: auto;">
+            Golește
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Results Section -->
+    <section id="results-section" aria-labelledby="results-heading" style="display: none; margin-top: 1.5rem;">
+      <h2 id="results-heading" class="sr-only">Rezultate sinteză ședință</h2>
+
+      <!-- Warnings Container from Guardrails -->
+      <div id="warnings-container" style="display: none; margin-bottom: 1.25rem;"></div>
+
+      <!-- AI Transparency Notice -->
+      <div id="ai-notice" class="status-message status-info" role="note" style="margin-bottom: 1.25rem;">
+        Generat de AI — verifică datele importante.
+      </div>
+
+      <!-- Summary Card with TTS Read-Aloud -->
+      <article id="summary-card" class="card" aria-labelledby="summary-heading" style="margin-bottom: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem;">
+          <h3 id="summary-heading" style="margin: 0; font-size: 1.25rem;">Rezumatul discuției</h3>
+          <button type="button" id="btn-speak-summary" class="btn btn-secondary" style="font-size: 0.9rem; padding: 0.4rem 0.85rem;" aria-pressed="false">
+            Ascultă rezumatul
+          </button>
+        </div>
+        <div id="summary-content" style="font-size: 1.05rem; line-height: 1.6;"></div>
+      </article>
+
+      <!-- Decisions Card -->
+      <article id="decisions-card" class="card" aria-labelledby="decisions-heading" style="margin-bottom: 1.25rem;">
+        <h3 id="decisions-heading" style="margin-bottom: 0.5rem; font-size: 1.25rem;">Decizii luate</h3>
+        <p class="meta-secondary" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+          Hotărâri agreate de echipă în cadrul discuției, ancorate cu citate verbatim din transcriere.
+        </p>
+        <div id="decisions-list"></div>
+      </article>
+
+      <!-- Action Items Card -->
+      <article id="actions-card" class="card" aria-labelledby="actions-heading" style="margin-bottom: 1.25rem;">
+        <h3 id="actions-heading" style="margin-bottom: 0.5rem; font-size: 1.25rem;">Sarcini de lucru și responsabili</h3>
+        <p class="meta-secondary" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+          Acțiunile stabilite, persoana responsabilă și termenele. Poți adăuga orice sarcină direct în Planificator.
+        </p>
+        <div id="actions-list"></div>
+      </article>
+
+      <!-- Unclear Points Card -->
+      <article id="unclear-card" class="card" aria-labelledby="unclear-heading" style="margin-bottom: 1.25rem;">
+        <h3 id="unclear-heading" style="margin-bottom: 0.5rem; font-size: 1.25rem;">Puncte rămase neclare sau de confirmat</h3>
+        <p class="meta-secondary" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+          Aspecte sau întrebări care au rămas fără răspuns definitiv și necesită lămuriri suplimentare.
+        </p>
+        <div id="unclear-list"></div>
+      </article>
+
+      <!-- Next Action / Planner CTA -->
+      <div class="card" style="background-color: var(--bg-surface-alt); border-left: 6px solid var(--primary); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem;">
+        <div>
+          <strong style="font-size: 1.05rem; display: block;">Vrei să-ți organizezi sarcinile din ședință în calendar?</strong>
+          <span style="font-size: 0.9rem; color: var(--text-muted);">
+            Sarcinile adăugate pot fi descărcate în format .ics compatibil cu Google Calendar sau Outlook din Planificator.
+          </span>
+        </div>
+        <a href="/employee/plan.html" class="btn">
+          Deschide Planificatorul &rarr;
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer Landmark -->
+  <footer role="contentinfo">
+    <p>
+      PrimaZi — Asistent accesibil pentru primul loc de muncă (WCAG 2.2 AA). Datele tale rămân 100% confidențiale pe acest dispozitiv.
+    </p>
+  </footer>
+
+  <!-- Wiring Script -->
+  <script type="module">
+    import { initMeetingPage } from "./meeting.js";
+    initMeetingPage();
+  </script>
+</body>
+</html>
+

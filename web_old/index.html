@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <title>PrimaZi — Asistent Accesibil pentru Primul Loc de Muncă</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/shared/a11y.css">
+</head>
+<body>
+  <!-- Skip link for keyboard navigation -->
+  <a href="#main" class="skip-link">Sari la conținutul principal</a>
+
+  <!-- Header & Navigation -->
+  <header role="banner">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <span style="font-size: 1.5rem; font-weight: 800; color: var(--primary);">PrimaZi</span>
+        <span class="meta-secondary" style="margin-left: 0.5rem; color: var(--text-muted); font-size: 0.95rem;">
+          — AI pentru un start incluziv la muncă
+        </span>
+      </div>
+      <nav aria-label="Navigare principală">
+        <ul style="list-style: none; display: flex; gap: 1rem; margin: 0; padding: 0; flex-wrap: wrap;">
+          <li><a href="#main" aria-current="page">Acasă</a></li>
+          <li><a href="/employee/profile.html">Profil &amp; Nevoi</a></li>
+          <li><a href="/employee/clarify.html">Clarificare</a></li>
+          <li><a href="/employee/plan.html">Planificator</a></li>
+          <li><a href="/employee/meeting.html">Ședințe</a></li>
+          <li><a href="/employee/adjustments.html">Adaptări</a></li>
+          <li><a href="/employer/index.html">Zona Angajator</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main id="main">
+    <!-- Live region for accessibility announcements -->
+    <div id="status-live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Accessibility Preferences Toolbar -->
+    <section class="a11y-toolbar" aria-labelledby="a11y-toolbar-heading">
+      <fieldset style="border: none; margin: 0; padding: 0; width: 100%;">
+        <legend id="a11y-toolbar-heading">Setări de accesibilitate și confort vizual</legend>
+        <div style="display: flex; flex-wrap: wrap; gap: 1.25rem; align-items: center; margin-top: 0.5rem;">
+          <div class="control-group">
+            <label for="theme-select">Temă:</label>
+            <select id="theme-select">
+              <option value="light">Luminoasă</option>
+              <option value="dark">Întunecată</option>
+              <option value="high-contrast">Contrast ridicat</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="text-size-select">Dimensiune text:</label>
+            <select id="text-size-select">
+              <option value="normal">Standard</option>
+              <option value="large">Mare</option>
+              <option value="xlarge">Foarte mare</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="spacing-toggle">
+              <input type="checkbox" id="spacing-toggle" style="width: auto; min-height: auto; margin-right: 0.35rem;">
+              Spațiere mărită
+            </label>
+          </div>
+
+          <div class="control-group">
+            <label for="simple-mode-toggle">
+              <input type="checkbox" id="simple-mode-toggle" style="width: auto; min-height: auto; margin-right: 0.35rem;">
+              Mod simplificat
+            </label>
+          </div>
+
+          <div class="control-group">
+            <label for="line-focus-toggle">
+              <input type="checkbox" id="line-focus-toggle" style="width: auto; min-height: auto; margin-right: 0.35rem;">
+              Ghidaj citire (linie)
+            </label>
+          </div>
+
+          <div class="control-group" style="margin-left: auto;">
+            <button type="button" id="btn-delete-data" class="btn btn-secondary" style="font-size: 0.9rem; padding: 0.4rem 0.8rem;">
+              Șterge datele mele
+            </button>
+          </div>
+        </div>
+      </fieldset>
+    </section>
+
+    <!-- Page Title & Introduction -->
+    <header style="border-bottom: none; background: transparent; padding: 0;">
+      <h1>Bine ai venit la PrimaZi</h1>
+      <p style="font-size: 1.15rem; max-width: 750px; color: var(--text-muted);">
+        Asistentul tău confidențial pentru un început sigur la locul de muncă. Înțelege clar sarcinile, organizează-ți termenele și solicită adaptările necesare fără a divulga vreun diagnostic medical.
+      </p>
+    </header>
+
+    <!-- Responsible AI & Privacy Notice -->
+    <div class="status-message status-info" role="note">
+      <strong>Confidențialitate garantată:</strong> Preferințele și nevoile tale sunt salvate exclusiv pe acest dispozitiv (local în browser). Nu solicităm, nu stocăm și nu inferăm diagnostice de sănătate.
+    </div>
+
+    <!-- Hub Navigation Entries -->
+    <section aria-labelledby="hub-sections-heading">
+      <h2 id="hub-sections-heading" class="sr-only">Secțiunile principale ale aplicației</h2>
+
+      <div class="card-grid">
+        <!-- Employee Entry Card -->
+        <article class="card">
+          <h2>Portalul Angajatului</h2>
+          <p>
+            Instrumente create pentru autonomia ta: clarifică sarcini complexe, extrage termenele în calendarul tău și compune cereri pentru adaptări la locul de muncă.
+          </p>
+          <ul style="margin-bottom: 1.5rem; padding-left: 1.25rem;">
+            <li><strong>Clarifică documente:</strong> Pași clari și explicații fără jargon.</li>
+            <li><strong>Planificator &amp; .ics:</strong> Termene sigure descărcabile în calendar.</li>
+            <li><strong>Asistent ședințe:</strong> Sinteză și decizii din transcrieri.</li>
+            <li><strong>Adaptări rezonabile:</strong> Cereri redactate fără date medicale.</li>
+          </ul>
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <a href="/employee/clarify.html" class="btn">Clarificare</a>
+            <a href="/employee/plan.html" class="btn btn-secondary">Planificator</a>
+            <a href="/employee/meeting.html" class="btn btn-secondary">Ședințe</a>
+            <a href="/employee/adjustments.html" class="btn btn-secondary">Adaptări</a>
+            <a href="/employee/profile.html" class="btn btn-secondary">Profil &amp; Nevoi</a>
+          </div>
+        </article>
+
+        <!-- Employer Entry Card -->
+        <article class="card">
+          <h2>Portalul Angajatorului / HR</h2>
+          <p>
+            Ghiduri și verificări automate pentru a transforma materialele de onboarding și anunțurile de angajare în conținut accesibil și incluziv.
+          </p>
+          <ul style="margin-bottom: 1.5rem; padding-left: 1.25rem;">
+            <li><strong>Verificare accesibilitate:</strong> Scor lizibilitate și fraze dense semnalate.</li>
+            <li><strong>Versiune ușor de citit:</strong> Rescriere adaptată pentru claritate.</li>
+            <li><strong>Listă de adaptări:</strong> Bune practici practice de integrare în echipă.</li>
+          </ul>
+          <div>
+            <a href="/employer/index.html" class="btn btn-secondary">Accesează Portalul HR</a>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer role="contentinfo">
+    <p>
+      PrimaZi — Proiect dezvoltat pentru <strong>AccessABILITY Hackathon 2026</strong>.
+      Conform standardelor WCAG 2.2 AA. Fără conturi, fără stocare pe server, 100% confidențial.
+    </p>
+  </footer>
+
+  <!-- Wiring Script -->
+  <script type="module">
+    import { getA11yPrefs, saveA11yPrefs, applyA11yPrefs, deleteAllUserData } from "/shared/profile.js";
+
+    // Initialize accessibility preferences on load
+    const prefs = getA11yPrefs();
+    applyA11yPrefs(prefs);
+
+    const themeSelect = document.getElementById("theme-select");
+    const textSizeSelect = document.getElementById("text-size-select");
+    const spacingToggle = document.getElementById("spacing-toggle");
+    const simpleModeToggle = document.getElementById("simple-mode-toggle");
+    const lineFocusToggle = document.getElementById("line-focus-toggle");
+    const btnDelete = document.getElementById("btn-delete-data");
+    const liveRegion = document.getElementById("status-live");
+
+    function announce(message) {
+      if (liveRegion) {
+        liveRegion.textContent = "";
+        setTimeout(() => { liveRegion.textContent = message; }, 50);
+      }
+    }
+
+    if (themeSelect) {
+      themeSelect.value = prefs.theme || "light";
+      themeSelect.addEventListener("change", (e) => {
+        saveA11yPrefs({ theme: e.target.value });
+        announce(`Tema a fost schimbată la ${e.target.options[e.target.selectedIndex].text}.`);
+      });
+    }
+
+    if (textSizeSelect) {
+      textSizeSelect.value = prefs.textSize || "normal";
+      textSizeSelect.addEventListener("change", (e) => {
+        saveA11yPrefs({ textSize: e.target.value });
+        announce(`Mărimea textului a fost setată la ${e.target.options[e.target.selectedIndex].text}.`);
+      });
+    }
+
+    if (spacingToggle) {
+      spacingToggle.checked = prefs.spacing === "wide";
+      spacingToggle.addEventListener("change", (e) => {
+        const spacing = e.target.checked ? "wide" : "normal";
+        saveA11yPrefs({ spacing });
+        announce(e.target.checked ? "Spațiere mărită activată." : "Spațiere standard restabilită.");
+      });
+    }
+
+    if (simpleModeToggle) {
+      simpleModeToggle.checked = Boolean(prefs.simpleMode);
+      simpleModeToggle.addEventListener("change", (e) => {
+        saveA11yPrefs({ simpleMode: e.target.checked });
+        announce(e.target.checked ? "Modul simplificat a fost activat." : "Modul complet a fost restabilit.");
+      });
+    }
+
+    if (lineFocusToggle) {
+      lineFocusToggle.checked = Boolean(prefs.lineFocus);
+      lineFocusToggle.addEventListener("change", (e) => {
+        saveA11yPrefs({ lineFocus: e.target.checked });
+        announce(e.target.checked ? "Ghidajul vizual de citire a fost activat." : "Ghidajul vizual de citire a fost dezactivat.");
+      });
+    }
+
+    if (btnDelete) {
+      btnDelete.addEventListener("click", () => {
+        const confirmed = window.confirm("Ești sigur că vrei să ștergi toate datele și preferințele locale de pe acest dispozitiv?");
+        if (confirmed) {
+          deleteAllUserData();
+          if (themeSelect) themeSelect.value = "light";
+          if (textSizeSelect) textSizeSelect.value = "normal";
+          if (spacingToggle) spacingToggle.checked = false;
+          if (simpleModeToggle) simpleModeToggle.checked = false;
+          if (lineFocusToggle) lineFocusToggle.checked = false;
+          announce("Toate datele locale au fost șterse cu succes.");
+          alert("Datele tale locale au fost șterse definitiv.");
+        }
+      });
+    }
+  </script>
+</body>
+</html>

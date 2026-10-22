@@ -1,0 +1,31 @@
+{
+  "ok": true,
+  "data": {
+    "summary": "Echipa a hotărât lansarea paginii de produs vineri, 6 noiembrie.",
+    "decisions": [
+      {
+        "text": "Lansăm vineri, 6 noiembrie.",
+        "source_quote": "lansăm vineri, 6 noiembrie"
+      }
+    ],
+    "action_items": [
+      {
+        "who": "Ioana",
+        "task": "Integrează textele finale",
+        "due_iso": null,
+        "due_text": "miercuri",
+        "needs_confirmation": true,
+        "source_quote": "tu integrezi textele miercuri"
+      }
+    ],
+    "unclear_points": [
+      "Nu e clar cine anunță clientul despre termen."
+    ]
+  },
+  "meta": {
+    "provider": "mock",
+    "cached": false,
+    "warnings": [],
+    "ai_notice_ro": "Generat de AI — verifică datele importante."
+  }
+}

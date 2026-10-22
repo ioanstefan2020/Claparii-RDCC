@@ -1,0 +1,232 @@
+/**
+ * tokens.css - Complete Design System Tokens
+ * Project: PrimaZi (AccessABILITY Hackathon 2026)
+ * Owner: p3
+ * Spec: docs/NEXT-STEPS.md (§1, §2)
+ *
+ * Rules:
+ * - All colors, sizes, radii, spacing live as CSS variables here.
+ * - Switches via data-* attributes on <html> (theme, text, spacing, contrast, motion, font, density, sidebar).
+ * - Accessible: WCAG 2.2 AA (contrast >= 4.5:1, touch targets >= 44px, focus ring 3px).
+ */
+
+:root {
+  /* Sizing and Touch Targets */
+  --min-touch-target: 44px;
+  --max-content-width: 720px;
+  --sidebar-width-expanded: 260px;
+  --sidebar-width-collapsed: 64px;
+  --topbar-height: 64px;
+
+  /* Spacing Scale */
+  --space-xxs: 0.25rem;  /* 4px */
+  --space-xs: 0.5rem;    /* 8px */
+  --space-sm: 0.75rem;   /* 12px */
+  --space-md: 1rem;      /* 16px */
+  --space-lg: 1.5rem;    /* 24px */
+  --space-xl: 2rem;      /* 32px */
+  --space-2xl: 3rem;     /* 48px */
+
+  /* Border Radii */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Typography Base */
+  --font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-scale: 1.125rem; /* 18px base */
+  --line-height: 1.6;
+  --letter-spacing: normal;
+  --word-spacing: normal;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Light Theme (Default: Warm Off-White, Inclusive, No Gradients) */
+  --bg-app: #fbfaf8;          /* Warm off-white background */
+  --bg-surface: #ffffff;      /* Pure white card surface */
+  --bg-surface-alt: #f3f1ec;  /* Soft warm neutral surface */
+  --bg-surface-hover: #eae7e0;
+  --text-main: #1c1b1f;       /* Deep warm charcoal (15.5:1 on white) */
+  --text-muted: #49454f;      /* Soft dark charcoal (7.2:1 on white) */
+  --text-inverse: #ffffff;
+
+  --border-color: #e4e1d9;    /* Gentle border */
+  --border-strong: #79747e;   /* Accessible strong border */
+
+  --primary: #1a56db;         /* Warm professional royal blue (5.7:1) */
+  --primary-hover: #1e40af;
+  --primary-contrast: #ffffff;
+  --primary-subtle: #eff6ff;
+
+  --secondary: #475569;
+  --secondary-hover: #334155;
+  --secondary-contrast: #ffffff;
+
+  --success-bg: #ecfdf5;
+  --success-text: #065f46;
+  --success-border: #059669;
+
+  --warning-bg: #fffbeb;
+  --warning-text: #92400e;
+  --warning-border: #d97706;
+
+  --error-bg: #fef2f2;
+  --error-text: #991b1b;
+  --error-border: #dc2626;
+
+  --focus-ring: #0284c7;
+  --focus-ring-offset: 3px;
+  --card-shadow: 0 1px 3px rgba(28, 27, 31, 0.05), 0 1px 2px rgba(28, 27, 31, 0.03);
+  --card-shadow-hover: 0 4px 6px -1px rgba(28, 27, 31, 0.08), 0 2px 4px -2px rgba(28, 27, 31, 0.05);
+
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+}
+
+/* Theme: Dark (Dark grey/navy, never pitch black on white) */
+[data-theme="dark"] {
+  --bg-app: #121824;
+  --bg-surface: #1e293b;
+  --bg-surface-alt: #334155;
+  --bg-surface-hover: #475569;
+  --text-main: #f8fafc;
+  --text-muted: #cbd5e1;
+  --text-inverse: #121824;
+
+  --border-color: #334155;
+  --border-strong: #94a3b8;
+
+  --primary: #60a5fa;
+  --primary-hover: #93c5fd;
+  --primary-contrast: #0f172a;
+  --primary-subtle: #1e3a8a;
+
+  --secondary: #94a3b8;
+  --secondary-hover: #cbd5e1;
+  --secondary-contrast: #0f172a;
+
+  --success-bg: #064e3b;
+  --success-text: #a7f3d0;
+  --success-border: #34d399;
+
+  --warning-bg: #78350f;
+  --warning-text: #fde68a;
+  --warning-border: #f59e0b;
+
+  --error-bg: #7f1d1d;
+  --error-text: #fecaca;
+  --error-border: #f87171;
+
+  --focus-ring: #38bdf8;
+  --card-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* Theme: High Contrast (meets WCAG AAA >= 7:1) */
+[data-theme="high-contrast"],
+[data-contrast="high"] {
+  --bg-app: #000000;
+  --bg-surface: #000000;
+  --bg-surface-alt: #1a1a1a;
+  --bg-surface-hover: #262626;
+  --text-main: #ffffff;
+  --text-muted: #ffff55;
+  --text-inverse: #000000;
+
+  --border-color: #ffffff;
+  --border-strong: #ffffff;
+
+  --primary: #ffff00;
+  --primary-hover: #ffffff;
+  --primary-contrast: #000000;
+  --primary-subtle: #1a1a1a;
+
+  --secondary: #ffffff;
+  --secondary-hover: #ffff00;
+  --secondary-contrast: #000000;
+
+  --success-bg: #000000;
+  --success-text: #00ff66;
+  --success-border: #00ff66;
+
+  --warning-bg: #000000;
+  --warning-text: #ffff00;
+  --warning-border: #ffff00;
+
+  --error-bg: #000000;
+  --error-text: #ff6666;
+  --error-border: #ff6666;
+
+  --focus-ring: #00ffff;
+  --focus-ring-offset: 4px;
+  --card-shadow: none;
+  --card-shadow-hover: none;
+}
+
+/* Text Size Preferences */
+[data-text="m"],
+[data-text-size="normal"] {
+  --font-scale: 1.125rem;
+}
+
+[data-text="l"],
+[data-text-size="large"] {
+  --font-scale: 1.25rem;
+}
+
+[data-text="xl"],
+[data-text-size="xlarge"] {
+  --font-scale: 1.4rem;
+}
+
+/* Spacing Preferences */
+[data-spacing="comfortable"],
+[data-spacing="normal"] {
+  --line-height: 1.6;
+  --letter-spacing: normal;
+  --word-spacing: normal;
+}
+
+[data-spacing="roomy"],
+[data-spacing="wide"] {
+  --line-height: 1.9;
+  --letter-spacing: 0.04em;
+  --word-spacing: 0.08em;
+}
+
+/* Font Family Preference */
+[data-font="readable"] {
+  --font-family: "Atkinson Hyperlegible", "Segoe UI", -apple-system, sans-serif;
+  --letter-spacing: 0.02em;
+}
+
+/* Density Preferences */
+[data-density="focused"] {
+  --space-md: 1.25rem;
+  --space-lg: 2rem;
+  --space-xl: 2.5rem;
+}
+
+/* Motion Preferences */
+[data-motion="reduced"] *,
+[data-motion="reduced"] *::before,
+[data-motion="reduced"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
