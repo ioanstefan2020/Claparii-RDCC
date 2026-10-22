@@ -335,6 +335,10 @@ def test_smoke_static_assets_served(client: TestClient) -> None:
     """Essential non-HTML assets (CSS, JS, fixtures, i18n) are served with HTTP 200."""
     assets = [
         ("/shared/a11y.css", "text/css"),
+        ("/css/tokens.css", "text/css"),
+        ("/css/shell.css", "text/css"),
+        ("/js/shell.js", "javascript"),
+        ("/js/home.js", "javascript"),
         ("/employer/fixture.json", "application/json"),
         ("/i18n/ro.employer.json", "application/json"),
         ("/employer/employer.js", "javascript"),
@@ -345,6 +349,37 @@ def test_smoke_static_assets_served(client: TestClient) -> None:
         assert mime_substr in res.headers.get("content-type", ""), (
             f"Expected {mime_substr} for {url}, got {res.headers.get('content-type')}"
         )
+
+
+def test_smoke_home_screen_interactive_elements(client: TestClient) -> None:
+    """Verifies that the Home screen (/index.html) contains all interactive elements for Task N3.2."""
+    res = client.get("/index.html")
+    assert res.status_code == 200
+    html = res.text
+
+    # Mode tabs & prompt form
+    assert 'id="home-prompt-section"' in html
+    assert 'data-mode="simplify"' in html
+    assert 'data-mode="plan"' in html
+    assert 'data-mode="meeting"' in html
+    assert 'id="home-input-text"' in html
+    assert 'id="btn-home-execute"' in html
+
+    # Sample chips
+    assert 'data-sample="onboarding"' in html
+    assert 'data-sample="email"' in html
+    assert 'data-sample="meeting"' in html
+
+    # Results & source viewer
+    assert 'id="home-results-section"' in html
+    assert 'id="home-source-viewer"' in html
+    assert 'id="btn-home-copy"' in html
+    assert 'id="btn-home-tts"' in html
+    assert 'id="btn-home-ics"' in html
+
+    # Module script imports
+    assert 'src="/js/shell.js"' in html
+    assert 'src="/js/home.js"' in html
 
 
 def test_smoke_adjustments_draft_unknown_id_400(client: TestClient) -> None:

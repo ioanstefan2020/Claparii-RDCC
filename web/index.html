@@ -146,6 +146,77 @@
           <strong>Confidențialitate garantată:</strong> Preferințele și nevoile tale sunt salvate exclusiv pe acest dispozitiv (local în browser). Nu solicităm, nu stocăm și nu inferăm date medicale sau diagnostice.
         </div>
 
+        <!-- Interactive Home Prompt Section (Gemini Style) -->
+        <section id="home-prompt-section" class="home-prompt-section" aria-labelledby="prompt-heading">
+          <h2 id="prompt-heading" class="sr-only">Asistent de lucru rapid</h2>
+
+          <!-- Mode Selector Tabs -->
+          <div class="mode-selector" role="tablist" aria-label="Alege modul de asistență">
+            <button type="button" role="tab" id="tab-simplify" class="mode-tab is-active" aria-selected="true" aria-controls="home-input-form" data-mode="simplify">Clarificare document</button>
+            <button type="button" role="tab" id="tab-plan" class="mode-tab" aria-selected="false" aria-controls="home-input-form" data-mode="plan">Planificator sarcini</button>
+            <button type="button" role="tab" id="tab-meeting" class="mode-tab" aria-selected="false" aria-controls="home-input-form" data-mode="meeting">Sinteză ședință</button>
+          </div>
+
+          <!-- Quick Samples Bar -->
+          <div class="sample-chips" aria-label="Exemple demonstrative rapide">
+            <span class="chips-label">Exemple rapide:</span>
+            <button type="button" id="btn-sample-onboarding" class="chip-btn" data-sample="onboarding">Ghid onboarding</button>
+            <button type="button" id="btn-sample-email" class="chip-btn" data-sample="email">Email sarcini</button>
+            <button type="button" id="btn-sample-meeting" class="chip-btn" data-sample="meeting">Transcriere ședință</button>
+          </div>
+
+          <!-- Input Form -->
+          <form id="home-input-form" class="home-input-form" novalidate>
+            <label for="home-input-text" id="home-input-label" class="home-input-label">Lipește documentul sau instrucțiunile de simplificat:</label>
+            <textarea id="home-input-text" class="home-input-text" name="home-input-text" rows="7" maxlength="12000" placeholder="Lipește aici proceduri, ghiduri de lucru, fișe de post sau e-mailuri..." aria-describedby="home-char-counter"></textarea>
+            
+            <div class="input-toolbar">
+              <div id="home-char-counter" class="char-counter" aria-live="off">0 / 12.000 caractere</div>
+              <div class="toolbar-actions">
+                <button type="button" id="btn-home-clear" class="btn btn-secondary">Golește</button>
+                <button type="submit" id="btn-home-execute" class="btn btn-primary">Clarifică documentul</button>
+              </div>
+            </div>
+          </form>
+
+          <!-- Loading Indicator -->
+          <div id="home-loading" class="home-loading" role="status" aria-live="polite" style="display: none;">
+            <span class="loading-spinner" aria-hidden="true"></span>
+            <span id="home-loading-text">Se procesează documentul...</span>
+          </div>
+
+          <!-- Error Banner -->
+          <div id="home-error-banner" class="status-message status-error" role="alert" style="display: none;">
+            <span id="home-error-message"></span>
+            <button type="button" id="btn-home-retry" class="btn btn-secondary" style="margin-left: var(--space-sm);">Încearcă din nou</button>
+          </div>
+        </section>
+
+        <!-- Interactive Results Section -->
+        <section id="home-results-section" class="home-results-section" aria-labelledby="results-heading" style="display: none;">
+          <div class="results-header">
+            <h2 id="results-heading" class="results-title">Rezultat analiză</h2>
+            <div class="results-actions">
+              <button type="button" id="btn-home-copy" class="btn btn-secondary">Copiază rezultatul</button>
+              <button type="button" id="btn-home-tts" class="btn btn-secondary" aria-pressed="false">Ascultă rezumatul</button>
+              <button type="button" id="btn-home-ics" class="btn btn-secondary" style="display: none;">Descarcă calendar (.ics)</button>
+            </div>
+          </div>
+
+          <div id="home-ai-notice" class="status-message status-info" role="note">Generat de AI — verifică datele importante.</div>
+          <div id="home-warnings-container" class="status-message status-warning" style="display: none;"></div>
+
+          <!-- Dynamic Result Body -->
+          <div id="home-result-body" class="home-result-body"></div>
+
+          <!-- Original Source Viewer Card with Quote Highlighting -->
+          <section class="home-source-viewer-card" aria-labelledby="source-heading">
+            <h3 id="source-heading" class="source-heading">Text original cu evidențiere citate</h3>
+            <p class="source-desc">Apasă pe butonul «Arată în text» de la oricare pas sau sarcină pentru a verifica citatul exact în textul original.</p>
+            <div id="home-source-viewer" class="source-viewer" tabindex="0" role="region" aria-label="Text original cu evidențiere citate"></div>
+          </section>
+        </section>
+
         <!-- Airy Feature Cards Grid -->
         <section aria-labelledby="features-title">
           <h2 id="features-title" class="sr-only">Opțiuni de lucru disponibile</h2>
@@ -229,5 +300,6 @@
   </div>
 
   <script type="module" src="/js/shell.js"></script>
+  <script type="module" src="/js/home.js"></script>
 </body>
 </html>
