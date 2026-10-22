@@ -1,0 +1,24 @@
+{
+  "summary": "Începi luni la 09:00. În prima săptămână ai 3 lucruri de făcut.",
+  "steps": [
+    {
+      "n": 1,
+      "text": "Luni la 09:00 mergi la recepția clădirii B și ceri cardul de acces.",
+      "source_quote": "Luni, ora 09:00 – Te prezinți la recepția clădirii B"
+    },
+    {
+      "n": 2,
+      "text": "Până miercuri, 28 octombrie, completezi formularul F-12 în portalul intern.",
+      "source_quote": "Până miercuri, 28 octombrie, trebuie să completezi în portalul intern formularul F-12"
+    }
+  ],
+  "key_terms": [
+    {
+      "term": "onboarding",
+      "explanation": "Primele zile în care înveți cum funcționează firma și ce ai de făcut."
+    }
+  ],
+  "questions_to_ask": [
+    "Pot primi instrucțiunile și în scris, pas cu pas?"
+  ]
+}

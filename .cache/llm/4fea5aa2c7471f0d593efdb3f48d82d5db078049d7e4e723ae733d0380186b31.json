@@ -1,0 +1,66 @@
+{
+  "subject": "Solicitare de adaptări funcționale în perioada de acomodare",
+  "body_ro": "Stimate/Stimată manager,\n\nVă scriu pentru a vă prezenta câteva adaptări practice care mă vor sprijini să lucrez cu randament și eficiență în primele săptămâni de la începerea activității: Echipamente ergonomice adaptate pentru birou, Segmentarea proiectelor în etape mici și prioritizate, Instrucțiuni scrise, pas cu pas, Timp suplimentar pentru asimilarea procedurilor noi, Sincronizări scurte și periodice cu mentorul sau managerul, Transmiterea agendei în avans pentru întâlniri, Ghiduri și documente în limbaj simplu, Compatibilitate cu cititoare de ecran și instrumente de mărire, Subtitrări și sinteze scrise pentru întâlniri, Program de lucru flexibil, Opțiune de telemuncă parțială sau regim hibrid, Spațiu de lucru liniștit și reducerea zgomotului.\n\nAceste ajustări organizatorice contribuie la claritatea sarcinilor și la o colaborare cât mai bună în cadrul echipei. Vă mulțumesc pentru sprijin și rămân la dispoziție pentru a agrea detaliile optime de implementare.\n\nCu stimă și respect,\nEchipa",
+  "checklist": [
+    {
+      "id": "ergonomic_equipment",
+      "title": "Echipamente ergonomice adaptate pentru birou",
+      "why": "Asigură un confort fizic adecvat pentru desfășurarea sarcinilor zilnice."
+    },
+    {
+      "id": "task_breakdown",
+      "title": "Segmentarea proiectelor în etape mici și prioritizate",
+      "why": "Permite planificarea transparentă a etapelor și urmărirea termenelor intermediare."
+    },
+    {
+      "id": "written_instructions",
+      "title": "Instrucțiuni scrise, pas cu pas",
+      "why": "Oferă claritate și reduce nevoia de memorare imediată a discuțiilor verbale."
+    },
+    {
+      "id": "extra_time",
+      "title": "Timp suplimentar pentru asimilarea procedurilor noi",
+      "why": "Permite asimilarea temeinică a instrumentelor și procedurilor specifice rolului."
+    },
+    {
+      "id": "regular_checkins",
+      "title": "Sincronizări scurte și periodice cu mentorul sau managerul",
+      "why": "Oferă un cadru structurat pentru clarificarea priorităților și feedback reciproc."
+    },
+    {
+      "id": "advance_agenda",
+      "title": "Transmiterea agendei în avans pentru întâlniri",
+      "why": "Asigură timpul necesar pentru pregătirea adecvată înainte de întâlniri."
+    },
+    {
+      "id": "plain_language_docs",
+      "title": "Ghiduri și documente în limbaj simplu",
+      "why": "Scurtează timpul necesar înțelegerii instrucțiunilor și procedurilor interne."
+    },
+    {
+      "id": "screen_reader_tools",
+      "title": "Compatibilitate cu cititoare de ecran și instrumente de mărire",
+      "why": "Asigură accesul direct și eficient la informațiile din documentele de lucru."
+    },
+    {
+      "id": "captions_transcripts",
+      "title": "Subtitrări și sinteze scrise pentru întâlniri",
+      "why": "Permite urmărirea completă a deciziilor luate în ședințele de echipă."
+    },
+    {
+      "id": "flexible_schedule",
+      "title": "Program de lucru flexibil",
+      "why": "Ajută la gestionarea predictibilă a energiei de lucru și a deplasărilor zilnice."
+    },
+    {
+      "id": "remote_option",
+      "title": "Opțiune de telemuncă parțială sau regim hibrid",
+      "why": "Reduce solicitarea asociată deplasărilor și sprijină un ritm de lucru echilibrat."
+    },
+    {
+      "id": "quiet_space",
+      "title": "Spațiu de lucru liniștit și reducerea zgomotului",
+      "why": "Facilitează concentrarea susținută și reduce oboseala generată de stimulii sonori."
+    }
+  ]
+}
