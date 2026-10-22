@@ -88,6 +88,24 @@
 
   --transition-fast: 150ms ease;
   --transition-normal: 250ms ease;
+
+  /* Gemini Dark & Atmospheric Tokens */
+  --gemini-canvas: #131314;
+  --gemini-surface: #1e1f20;
+  --gemini-surface-alt: #282a2c;
+  --gemini-surface-hover: #333538;
+  --gemini-border: rgba(255, 255, 255, 0.08);
+  --gemini-border-subtle: rgba(255, 255, 255, 0.14);
+  --gemini-text-primary: #e3e3e3;
+  --gemini-text-muted: #9aa0a6;
+  --gemini-blue-accent: #1d4ed8;
+  --gemini-blue-soft: #8ab4f8;
+  --gemini-avatar-bg: #ea4335;
+  --gemini-badge-bg: #3c4043;
+  --gemini-pill-radius: 28px;
+  --gemini-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+  --gemini-menu-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --gemini-aura: radial-gradient(ellipse 650px 300px at 50% 50%, rgba(29, 78, 216, 0.22) 0%, rgba(15, 23, 42, 0) 70%);
 }
 
 /* Theme: Dark (High-Contrast Dark #121212 canvas with yellow AAA accents) */

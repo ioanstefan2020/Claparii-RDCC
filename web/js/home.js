@@ -145,6 +145,7 @@ export function setMode(mode) {
   const label = document.getElementById("home-input-label");
   const submitBtn = document.getElementById("btn-home-execute");
   const icsBtn = document.getElementById("btn-home-ics");
+  const modeLabel = document.getElementById("current-mode-label");
 
   if (icsBtn) {
     icsBtn.style.display = mode === "plan" ? "inline-flex" : "none";
@@ -152,16 +153,19 @@ export function setMode(mode) {
 
   if (mode === "simplify") {
     if (label) label.textContent = "Lipește documentul sau instrucțiunile de simplificat:";
-    if (textarea) textarea.placeholder = "Lipește aici proceduri, ghiduri de lucru, fișe de post sau e-mailuri...";
-    if (submitBtn) submitBtn.textContent = "Clarifică documentul";
+    if (textarea) textarea.placeholder = "Introdu textul sau instrucțiunile de la manager...";
+    if (submitBtn) submitBtn.setAttribute("aria-label", "Clarifică documentul");
+    if (modeLabel) modeLabel.textContent = "Clarificare";
   } else if (mode === "plan") {
     if (label) label.textContent = "Lipește e-mailul sau mesajul cu sarcini și termene:";
-    if (textarea) textarea.placeholder = "Lipește aici mesajul primit de la manager sau colegi...";
-    if (submitBtn) submitBtn.textContent = "Extrage sarcinile și termenele";
+    if (textarea) textarea.placeholder = "Lipește aici mesajul cu sarcini și termene...";
+    if (submitBtn) submitBtn.setAttribute("aria-label", "Extrage sarcinile și termenele");
+    if (modeLabel) modeLabel.textContent = "Planificator";
   } else if (mode === "meeting") {
     if (label) label.textContent = "Lipește transcrierea sau notițele din ședință:";
-    if (textarea) textarea.placeholder = "Lipește aici discuția sau transcrierea ședinței de lucru...";
-    if (submitBtn) submitBtn.textContent = "Rezumă ședința";
+    if (textarea) textarea.placeholder = "Lipește aici transcrierea ședinței de lucru...";
+    if (submitBtn) submitBtn.setAttribute("aria-label", "Rezumă ședința");
+    if (modeLabel) modeLabel.textContent = "Ședințe";
   }
 }
 
@@ -188,14 +192,28 @@ export function loadSample(sampleKey) {
 }
 
 /**
- * Updates the character counter.
+ * Updates the character counter and auto-resizes the input.
  */
 function updateCharCounter() {
   const textarea = document.getElementById("home-input-text");
   const counter = document.getElementById("home-char-counter");
-  if (!textarea || !counter) return;
+  const clearBtn = document.getElementById("btn-home-clear");
+  if (!textarea) return;
+
   const count = textarea.value.length;
-  counter.textContent = `${count.toLocaleString("ro-RO")} / 12.000 caractere`;
+  if (counter) {
+    counter.textContent = `${count.toLocaleString("ro-RO")} / 12.000 caractere`;
+  }
+
+  if (clearBtn) {
+    clearBtn.style.display = count > 0 ? "inline-flex" : "none";
+  }
+
+  // Auto-resize textarea height
+  textarea.style.height = "auto";
+  if (textarea.scrollHeight > 32) {
+    textarea.style.height = Math.min(textarea.scrollHeight, 220) + "px";
+  }
 }
 
 /**
@@ -761,6 +779,45 @@ export function saveCurrentResultToLibrary() {
 }
 
 /**
+ * Populates dynamic saved items in the sidebar under Blocnotesuri.
+ */
+function populateSidebarNotebooks() {
+  const list = document.getElementById("sidebar-notebooks-list");
+  if (!list) return;
+
+  try {
+    const raw = localStorage.getItem("wp.library.v1");
+    if (!raw) return;
+    const items = JSON.parse(raw);
+    if (!Array.isArray(items) || items.length === 0) return;
+
+    list.innerHTML = "";
+    items.slice(0, 5).forEach(item => {
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      a.href = "#";
+      a.className = "sidebar-item-link";
+      a.innerHTML = `
+        <svg class="nav-icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+        <span>${escapeHtml(item.title || "Document salvat")}</span>
+      `;
+      a.addEventListener("click", (e) => {
+        e.preventDefault();
+        const textarea = document.getElementById("home-input-text");
+        if (textarea && item.source_text) {
+          textarea.value = item.source_text;
+          if (item.mode) setMode(item.mode);
+          updateCharCounter();
+          executeCurrentTask();
+        }
+      });
+      li.appendChild(a);
+      list.appendChild(li);
+    });
+  } catch {}
+}
+
+/**
  * Initializes the Home page interactions.
  */
 export function initHomePage() {
@@ -769,18 +826,124 @@ export function initHomePage() {
   tabs.forEach(tab => {
     tab.addEventListener("click", () => {
       const mode = tab.getAttribute("data-mode");
-      if (mode) setMode(mode);
+      if (mode) {
+        setMode(mode);
+        const modeMenu = document.getElementById("mode-dropdown-menu");
+        if (modeMenu) modeMenu.style.display = "none";
+        const modeBtn = document.getElementById("btn-mode-dropdown");
+        if (modeBtn) modeBtn.setAttribute("aria-expanded", "false");
+      }
     });
   });
 
-  // Quick sample buttons
+  // Quick sample buttons (in attach menu)
   const onboardingBtn = document.getElementById("btn-sample-onboarding");
   const emailBtn = document.getElementById("btn-sample-email");
   const meetingBtn = document.getElementById("btn-sample-meeting");
 
-  if (onboardingBtn) onboardingBtn.addEventListener("click", () => loadSample("onboarding"));
-  if (emailBtn) emailBtn.addEventListener("click", () => loadSample("email"));
-  if (meetingBtn) meetingBtn.addEventListener("click", () => loadSample("meeting"));
+  function handleSampleClick(sampleKey) {
+    loadSample(sampleKey);
+    const attachMenu = document.getElementById("capsule-samples-menu");
+    if (attachMenu) attachMenu.style.display = "none";
+    const attachBtn = document.getElementById("btn-capsule-attach");
+    if (attachBtn) attachBtn.setAttribute("aria-expanded", "false");
+  }
+
+  if (onboardingBtn) onboardingBtn.addEventListener("click", () => handleSampleClick("onboarding"));
+  if (emailBtn) emailBtn.addEventListener("click", () => handleSampleClick("email"));
+  if (meetingBtn) meetingBtn.addEventListener("click", () => handleSampleClick("meeting"));
+
+  // Capsule attachment dropdown toggle
+  const attachBtn = document.getElementById("btn-capsule-attach");
+  const attachMenu = document.getElementById("capsule-samples-menu");
+  if (attachBtn && attachMenu) {
+    attachBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = attachMenu.style.display === "flex";
+      attachMenu.style.display = isOpen ? "none" : "flex";
+      attachBtn.setAttribute("aria-expanded", isOpen ? "false" : "true");
+    });
+  }
+
+  // Capsule mode dropdown toggle
+  const modeBtn = document.getElementById("btn-mode-dropdown");
+  const modeMenu = document.getElementById("mode-dropdown-menu");
+  if (modeBtn && modeMenu) {
+    modeBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = modeMenu.style.display === "flex";
+      modeMenu.style.display = isOpen ? "none" : "flex";
+      modeBtn.setAttribute("aria-expanded", isOpen ? "false" : "true");
+    });
+  }
+
+  // Quick suggestion action chips
+  document.querySelectorAll(".gemini-action-chip").forEach(chip => {
+    chip.addEventListener("click", () => {
+      const sample = chip.getAttribute("data-sample");
+      const mode = chip.getAttribute("data-mode");
+      if (mode) setMode(mode);
+      if (sample) loadSample(sample);
+    });
+  });
+
+  // Speech dictation on mic button
+  const micBtn = document.getElementById("btn-capsule-mic");
+  if (micBtn && typeof window !== "undefined") {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.lang = "ro-RO";
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      let isListening = false;
+      recognition.onstart = () => {
+        isListening = true;
+        micBtn.style.color = "var(--primary)";
+        announceToLiveRegion("Ascult... Vorbește acum.");
+      };
+      recognition.onend = () => {
+        isListening = false;
+        micBtn.style.color = "";
+      };
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        const textarea = document.getElementById("home-input-text");
+        if (textarea) {
+          textarea.value = (textarea.value + " " + transcript).trim();
+          updateCharCounter();
+          textarea.focus();
+        }
+      };
+      recognition.onerror = () => {
+        isListening = false;
+        micBtn.style.color = "";
+      };
+
+      micBtn.addEventListener("click", () => {
+        if (!isListening) {
+          try { recognition.start(); } catch {}
+        } else {
+          try { recognition.stop(); } catch {}
+        }
+      });
+    } else {
+      micBtn.title = "Dictarea vocală nu este suportată în acest browser";
+    }
+  }
+
+  // Close menus when clicking outside
+  document.addEventListener("click", (e) => {
+    if (attachMenu && !attachMenu.contains(e.target) && e.target !== attachBtn) {
+      attachMenu.style.display = "none";
+      if (attachBtn) attachBtn.setAttribute("aria-expanded", "false");
+    }
+    if (modeMenu && !modeMenu.contains(e.target) && e.target !== modeBtn) {
+      modeMenu.style.display = "none";
+      if (modeBtn) modeBtn.setAttribute("aria-expanded", "false");
+    }
+  });
 
   // Textarea input character counter
   const textarea = document.getElementById("home-input-text");
@@ -823,6 +986,9 @@ export function initHomePage() {
   if (ttsBtn) ttsBtn.addEventListener("click", toggleTTS);
   if (icsBtn) icsBtn.addEventListener("click", downloadPlanIcs);
   if (retryBtn) retryBtn.addEventListener("click", executeCurrentTask);
+
+  // Populate dynamic Notebooks from Library storage
+  populateSidebarNotebooks();
 }
 
 // Auto-initialize when DOM is ready

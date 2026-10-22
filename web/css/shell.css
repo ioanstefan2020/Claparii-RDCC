@@ -2355,3 +2355,457 @@ mark.quote-highlight {
   border-color: var(--primary);
   color: var(--text-main);
 }
+
+/* -------------------------------------------------- */
+/* Gemini Velvet Dark & Authentic UI Layout          */
+/* -------------------------------------------------- */
+
+.gemini-hero-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: var(--max-content-width);
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-md) var(--space-md);
+  text-align: center;
+}
+
+.gemini-greeting {
+  font-size: 2.5rem;
+  font-weight: var(--font-weight-regular);
+  color: var(--gemini-text-primary);
+  margin-bottom: var(--space-lg);
+  letter-spacing: -0.02em;
+}
+
+@media (max-width: 640px) {
+  .gemini-greeting {
+    font-size: 1.85rem;
+  }
+}
+
+.gemini-capsule-wrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: var(--space-md);
+}
+
+.gemini-ambient-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  max-width: 680px;
+  height: 220px;
+  background: var(--gemini-aura);
+  filter: blur(35px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.85;
+}
+
+.gemini-input-capsule {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background-color: var(--gemini-surface);
+  border: 1px solid var(--gemini-border-subtle);
+  border-radius: var(--gemini-pill-radius);
+  padding: var(--space-xxs) var(--space-xs);
+  box-shadow: var(--gemini-shadow);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.gemini-input-capsule:focus-within {
+  border-color: var(--gemini-blue-soft);
+  outline: 3px solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.capsule-left {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.capsule-circle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--min-touch-target);
+  height: var(--min-touch-target);
+  border-radius: var(--radius-full);
+  background: transparent;
+  border: none;
+  color: var(--gemini-text-primary);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.capsule-circle-btn:hover {
+  background-color: var(--gemini-surface-alt);
+}
+
+.capsule-circle-btn:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.capsule-icon {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.capsule-center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-xs);
+}
+
+.capsule-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--gemini-text-primary);
+  font-family: inherit;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  padding: var(--space-xs) 0;
+  resize: none;
+  outline: none;
+  min-height: 28px;
+  max-height: 220px;
+}
+
+.capsule-input::placeholder {
+  color: var(--gemini-text-muted);
+  opacity: 0.85;
+}
+
+.capsule-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xxs);
+}
+
+.capsule-mode-wrapper {
+  position: relative;
+}
+
+.capsule-mode-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xxs);
+  min-height: 36px;
+  padding: var(--space-xxs) var(--space-sm);
+  background-color: var(--gemini-surface-alt);
+  color: var(--gemini-text-primary);
+  border: 1px solid var(--gemini-border);
+  border-radius: var(--radius-full);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.capsule-mode-btn:hover {
+  background-color: var(--gemini-surface-hover);
+}
+
+.capsule-mode-btn .chevron-icon {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+}
+
+.capsule-send-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--min-touch-target);
+  height: var(--min-touch-target);
+  border-radius: var(--radius-full);
+  background-color: var(--gemini-blue-accent);
+  color: var(--text-inverse);
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.capsule-send-btn:hover {
+  background-color: var(--primary-hover);
+  transform: scale(1.05);
+}
+
+.capsule-send-btn .send-icon {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Dropdown Menus for Capsule (Attach samples + Mode select) */
+.capsule-dropdown-menu,
+.mode-dropdown-menu {
+  position: absolute;
+  bottom: calc(100% + var(--space-xs));
+  left: 0;
+  min-width: 240px;
+  background-color: var(--gemini-surface);
+  border: 1px solid var(--gemini-border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-xs);
+  box-shadow: var(--gemini-menu-shadow);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs);
+}
+
+.mode-dropdown-menu {
+  right: 0;
+  left: auto;
+}
+
+.dropdown-item,
+.mode-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  width: 100%;
+  padding: var(--space-xs) var(--space-sm);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--gemini-text-primary);
+  font-family: inherit;
+  font-size: 0.9rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.dropdown-item:hover,
+.mode-option:hover {
+  background-color: var(--gemini-surface-alt);
+}
+
+.mode-option.is-selected {
+  background-color: var(--gemini-surface-alt);
+  color: var(--gemini-blue-soft);
+  font-weight: var(--font-weight-semibold);
+}
+
+.dropdown-icon,
+.mode-icon {
+  font-size: 1.15rem;
+}
+
+.dropdown-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown-text small {
+  color: var(--gemini-text-muted);
+  font-size: 0.78rem;
+}
+
+/* Quick Suggestion Action Chips */
+.gemini-chips-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+  width: 100%;
+  margin-top: var(--space-xs);
+}
+
+.gemini-action-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-height: var(--min-touch-target);
+  padding: var(--space-xs) var(--space-md);
+  background-color: var(--gemini-surface);
+  border: 1px solid var(--gemini-border);
+  border-radius: var(--radius-full);
+  color: var(--gemini-text-primary);
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.gemini-action-chip:hover {
+  background-color: var(--gemini-surface-alt);
+  border-color: var(--gemini-border-subtle);
+}
+
+.gemini-action-chip:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Sidebar Gemini Enhancements */
+.sidebar-action-container {
+  padding: 0 var(--space-md) var(--space-sm);
+}
+
+.sidebar-new-pill {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  min-height: var(--min-touch-target);
+  padding: var(--space-xs) var(--space-md);
+  background-color: var(--gemini-surface-alt);
+  border: 1px solid var(--gemini-border);
+  border-radius: var(--radius-full);
+  color: var(--gemini-text-primary);
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color var(--transition-fast);
+}
+
+.sidebar-new-pill:hover {
+  background-color: var(--gemini-surface-hover);
+}
+
+.sidebar-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-xs) var(--space-md);
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--gemini-text-muted);
+}
+
+.sidebar-section-btn {
+  background: transparent;
+  border: none;
+  color: var(--gemini-text-muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: var(--space-xxs);
+}
+
+.sidebar-items-list {
+  list-style: none;
+  padding: 0 var(--space-xs);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-item-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-height: 38px;
+  padding: var(--space-xxs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  color: var(--gemini-text-primary);
+  text-decoration: none;
+  font-size: 0.86rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background-color var(--transition-fast);
+}
+
+.sidebar-item-link:hover {
+  background-color: var(--gemini-surface-alt);
+}
+
+/* User Card in Sidebar Footer */
+.sidebar-user-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  border-top: 1px solid var(--gemini-border);
+  margin-top: auto;
+}
+
+.user-avatar-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: var(--gemini-avatar-bg);
+  color: var(--text-inverse);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-weight-bold);
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  font-size: 0.88rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--gemini-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-tier {
+  font-size: 0.75rem;
+  color: var(--gemini-text-muted);
+}
+
+.user-settings-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  color: var(--gemini-text-muted);
+  cursor: pointer;
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.user-settings-btn:hover {
+  color: var(--gemini-text-primary);
+  background-color: var(--gemini-surface-alt);
+}
+

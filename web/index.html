@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ro">
+<html lang="ro" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <title>PrimaZi — Asistent Accesibil pentru Primul Loc de Muncă</title>
@@ -37,20 +37,34 @@
     <!-- Mobile Backdrop -->
     <div id="sidebar-backdrop" class="sidebar-backdrop" tabindex="-1" aria-hidden="true"></div>
 
-    <!-- Collapsible Sidebar -->
+    <!-- Collapsible Gemini Sidebar -->
     <aside id="app-sidebar" class="app-sidebar" aria-label="Bara laterală de navigare">
-      <div class="sidebar-header">
+      <!-- Top Brand Header with Logo, Search, and Collapse -->
+      <div class="sidebar-header" style="justify-content: space-between;">
         <a href="/" class="sidebar-brand" aria-label="PrimaZi Acasă">
-          <span class="brand-badge" aria-hidden="true">PZ</span>
+          <svg class="brand-badge" style="width: 26px; height: 26px; border-radius: 6px; padding: 2px;" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" fill="#8ab4f8"/>
+          </svg>
           <span class="sidebar-brand-text">PrimaZi</span>
         </a>
+        <div style="display: flex; align-items: center; gap: 4px;">
+          <a href="/library.html" class="capsule-circle-btn" style="width: 32px; height: 32px;" aria-label="Căutare documente">
+            <svg class="nav-icon" style="width: 16px; height: 16px;" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </a>
+          <button type="button" id="btn-sidebar-collapse" class="btn-sidebar-toggle" style="width: 32px; height: 32px;" aria-expanded="true" aria-label="Restrânge bara laterală">
+            <svg class="nav-icon" style="width: 16px; height: 16px;" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+        </div>
       </div>
 
       <div class="sidebar-content">
-        <a href="/employee/clarify.html" class="btn-new" aria-label="Pornește o clarificare nouă">
-          <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-          <span class="btn-new-text">Conversație nouă</span>
-        </a>
+        <!-- New Conversation Pill Button (Gemini Style) -->
+        <div class="sidebar-action-container">
+          <a href="/" id="btn-sidebar-new" class="sidebar-new-pill" aria-label="Pornește o conversație nouă">
+            <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span class="btn-new-text">Conversație nouă</span>
+          </a>
+        </div>
 
         <!-- Main Navigation Landmark with all required links -->
         <nav aria-label="Navigare principală">
@@ -63,7 +77,7 @@
             </li>
             <li>
               <a href="/library.html" class="nav-link">
-                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                 <span class="nav-text">Bibliotecă</span>
               </a>
             </li>
@@ -75,7 +89,7 @@
             </li>
             <li>
               <a href="/employee/plan.html" class="nav-link">
-                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                 <span class="nav-text">Planificator</span>
               </a>
             </li>
@@ -111,26 +125,89 @@
             </li>
           </ul>
         </nav>
+
+        <!-- Section: Blocnotesuri (Gemini Style Notebooks) -->
+        <div class="sidebar-section-header">
+          <span>Blocnotesuri</span>
+          <button type="button" class="sidebar-section-btn" id="btn-add-notebook" aria-label="Blocnotes nou">+</button>
+        </div>
+        <ul id="sidebar-notebooks-list" class="sidebar-items-list" aria-label="Blocnotesuri salvate">
+          <li>
+            <a href="#" class="sidebar-item-link" data-sample="onboarding">
+              <svg class="nav-icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+              <span>Ghid Onboarding IT</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="sidebar-item-link" data-sample="email">
+              <svg class="nav-icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+              <span>Email Sarcini Urgente</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="sidebar-item-link" data-sample="meeting">
+              <svg class="nav-icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+              <span>Minute Ședință Operațiuni</span>
+            </a>
+          </li>
+        </ul>
+
+        <!-- Section: Toate / Recente (Gemini History) -->
+        <div class="sidebar-section-header">
+          <span>Toate</span>
+          <button type="button" class="sidebar-section-btn" aria-label="Filtrează conversațiile">
+            <svg class="nav-icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24" aria-hidden="true"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+          </button>
+        </div>
+        <ul id="sidebar-recent-list" class="sidebar-items-list" aria-label="Conversații recente">
+          <li>
+            <a href="#" class="sidebar-item-link" data-sample="onboarding">
+              <span>Proceduri prima săptămână</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="sidebar-item-link" data-sample="email">
+              <span>Termene proiect Alpha</span>
+            </a>
+          </li>
+          <li>
+            <a href="/employee/adjustments.html" class="sidebar-item-link">
+              <span>Solicitare echipament ergonomic</span>
+            </a>
+          </li>
+        </ul>
       </div>
 
-      <div class="sidebar-footer">
-        <button type="button" id="btn-sidebar-collapse" class="btn-sidebar-toggle" aria-expanded="true" aria-label="Restrânge bara laterală">
-          <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>
-          <span class="collapse-text">Restrânge meniul</span>
-        </button>
+      <!-- User Card Footer (Gemini Style) -->
+      <div class="sidebar-footer" style="padding: 0;">
+        <div style="padding: var(--space-xs) var(--space-md); font-size: 0.78rem; color: var(--gemini-text-muted); display: flex; align-items: center; gap: 6px;">
+          <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background-color: var(--success-border);" aria-hidden="true"></span>
+          <span>București, România · Mod Confidențial</span>
+        </div>
+
+        <div class="sidebar-user-card">
+          <div class="user-avatar-circle" aria-hidden="true">D</div>
+          <div class="user-info">
+            <span class="user-name">David Stan</span>
+            <span class="user-tier">Pro · Angajat</span>
+          </div>
+          <a href="/settings.html" class="user-settings-btn" aria-label="Deschide setările de confort">
+            <svg class="nav-icon" style="width: 18px; height: 18px;" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          </a>
+        </div>
       </div>
     </aside>
 
     <!-- Main Content Area -->
     <div class="app-main-area">
-      <!-- Top Bar -->
+      <!-- Top Bar with Minimal Header & Accessibility Toolbar -->
       <header class="app-topbar" role="banner">
         <div class="topbar-left">
           <button type="button" id="btn-menu-toggle" class="btn-menu-toggle" aria-expanded="false" aria-controls="app-sidebar" aria-label="Deschide meniul de navigare">
             <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
             <span>Meniu</span>
           </button>
-          <span class="topbar-title">Acasă</span>
+          <span class="topbar-title">PrimaZi AI</span>
         </div>
         <div class="topbar-right">
           <!-- Persistent Accessibility Header Toolbar -->
@@ -159,65 +236,140 @@
         </div>
       </header>
 
-      <!-- Main Landmark (max 720px centered) -->
+      <!-- Main Landmark (Centrat, Serenity Focus Bubble) -->
       <main id="main">
         <!-- Live region for accessibility announcements -->
         <div id="status-live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
-        <!-- Hero Section with exactly one <h1> -->
-        <section class="hero-section" aria-labelledby="hero-title">
-          <h1 id="hero-title" class="hero-title">PrimaZi — Start incluziv la muncă</h1>
-          <p class="hero-lead">
-            Asistentul tău confidențial pentru primul loc de muncă. Înțelege documentele complexe, organizează-ți termenele și solicită adaptările necesare în ritmul tău.
-          </p>
-        </section>
+        <!-- Gemini Centered Hero Section -->
+        <section id="home-prompt-section" class="gemini-hero-container" aria-labelledby="hero-title">
+          <h1 id="hero-title" class="gemini-greeting">De unde să începem?</h1>
 
-        <!-- Privacy & Responsible AI Notice -->
-        <div class="privacy-banner" role="note">
-          <strong>Confidențialitate garantată:</strong> Preferințele și nevoile tale sunt salvate exclusiv pe acest dispozitiv (local în browser). Nu solicităm, nu stocăm și nu inferăm date medicale sau diagnostice.
-        </div>
+          <!-- Atmospheric Aura & Floating Gemini Pill -->
+          <div class="gemini-capsule-wrapper">
+            <div class="gemini-ambient-glow" aria-hidden="true"></div>
 
-        <!-- Interactive Home Prompt Section (Gemini Style) -->
-        <section id="home-prompt-section" class="home-prompt-section" aria-labelledby="prompt-heading">
-          <h2 id="prompt-heading" class="sr-only">Asistent de lucru rapid</h2>
+            <form id="home-input-form" class="gemini-input-capsule" role="search" novalidate>
+              <!-- Left: Attachment / Quick Samples Dropdown Button -->
+              <div class="capsule-left">
+                <button type="button" id="btn-capsule-attach" class="capsule-circle-btn" aria-label="Atașează document sau alege un exemplu demonstrativ" aria-expanded="false" aria-haspopup="menu">
+                  <svg class="capsule-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                </button>
 
-          <!-- Mode Selector Tabs -->
-          <div class="mode-selector" role="tablist" aria-label="Alege modul de asistență">
-            <button type="button" role="tab" id="tab-simplify" class="mode-tab is-active" aria-selected="true" aria-controls="home-input-form" data-mode="simplify">Clarificare document</button>
-            <button type="button" role="tab" id="tab-plan" class="mode-tab" aria-selected="false" aria-controls="home-input-form" data-mode="plan">Planificator sarcini</button>
-            <button type="button" role="tab" id="tab-meeting" class="mode-tab" aria-selected="false" aria-controls="home-input-form" data-mode="meeting">Sinteză ședință</button>
-          </div>
-
-          <!-- Quick Samples Bar -->
-          <div class="sample-chips" aria-label="Exemple demonstrative rapide">
-            <span class="chips-label">Exemple rapide:</span>
-            <button type="button" id="btn-sample-onboarding" class="chip-btn" data-sample="onboarding">Ghid onboarding</button>
-            <button type="button" id="btn-sample-email" class="chip-btn" data-sample="email">Email sarcini</button>
-            <button type="button" id="btn-sample-meeting" class="chip-btn" data-sample="meeting">Transcriere ședință</button>
-          </div>
-
-          <!-- Input Form -->
-          <form id="home-input-form" class="home-input-form" novalidate>
-            <label for="home-input-text" id="home-input-label" class="home-input-label">Lipește documentul sau instrucțiunile de simplificat:</label>
-            <textarea id="home-input-text" class="home-input-text" name="home-input-text" rows="7" maxlength="12000" placeholder="Lipește aici proceduri, ghiduri de lucru, fișe de post sau e-mailuri..." aria-describedby="home-char-counter"></textarea>
-            
-            <div class="input-toolbar">
-              <div id="home-char-counter" class="char-counter" aria-live="off">0 / 12.000 caractere</div>
-              <div class="toolbar-actions">
-                <button type="button" id="btn-home-clear" class="btn btn-secondary">Golește</button>
-                <button type="submit" id="btn-home-execute" class="btn btn-primary">Clarifică documentul</button>
+                <!-- Floating Dropdown for Samples -->
+                <div id="capsule-samples-menu" class="capsule-dropdown-menu" role="menu" style="display: none;">
+                  <button type="button" role="menuitem" class="dropdown-item" id="btn-sample-onboarding" data-sample="onboarding">
+                    <span class="dropdown-icon" aria-hidden="true">📋</span>
+                    <div class="dropdown-text">
+                      <strong>Ghid Onboarding IT</strong>
+                      <small>Proceduri și sarcini prima săptămână</small>
+                    </div>
+                  </button>
+                  <button type="button" role="menuitem" class="dropdown-item" id="btn-sample-email" data-sample="email">
+                    <span class="dropdown-icon" aria-hidden="true">✉️</span>
+                    <div class="dropdown-text">
+                      <strong>Email Sarcini Urgente</strong>
+                      <small>Termene limită de la manager</small>
+                    </div>
+                  </button>
+                  <button type="button" role="menuitem" class="dropdown-item" id="btn-sample-meeting" data-sample="meeting">
+                    <span class="dropdown-icon" aria-hidden="true">🎙</span>
+                    <div class="dropdown-text">
+                      <strong>Transcriere Ședință</strong>
+                      <small>Sinteză decizii și acțiuni echipă</small>
+                    </div>
+                  </button>
+                </div>
               </div>
-            </div>
-          </form>
+
+              <!-- Center: Expanding Prompt Textarea -->
+              <div class="capsule-center">
+                <label for="home-input-text" id="home-input-label" class="sr-only">Lipește documentul sau instrucțiunile de simplificat:</label>
+                <textarea id="home-input-text" class="capsule-input" name="home-input-text" rows="1" maxlength="12000" placeholder="Introdu textul sau instrucțiunile de la manager..." aria-describedby="home-char-counter"></textarea>
+              </div>
+
+              <!-- Right: Mode Selector + Mic Dictation + Send Button -->
+              <div class="capsule-right">
+                <!-- Mode Selector Pill with popup menu -->
+                <div class="capsule-mode-wrapper">
+                  <button type="button" id="btn-mode-dropdown" class="capsule-mode-btn" aria-haspopup="listbox" aria-expanded="false" aria-label="Mod de analiză: Clarificare">
+                    <span id="current-mode-label">Clarificare</span>
+                    <svg class="chevron-icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  </button>
+
+                  <div id="mode-dropdown-menu" class="mode-dropdown-menu" role="listbox" style="display: none;">
+                    <button type="button" role="option" aria-selected="true" class="mode-option is-selected mode-tab" data-mode="simplify" id="tab-simplify">
+                      <span class="mode-icon" aria-hidden="true">🔍</span>
+                      <div class="dropdown-text">
+                        <strong>Clarificare document</strong>
+                        <small>Explică pașii simplu cu citate sursă</small>
+                      </div>
+                    </button>
+                    <button type="button" role="option" aria-selected="false" class="mode-option mode-tab" data-mode="plan" id="tab-plan">
+                      <span class="mode-icon" aria-hidden="true">📅</span>
+                      <div class="dropdown-text">
+                        <strong>Planificator sarcini</strong>
+                        <small>Extrage termene și exportă în .ics</small>
+                      </div>
+                    </button>
+                    <button type="button" role="option" aria-selected="false" class="mode-option mode-tab" data-mode="meeting" id="tab-meeting">
+                      <span class="mode-icon" aria-hidden="true">🎙</span>
+                      <div class="dropdown-text">
+                        <strong>Sinteză ședință</strong>
+                        <small>Extrage decizii și acțiuni clare</small>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Speech Dictation Button -->
+                <button type="button" id="btn-capsule-mic" class="capsule-circle-btn" aria-label="Pornește dictarea vocală" title="Dictare vocală">
+                  <svg class="capsule-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                </button>
+
+                <!-- Clear Button -->
+                <button type="button" id="btn-home-clear" class="capsule-circle-btn" aria-label="Golește textul" title="Golește" style="display: none;">
+                  <svg class="capsule-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+
+                <!-- Submit / Send Arrow Button -->
+                <button type="submit" id="btn-home-execute" class="capsule-send-btn" aria-label="Clarifică documentul" title="Trimite">
+                  <svg class="send-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+              </div>
+            </form>
+
+            <div id="home-char-counter" class="char-counter sr-only" aria-live="off">0 / 12.000 caractere</div>
+          </div>
+
+          <!-- Quick Suggestion Chips below Capsule -->
+          <div class="gemini-chips-row" role="region" aria-label="Sugestii rapide de analiză">
+            <button type="button" class="gemini-action-chip" data-sample="onboarding" data-mode="simplify">
+              <span class="chip-icon" aria-hidden="true">🔍</span>
+              <span>Clarifică fișa postului</span>
+            </button>
+            <button type="button" class="gemini-action-chip" data-sample="email" data-mode="plan">
+              <span class="chip-icon" aria-hidden="true">📅</span>
+              <span>Planifică termene limită</span>
+            </button>
+            <button type="button" class="gemini-action-chip" data-sample="meeting" data-mode="meeting">
+              <span class="chip-icon" aria-hidden="true">🎙</span>
+              <span>Sinteză ședință operațională</span>
+            </button>
+            <a href="/employee/adjustments.html" class="gemini-action-chip">
+              <span class="chip-icon" aria-hidden="true">🤝</span>
+              <span>Solicită adaptări de muncă</span>
+            </a>
+          </div>
 
           <!-- Loading Indicator -->
-          <div id="home-loading" class="home-loading" role="status" aria-live="polite" style="display: none;">
+          <div id="home-loading" class="home-loading" role="status" aria-live="polite" style="display: none; margin-top: var(--space-md);">
             <span class="loading-spinner" aria-hidden="true"></span>
             <span id="home-loading-text">Se procesează documentul...</span>
           </div>
 
           <!-- Error Banner -->
-          <div id="home-error-banner" class="status-message status-error" role="alert" style="display: none;">
+          <div id="home-error-banner" class="status-message status-error" role="alert" style="display: none; margin-top: var(--space-md); width: 100%;">
             <span id="home-error-message"></span>
             <button type="button" id="btn-home-retry" class="btn btn-secondary" style="margin-left: var(--space-sm);">Încearcă din nou</button>
           </div>
@@ -247,78 +399,6 @@
             <p class="source-desc">Apasă pe butonul «Arată în text» de la oricare pas sau sarcină pentru a verifica citatul exact în textul original.</p>
             <div id="home-source-viewer" class="source-viewer" tabindex="0" role="region" aria-label="Text original cu evidențiere citate"></div>
           </section>
-        </section>
-
-        <!-- Airy Feature Cards Grid -->
-        <section aria-labelledby="features-title">
-          <h2 id="features-title" class="sr-only">Opțiuni de lucru disponibile</h2>
-
-          <div class="card-grid">
-            <!-- Primary Action Card: Clarify -->
-            <article class="feature-card primary-card">
-              <div>
-                <h3 class="card-title">Clarifică un document sau o sarcină</h3>
-                <p class="card-desc">
-                  Transformă proceduri stufoase sau mesaje neclare în pași simpli și prioritizați, fără limbaj de lemn.
-                </p>
-              </div>
-              <div class="card-action">
-                <a href="/employee/clarify.html" class="card-btn">Deschide Clarificarea</a>
-              </div>
-            </article>
-
-            <!-- Card: Planificator -->
-            <article class="feature-card">
-              <div>
-                <h3 class="card-title">Planificator &amp; Termene</h3>
-                <p class="card-desc">
-                  Extrage automat termenele și sarcinile dintr-un email sau document și descarcă-le în fișier calendar .ics.
-                </p>
-              </div>
-              <div class="card-action">
-                <a href="/employee/plan.html" class="card-btn">Deschide Planificatorul</a>
-              </div>
-            </article>
-
-            <!-- Card: Ședințe -->
-            <article class="feature-card">
-              <div>
-                <h3 class="card-title">Asistent Ședințe</h3>
-                <p class="card-desc">
-                  Extrage sinteza, deciziile cheie și lista de acțiuni dintr-o transcriere sau minute de ședință.
-                </p>
-              </div>
-              <div class="card-action">
-                <a href="/employee/meeting.html" class="card-btn">Sinteză Ședințe</a>
-              </div>
-            </article>
-
-            <!-- Card: Adaptări -->
-            <article class="feature-card">
-              <div>
-                <h3 class="card-title">Adaptări Rezonabile</h3>
-                <p class="card-desc">
-                  Explorează catalogul de acomodări și redactează o cerere profesională către manager, fără date medicale.
-                </p>
-              </div>
-              <div class="card-action">
-                <a href="/employee/adjustments.html" class="card-btn">Explorează Adaptări</a>
-              </div>
-            </article>
-
-            <!-- Card: Zona Angajator -->
-            <article class="feature-card">
-              <div>
-                <h3 class="card-title">Portalul Angajatorului</h3>
-                <p class="card-desc">
-                  Verifică scorul de lizibilitate al documentelor de onboarding și generează versiuni ușor de citit.
-                </p>
-              </div>
-              <div class="card-action">
-                <a href="/employer/index.html" class="card-btn">Zona Angajator</a>
-              </div>
-            </article>
-          </div>
         </section>
       </main>
 
