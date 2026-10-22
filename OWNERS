@@ -11,33 +11,38 @@ docs/PROMPTS.md frozen
 docs/TEAM-WORKFLOW.md frozen
 docs/TASKS.md frozen
 docs/DECISIONS.md frozen
+docs/NEXT-STEPS.md frozen
 
-# ---- P1: AI core + backend ----
+# ---- P1: AI core + backend + evals ----
 app/ p1
 requirements.txt p1
 .env.example p1
 .gitignore p1
 tests/ p1
+evals/ p1
 docs/CONTRACTS.md p1
 docs/plan/p1.md p1
 docs/decisions/p1.md p1
 
-# ---- P2: employee experience + accessibility ----
-web/ p2
-tests/web/ p2
+# ---- P2: preferences engine, QA, pitch ----
+web/js/prefs/ p2
+web/shared/prefs/ p2
+tests/web/prefs/ p2
+tests/e2e/ p2
 tests/test_a11y_static.py p2
+docs/DEMO-SCRIPT.md p2
+docs/PITCH.md p2
 docs/plan/p2.md p2
 docs/decisions/p2.md p2
 
-# ---- P3: employer side + content + evidence + pitch ----
+# ---- P3: frontend rebuild (Gemini shell), evidence, employer ----
+web/ p3
 app/routers/employer.py p3
 app/routers/adjustments.py p3
 app/schemas/employer.py p3
 app/schemas/adjustments.py p3
 app/prompts/employer.py p3
 app/prompts/adjustments.py p3
-web/employer/ p3
-web/i18n/ro.employer.json p3
 tests/backend/test_employer.py p3
 tests/backend/test_adjustments.py p3
 tests/test_smoke.py p3
