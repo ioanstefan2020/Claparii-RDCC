@@ -169,20 +169,11 @@ export function renderTranscript(data) {
   if (data.segments && data.segments.length > 0) {
     data.segments.forEach((seg, idx) => {
       const item = document.createElement("div");
-      item.className = "card";
-      item.style.display = "flex";
-      item.style.gap = "var(--space-sm)";
-      item.style.alignItems = "baseline";
-      item.style.padding = "var(--space-sm) var(--space-md)";
-      item.style.borderLeft = "3px solid var(--accent-primary)";
+      item.className = "transcript-segment-row";
 
       const timeBtn = document.createElement("button");
       timeBtn.type = "button";
-      timeBtn.className = "btn btn-secondary";
-      timeBtn.style.padding = "2px 8px";
-      timeBtn.style.minHeight = "32px";
-      timeBtn.style.fontFamily = "monospace";
-      timeBtn.style.fontSize = "0.85rem";
+      timeBtn.className = "transcript-time-btn";
       timeBtn.setAttribute("aria-label", `Sari redarea la minutul ${formatTime(seg.start)}`);
       timeBtn.textContent = `[${formatTime(seg.start)}]`;
 
@@ -196,7 +187,7 @@ export function renderTranscript(data) {
       });
 
       const textSpan = document.createElement("span");
-      textSpan.style.lineHeight = "1.6";
+      textSpan.className = "transcript-segment-text";
       textSpan.textContent = seg.text;
 
       item.appendChild(timeBtn);
@@ -293,7 +284,7 @@ export function saveTranscriptToLibrary() {
   if (!currentTranscriptData) return;
   const item = {
     mode: "audio",
-    title: "Transkriere audio ședință",
+    title: "Transcriere audio ședință",
     source_text: currentTranscriptData.text,
     result_data: currentTranscriptData,
     created_at: new Date().toISOString()
@@ -378,9 +369,96 @@ export async function deriveFromTranscript(actionType) {
 export function initAudioPage() {
   const form = document.getElementById("audio-upload-form");
   const fileInput = document.getElementById("audio-file-input");
+  const dropzone = document.getElementById("audio-dropzone");
+  const dropzoneContent = document.getElementById("dropzone-content");
+  const fileSelectedBadge = document.getElementById("audio-file-selected");
+  const fileNameEl = document.getElementById("audio-file-name");
+  const fileSizeEl = document.getElementById("audio-file-size");
+  const clearFileBtn = document.getElementById("btn-clear-audio-file");
   const sampleBtn = document.getElementById("btn-audio-sample");
   const recordBtn = document.getElementById("btn-audio-record");
   const recordText = document.getElementById("record-btn-text");
+
+  function handleFileSelected(file) {
+    if (!file) return;
+    if (file.size > 25 * 1024 * 1024) {
+      showError("Fișierul depășește limita de 25 MB.");
+      return;
+    }
+    clearError();
+    const sizeInMb = (file.size / (1024 * 1024)).toFixed(1);
+    if (fileNameEl) fileNameEl.textContent = file.name;
+    if (fileSizeEl) fileSizeEl.textContent = `(${sizeInMb} MB)`;
+    if (dropzoneContent) dropzoneContent.style.display = "none";
+    if (fileSelectedBadge) fileSelectedBadge.style.display = "inline-flex";
+
+    // Set player source for instant preview
+    const player = document.getElementById("audio-playback");
+    if (player) {
+      player.src = URL.createObjectURL(file);
+    }
+  }
+
+  function clearSelectedFile() {
+    if (fileInput) fileInput.value = "";
+    if (fileSelectedBadge) fileSelectedBadge.style.display = "none";
+    if (dropzoneContent) dropzoneContent.style.display = "flex";
+  }
+
+  if (clearFileBtn) {
+    clearFileBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      clearSelectedFile();
+    });
+  }
+
+  // Drag and drop & dropzone click
+  if (dropzone && fileInput) {
+    dropzone.addEventListener("click", (e) => {
+      if (e.target.closest("#btn-clear-audio-file")) return;
+      fileInput.click();
+    });
+
+    dropzone.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        fileInput.click();
+      }
+    });
+
+    dropzone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      dropzone.classList.add("is-dragover");
+    });
+
+    ["dragleave", "dragend"].forEach((ev) => {
+      dropzone.addEventListener(ev, () => {
+        dropzone.classList.remove("is-dragover");
+      });
+    });
+
+    dropzone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropzone.classList.remove("is-dragover");
+      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
+        const file = e.dataTransfer.files[0];
+        try {
+          const dt = new DataTransfer();
+          dt.items.add(file);
+          fileInput.files = dt.files;
+        } catch {}
+        handleFileSelected(file);
+      }
+    });
+  }
+
+  if (fileInput) {
+    fileInput.addEventListener("change", () => {
+      if (fileInput.files && fileInput.files[0]) {
+        handleFileSelected(fileInput.files[0]);
+      }
+    });
+  }
 
   // Form upload
   if (form) {
@@ -393,12 +471,7 @@ export function initAudioPage() {
           return;
         }
 
-        // Set player source for instant preview
-        const player = document.getElementById("audio-playback");
-        if (player) {
-          player.src = URL.createObjectURL(file);
-        }
-
+        handleFileSelected(file);
         transcribeAudio(file);
       } else {
         showError("Vă rugăm să alegeți un fișier audio sau să folosiți butonul «Încarcă exemplu ședință».");
@@ -435,7 +508,7 @@ export function initAudioPage() {
 
           mediaRecorder.start();
           isRecording = true;
-          recordBtn.style.color = "var(--text-error, #9B1C1C)";
+          recordBtn.classList.add("is-recording");
           if (recordText) recordText.textContent = "Oprește înregistrarea";
           announce("Înregistrare vocală pornită. Vorbiți la microfon.");
         } catch (err) {
@@ -445,7 +518,7 @@ export function initAudioPage() {
         if (mediaRecorder && mediaRecorder.state !== "inactive") {
           mediaRecorder.stop();
           isRecording = false;
-          recordBtn.style.color = "";
+          recordBtn.classList.remove("is-recording");
           if (recordText) recordText.textContent = "Înregistrează live";
           announce("Înregistrarea a fost oprită. Se trimite pentru transcriere.");
         }
