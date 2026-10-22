@@ -1,0 +1,11 @@
+{
+  "subject": "Solicitare de adaptări funcționale în perioada de acomodare",
+  "body_ro": "Bună ziua,\n\nVă scriu pentru a vă prezenta câteva adaptări practice care mă vor sprijini să lucrez cu randament și eficiență în primele săptămâni de la începerea activității: Instrucțiuni scrise, pas cu pas.\n\nAceste ajustări organizatorice contribuie la claritatea sarcinilor și la o colaborare cât mai bună în cadrul echipei. Vă mulțumesc pentru sprijin și rămân la dispoziție pentru a agrea detaliile optime de implementare.\n\nCu drag și deschidere,\nEchipa",
+  "checklist": [
+    {
+      "id": "written_instructions",
+      "title": "Instrucțiuni scrise, pas cu pas",
+      "why": "Oferă claritate și reduce nevoia de memorare imediată a discuțiilor verbale."
+    }
+  ]
+}
