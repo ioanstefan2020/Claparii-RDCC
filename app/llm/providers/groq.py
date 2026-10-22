@@ -6,6 +6,7 @@ import httpx
 from pydantic import BaseModel
 
 from app.config import settings
+from app.llm.json_repair import clean_and_parse_json
 from app.schemas.common import BadLLMOutput, LLMUnavailable
 
 
@@ -22,7 +23,7 @@ async def call_groq(
     model_name = (
         model
         if model and not model.startswith("deepseek")
-        else settings.GROQ_MODEL or "qwen/qwen3.8-27b"
+        else settings.GROQ_MODEL or "llama-3.3-70b-versatile"
     )
 
     json_schema_prompt = (
@@ -53,6 +54,12 @@ async def call_groq(
     except Exception as e:
         raise LLMUnavailable(f"Eroare de conectare la serviciul Groq: {e}")
 
+    if resp.status_code == 429:
+        retry_after = resp.headers.get("retry-after", "5")
+        raise LLMUnavailable(
+            f"Groq API rate limit (HTTP 429, retry-after: {retry_after}s): {resp.text[:120]}"
+        )
+
     if resp.status_code != 200:
         raise LLMUnavailable(
             f"Eroare API Groq (HTTP {resp.status_code}): {resp.text[:200]}"
@@ -61,6 +68,10 @@ async def call_groq(
     try:
         data = resp.json()
         raw_text = data["choices"][0]["message"]["content"]
-        return json.loads(raw_text)
+        return clean_and_parse_json(raw_text)
+    except KeyError as e:
+        raise BadLLMOutput(
+            f"Răspunsul primit de la Groq are structură neașteptată: {e}"
+        )
     except Exception as e:
         raise BadLLMOutput(f"Răspunsul primit de la Groq nu este JSON valid: {e}")

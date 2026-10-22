@@ -3,7 +3,7 @@ from fastapi import APIRouter
 from app.config import settings
 from app.guardrails import verify_quotes
 from app.llm import generate_json
-from app.prompts.simplify import MOCK, SYSTEM, build_user
+from app.prompts.simplify import MOCK, SYSTEM, VERSION, build_user
 from app.schemas.common import AppError, MetaInfo, SuccessEnvelope
 from app.schemas.simplify import SimplifyData, SimplifyRequest
 
@@ -30,7 +30,12 @@ async def simplify_text(payload: SimplifyRequest):
     user_prompt = build_user(text=text, profile=payload.profile)
 
     data_model, meta = await generate_json(
-        task="simplify", system=SYSTEM, user=user_prompt, schema=SimplifyData, mock=MOCK
+        task="simplify",
+        system=SYSTEM,
+        user=user_prompt,
+        schema=SimplifyData,
+        mock=MOCK,
+        prompt_version=VERSION,
     )
 
     # Convert steps to dicts for quote verification guardrail
@@ -64,6 +69,9 @@ async def simplify_text(payload: SimplifyRequest):
         ai_notice_ro=meta.get(
             "ai_notice_ro", "Generat de AI — verifică datele importante."
         ),
+        latency_ms=meta.get("latency_ms"),
+        prompt_version=meta.get("prompt_version", VERSION),
+        provider_chain_tried=meta.get("provider_chain_tried", []),
     )
 
     return SuccessEnvelope(ok=True, data=clean_data, meta=meta_info)

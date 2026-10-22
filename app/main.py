@@ -3,6 +3,7 @@ import logging
 import os
 import pkgutil
 import time
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, Request
@@ -13,6 +14,7 @@ from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.config import settings
+from app.llm import log_llm_startup, warm_up_llm
 from app.schemas.common import AppError
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
@@ -21,11 +23,19 @@ WEB_DIR = ROOT_DIR / "web"
 logger = logging.getLogger("primazi.api")
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await warm_up_llm()
+    yield
+
+
 app = FastAPI(
     title="PrimaZi API — Asistent Accesibil pentru Primul Loc de Muncă",
     version="2.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
+    lifespan=lifespan,
 )
 
 # CORS Middleware (Task P1-15)
@@ -83,11 +93,12 @@ def register_routers():
                 logger.error(f"[ROUTER ERROR] Failed to load {full_module_name}: {e}")
 
 
-# Register discovered routers
+# Register discovered routers and log startup status
 try:
     register_routers()
+    log_llm_startup()
 except Exception as e:
-    logger.error(f"[ROUTER ERROR] register_routers failed: {e}")
+    logger.error(f"[STARTUP ERROR] initialization failed: {e}")
 
 
 # GET /api/health

@@ -3,7 +3,7 @@ from fastapi import APIRouter
 from app.config import settings
 from app.guardrails import verify_quotes
 from app.llm import generate_json
-from app.prompts.meeting import MOCK, SYSTEM, build_user
+from app.prompts.meeting import MOCK, SYSTEM, VERSION, build_user
 from app.schemas.common import AppError, MetaInfo, SuccessEnvelope
 from app.schemas.meeting import (
     MeetingActionItem,
@@ -42,6 +42,7 @@ async def summarize_meeting(payload: MeetingSummarizeRequest):
         user=user_prompt,
         schema=MeetingSummarizeData,
         mock=MOCK,
+        prompt_version=VERSION,
     )
 
     # 1. Verify quotes on decisions
@@ -77,6 +78,9 @@ async def summarize_meeting(payload: MeetingSummarizeRequest):
         ai_notice_ro=meta.get(
             "ai_notice_ro", "Generat de AI — verifică datele importante."
         ),
+        latency_ms=meta.get("latency_ms"),
+        prompt_version=meta.get("prompt_version", VERSION),
+        provider_chain_tried=meta.get("provider_chain_tried", []),
     )
 
     return SuccessEnvelope(ok=True, data=clean_data, meta=meta_info)

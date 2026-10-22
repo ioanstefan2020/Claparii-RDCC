@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field, model_validator
 from app.config import settings
 from app.guardrails import verify_quotes
 from app.llm import generate_json
-from app.prompts.plan import MOCK, SYSTEM, build_user
+from app.prompts.plan import MOCK, SYSTEM, VERSION, build_user
 from app.schemas.common import AppError, MetaInfo, SuccessEnvelope
 from app.schemas.plan import PlanExtractData, PlanExtractRequest, PlanTask
 
@@ -91,6 +91,7 @@ async def extract_plan(payload: PlanExtractRequest):
         user=user_prompt,
         schema=PlanExtractData,
         mock=MOCK,
+        prompt_version=VERSION,
     )
 
     # Convert tasks to dicts for quote verification guardrail
@@ -119,6 +120,9 @@ async def extract_plan(payload: PlanExtractRequest):
         ai_notice_ro=meta.get(
             "ai_notice_ro", "Generat de AI — verifică datele importante."
         ),
+        latency_ms=meta.get("latency_ms"),
+        prompt_version=meta.get("prompt_version", VERSION),
+        provider_chain_tried=meta.get("provider_chain_tried", []),
     )
 
     return SuccessEnvelope(ok=True, data=clean_data, meta=meta_info)

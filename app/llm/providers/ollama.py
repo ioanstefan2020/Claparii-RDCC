@@ -1,12 +1,12 @@
 import json
 import os
-import re
 from typing import Any, Type
 
 import httpx
 from pydantic import BaseModel
 
 from app.config import settings
+from app.llm.json_repair import clean_and_parse_json
 from app.schemas.common import BadLLMOutput, LLMUnavailable
 
 
@@ -59,11 +59,10 @@ async def call_ollama(
     try:
         data = resp.json()
         raw_text = data["choices"][0]["message"]["content"]
-        # Strip markdown fences if present
-        clean_text = re.sub(
-            r"^```(?:json)?\s*", "", raw_text.strip(), flags=re.IGNORECASE
+        return clean_and_parse_json(raw_text)
+    except KeyError as e:
+        raise BadLLMOutput(
+            f"Răspunsul primit de la Ollama are structură neașteptată: {e}"
         )
-        clean_text = re.sub(r"\s*```$", "", clean_text)
-        return json.loads(clean_text)
     except Exception as e:
         raise BadLLMOutput(f"Răspunsul primit de la Ollama nu este JSON valid: {e}")

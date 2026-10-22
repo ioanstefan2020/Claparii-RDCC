@@ -6,6 +6,7 @@ import httpx
 from pydantic import BaseModel
 
 from app.config import settings
+from app.llm.json_repair import clean_and_parse_json
 from app.schemas.common import BadLLMOutput, LLMUnavailable
 
 
@@ -46,6 +47,12 @@ async def call_gemini(
     except Exception as e:
         raise LLMUnavailable(f"Eroare de conectare la serviciul Gemini: {e}")
 
+    if resp.status_code == 429:
+        retry_after = resp.headers.get("retry-after", "5")
+        raise LLMUnavailable(
+            f"Gemini API rate limit (HTTP 429, retry-after: {retry_after}s): {resp.text[:120]}"
+        )
+
     if resp.status_code != 200:
         raise LLMUnavailable(
             f"Eroare API Gemini (HTTP {resp.status_code}): {resp.text[:200]}"
@@ -54,6 +61,10 @@ async def call_gemini(
     try:
         data = resp.json()
         raw_text = data["candidates"][0]["content"]["parts"][0]["text"]
-        return json.loads(raw_text)
+        return clean_and_parse_json(raw_text)
+    except KeyError as e:
+        raise BadLLMOutput(
+            f"Răspunsul primit de la Gemini are structură neașteptată: {e}"
+        )
     except Exception as e:
         raise BadLLMOutput(f"Răspunsul primit de la Gemini nu este JSON valid: {e}")

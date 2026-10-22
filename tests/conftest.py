@@ -1,6 +1,7 @@
 import pytest
 
 from app.config import settings
+from app.llm import reset_circuit_breakers
 
 
 def pytest_configure(config):
@@ -24,6 +25,7 @@ def pytest_collection_modifyitems(config, items):
 @pytest.fixture(autouse=True)
 def ensure_mock_provider(monkeypatch, request):
     """Enforces mock mode for non-live unit tests regardless of .env configuration."""
+    reset_circuit_breakers()
     if "live" not in request.keywords:
         monkeypatch.setenv("LLM_PROVIDER", "mock")
         monkeypatch.setattr(settings, "LLM_PROVIDER", "mock")
