@@ -41,6 +41,25 @@ export function formatIcsDate(dateInput) {
 }
 
 /**
+ * Folds lines longer than 75 octets per RFC 5545 section 3.1.
+ */
+export function foldIcsLine(line) {
+  if (!line || line.length <= 75) return line;
+  const parts = [];
+  let remaining = line;
+  parts.push(remaining.slice(0, 75));
+  remaining = remaining.slice(75);
+  while (remaining.length > 74) {
+    parts.push(" " + remaining.slice(0, 74));
+    remaining = remaining.slice(74);
+  }
+  if (remaining.length > 0) {
+    parts.push(" " + remaining);
+  }
+  return parts.join("\r\n");
+}
+
+/**
  * Generates an RFC 5545 VCALENDAR string from a list of tasks.
  * Pure function: takes data, returns string.
  *
@@ -69,23 +88,12 @@ export function generateIcs(tasks = [], options = {}) {
     const title = task.title || task.text || `Sarcină #${idx + 1}`;
     const uid = task.id ? `primazi-${task.id}@primazi.ro` : `primazi-task-${Date.now()}-${idx}@primazi.ro`;
 
-    // Determine due date
-    let dtStartDate = "";
-    if (task.due_iso) {
-      dtStartDate = formatIcsDate(task.due_iso);
-    } else {
-      // If deadline is vague or not set, schedule for tomorrow as unconfirmed task
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      dtStartDate = formatIcsDate(tomorrow);
-    }
-
     // Compose description from steps and source quote
     const descParts = [];
     if (task.due_text && task.needs_confirmation) {
       descParts.push(`[NOTĂ]: Termen estimat în text: "${task.due_text}" (necesită confirmare)`);
     }
-    if (task.steps && task.steps.length) {
+    if (Array.isArray(task.steps) && task.steps.length) {
       descParts.push("Pași:");
       task.steps.forEach((s, sIdx) => {
         descParts.push(`  ${sIdx + 1}. ${s}`);
@@ -99,20 +107,34 @@ export function generateIcs(tasks = [], options = {}) {
     const description = escapeIcsText(descParts.join("\n"));
     const summary = escapeIcsText(task.needs_confirmation ? `[De confirmat] ${title}` : title);
 
-    lines.push("BEGIN:VEVENT");
-    lines.push(`UID:${uid}`);
-    lines.push(`DTSTAMP:${dtStamp}`);
-    lines.push(`SUMMARY:${summary}`);
-    lines.push(`DESCRIPTION:${description}`);
-    lines.push(`DTSTART;VALUE=DATE:${dtStartDate}`);
-    lines.push(`DTEND;VALUE=DATE:${dtStartDate}`);
-    lines.push("STATUS:CONFIRMED");
-    lines.push("END:VEVENT");
+    if (task.due_iso) {
+      // Event with confirmed or tentative date
+      const dtStartDate = formatIcsDate(task.due_iso);
+      lines.push("BEGIN:VEVENT");
+      lines.push(`UID:${uid}`);
+      lines.push(`DTSTAMP:${dtStamp}`);
+      lines.push(`SUMMARY:${summary}`);
+      lines.push(`DESCRIPTION:${description}`);
+      lines.push(`DTSTART;VALUE=DATE:${dtStartDate}`);
+      // Per RFC 5545 §3.6.1, omitting DTEND for an all-day event (VALUE=DATE) defaults to 1 day duration.
+      lines.push(task.needs_confirmation ? "STATUS:TENTATIVE" : "STATUS:CONFIRMED");
+      lines.push("END:VEVENT");
+    } else {
+      // Task without confirmed calendar date: strictly export as VTODO without date per RFC 5545 §3.6.2
+      // NEVER invent or guess a fake date (e.g. tomorrow) for unconfirmed tasks
+      lines.push("BEGIN:VTODO");
+      lines.push(`UID:${uid}`);
+      lines.push(`DTSTAMP:${dtStamp}`);
+      lines.push(`SUMMARY:${summary}`);
+      lines.push(`DESCRIPTION:${description}`);
+      lines.push("STATUS:NEEDS-ACTION");
+      lines.push("END:VTODO");
+    }
   }
 
   lines.push("END:VCALENDAR");
 
-  // RFC 5545 requires CRLF line endings
+  // RFC 5545 requires CRLF line terminators
   return lines.join("\r\n") + "\r\n";
 }
 

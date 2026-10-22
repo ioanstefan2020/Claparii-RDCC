@@ -57,7 +57,6 @@ def test_ics_valid_task_structure():
     assert "UID:primazi-t1@primazi.ro\r\n" in output
     assert "SUMMARY:Completează formularul F-12\r\n" in output
     assert "DTSTART;VALUE=DATE:20261028\r\n" in output
-    assert "DTEND;VALUE=DATE:20261028\r\n" in output
     assert "STATUS:CONFIRMED\r\n" in output
     # Description contains steps and source quote
     assert "Pas 1" in output
