@@ -146,8 +146,12 @@ def normalize_profile(raw: Any) -> NormalizedProfile:
         or data.get("notes")
         or data.get("user_words")
         or data.get("freeform_needs")
+        or data.get("freeText")
+        or data.get("custom_instructions")
+        or data.get("instructions")
+        or data.get("nevoi")
     )
-    needs_notes = str(raw_notes).strip()[:500] if raw_notes else None
+    needs_notes = str(raw_notes).strip()[:1000] if raw_notes else None
 
     # 6. Booleans
     bionic = bool(data.get("bionic", False))

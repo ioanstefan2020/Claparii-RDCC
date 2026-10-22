@@ -18,6 +18,7 @@ import { speakText, stopSpeaking, isSynthesisSupported } from "/shared/speech.js
 import { generateIcs, downloadIcsFile } from "/shared/ics.js";
 import { saveLibraryItem } from "/js/library-storage.js";
 import { transformText, sendTasksToPlanner } from "/js/actions.js";
+import { getProfile, getApiProfile } from "/shared/profile.js";
 
 // Embedded sample texts for instant, offline-safe execution
 export const SAMPLES = {
@@ -115,23 +116,9 @@ export function normalizeWhitespace(str) {
  */
 function getStoredProfile() {
   try {
-    const raw = localStorage.getItem("primazi_profile") || localStorage.getItem("wp.prefs.v1");
-    if (!raw) return { reading_level: "simple", format: "steps" };
-    const parsed = JSON.parse(raw);
-    if (parsed.answers) {
-      return {
-        reading_level: parsed.answers.textAmount === "short" ? "simple" : "standard",
-        format: parsed.answers.stepByStep ? "steps" : "short_paragraphs"
-      };
-    }
-    const prof = parsed.profile || {};
-    return {
-      reading_level: (prof.reading_level === "detailed" ? "standard" : prof.reading_level) || "simple",
-      format: (prof.format === "paragraphs" ? "short_paragraphs" : prof.format) || "steps",
-      needs_notes: prof.needs_notes || null
-    };
-  } catch {
-    return { reading_level: "simple", format: "steps" };
+    return getApiProfile();
+  } catch (_) {
+    return { reading_level: "simple", format: "steps", needs_notes: "" };
   }
 }
 
@@ -169,6 +156,11 @@ export function setMode(mode) {
     if (textarea) textarea.placeholder = "Introdu textul sau instrucțiunile de la manager...";
     if (submitBtn) submitBtn.setAttribute("aria-label", "Clarifică documentul");
     if (modeLabel) modeLabel.textContent = "Clarificare";
+  } else if (mode === "rewrite") {
+    if (label) label.textContent = "Lipește documentul sau atașează PDF-ul pentru rescriere integrală:";
+    if (textarea) textarea.placeholder = "Introdu textul sau atașează un fișier PDF (+) pentru rescriere completă fără omisiuni...";
+    if (submitBtn) submitBtn.setAttribute("aria-label", "Rescrie tot documentul");
+    if (modeLabel) modeLabel.textContent = "Rescriere";
   } else if (mode === "plan") {
     if (label) label.textContent = "Lipește e-mailul sau mesajul cu sarcini și termene:";
     if (textarea) textarea.placeholder = "Lipește aici mesajul cu sarcini și termene...";
@@ -179,6 +171,19 @@ export function setMode(mode) {
     if (textarea) textarea.placeholder = "Lipește aici transcrierea ședinței de lucru...";
     if (submitBtn) submitBtn.setAttribute("aria-label", "Rezumă ședința");
     if (modeLabel) modeLabel.textContent = "Ședințe";
+  }
+
+  const btnFileSimp = document.getElementById("btn-file-simplify");
+  const btnFileRew = document.getElementById("btn-file-rewrite");
+  if (btnFileSimp) {
+    const isSimp = mode === "simplify";
+    btnFileSimp.classList.toggle("is-active", isSimp);
+    btnFileSimp.setAttribute("aria-pressed", isSimp ? "true" : "false");
+  }
+  if (btnFileRew) {
+    const isRew = mode === "rewrite";
+    btnFileRew.classList.toggle("is-active", isRew);
+    btnFileRew.setAttribute("aria-pressed", isRew ? "true" : "false");
   }
 }
 
@@ -393,6 +398,35 @@ export function renderSimplifyResult(data, meta = {}) {
 }
 
 /**
+ * Renders the full Rewrite result (without omissions).
+ */
+export function renderRewriteResult(data, meta = {}) {
+  const container = document.getElementById("home-result-body");
+  if (!container) return;
+
+  const rewrittenText = data.text || (Array.isArray(data.items) ? data.items.join("\n\n") : "");
+  currentSummaryForTTS = rewrittenText;
+
+  // Split into clean paragraphs
+  const paragraphs = rewrittenText.split(/\n\s*\n/).filter(p => p.trim());
+  const paragraphsHtml = paragraphs.map(p => `<p class="result-summary-text" style="margin-bottom: var(--space-md); font-size: 1.05rem; line-height: 1.6;">${escapeHtml(p)}</p>`).join("");
+
+  let html = `
+    <div class="result-card">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-sm); flex-wrap: wrap; gap: var(--space-xs);">
+        <h3 class="result-subtitle" style="margin: 0;">Rescriere integrală (fără omisiuni)</h3>
+        <span style="font-size: 0.85rem; color: var(--gemini-text-muted); background: var(--bg-surface-hover); padding: 2px 8px; border-radius: var(--radius-full);">Text adaptat integral</span>
+      </div>
+      <div class="rewrite-content">
+        ${paragraphsHtml || `<p class="result-summary-text">${escapeHtml(rewrittenText)}</p>`}
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = html;
+}
+
+/**
  * Renders the Plan result.
  */
 export function renderPlanResult(data, meta = {}) {
@@ -583,12 +617,14 @@ export async function executeCurrentTask() {
     viewer.textContent = currentOriginalText;
   }
 
-  setLoading(true, currentMode === "simplify" ? "Se simplifică documentul..." : (currentMode === "plan" ? "Se extrag sarcinile și termenele..." : "Se sintetizează ședința..."));
+  setLoading(true, currentMode === "simplify" ? "Se simplifică documentul..." : (currentMode === "rewrite" ? "Se rescrie documentul integral..." : (currentMode === "plan" ? "Se extrag sarcinile și termenele..." : "Se sintetizează ședința...")));
 
   try {
     let res;
     if (currentMode === "simplify") {
       res = await simplifyDocument(text, profile);
+    } else if (currentMode === "rewrite") {
+      res = await transformText(text, "rewrite", profile);
     } else if (currentMode === "plan") {
       res = await extractPlan(text, null, profile);
     } else if (currentMode === "meeting") {
@@ -632,6 +668,8 @@ export async function executeCurrentTask() {
     // Render structured results
     if (currentMode === "simplify") {
       renderSimplifyResult(res.data, res.meta);
+    } else if (currentMode === "rewrite") {
+      renderRewriteResult(res.data, res.meta);
     } else if (currentMode === "plan") {
       renderPlanResult(res.data, res.meta);
     } else if (currentMode === "meeting") {
@@ -852,7 +890,7 @@ export async function handleTransform(mode, labelRo) {
     banner.style.display = "flex";
   }
 
-  const res = await transformText(currentOriginalText, mode);
+  const res = await transformText(currentOriginalText, mode, getStoredProfile());
   if (res && res.ok && res.data) {
     if (banner && textEl) {
       textEl.textContent = `Versiune transformată: ${labelRo}`;
@@ -970,6 +1008,8 @@ export function initHomePage() {
               textarea.focus();
             }
             if (fileNameSpan) fileNameSpan.textContent = file.name;
+            const fileActionPills = document.getElementById("file-action-pills");
+            if (fileActionPills) fileActionPills.style.display = "flex";
             announceToLiveRegion(`Fișierul ${file.name} a fost încărcat.`);
           };
           reader.readAsText(file);
@@ -1016,6 +1056,8 @@ export function initHomePage() {
             fileNameSpan.textContent = `${file.name}${pageInfo}`;
           }
 
+          const fileActionPills = document.getElementById("file-action-pills");
+          if (fileActionPills) fileActionPills.style.display = "flex";
           announceToLiveRegion(`Documentul ${file.name} a fost extras cu succes.`);
         }
       } catch (err) {
@@ -1030,6 +1072,8 @@ export function initHomePage() {
     removeFileBtn.addEventListener("click", () => {
       if (fileInput) fileInput.value = "";
       if (fileChip) fileChip.style.display = "none";
+      const fileActionPills = document.getElementById("file-action-pills");
+      if (fileActionPills) fileActionPills.style.display = "none";
       const textarea = document.getElementById("home-input-text");
       if (textarea) {
         textarea.value = "";
@@ -1048,6 +1092,20 @@ export function initHomePage() {
       const isOpen = modeMenu.style.display === "flex";
       modeMenu.style.display = isOpen ? "none" : "flex";
       modeBtn.setAttribute("aria-expanded", isOpen ? "false" : "true");
+    });
+  }
+
+  // File action choice buttons (Simplifică vs Rescrie)
+  const btnFileSimplify = document.getElementById("btn-file-simplify");
+  const btnFileRewrite = document.getElementById("btn-file-rewrite");
+  if (btnFileSimplify) {
+    btnFileSimplify.addEventListener("click", () => {
+      setMode("simplify");
+    });
+  }
+  if (btnFileRewrite) {
+    btnFileRewrite.addEventListener("click", () => {
+      setMode("rewrite");
     });
   }
 

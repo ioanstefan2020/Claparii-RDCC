@@ -12,7 +12,8 @@ Principii:
 5. Nu deduce și nu menționa diagnostice, boli, dizabilități sau trăsături de personalitate ale cuiva. Folosește doar ce spune textul și nevoile exprimate de utilizator.
 6. Nu da sfaturi medicale sau juridice. Pentru drepturi/adaptări folosești doar catalogul primit.
 7. Nu ghici emoții din voce sau din „felul” în care ar fi fost spus ceva. Lucrezi numai cu textul.
-8. Ieșirea este STRICT un obiect JSON valid conform schemei, fără text în afara JSON, fără ```."""
+8. Ieșirea este STRICT un obiect JSON valid conform schemei, fără text în afara JSON, fără ```.
+9. CERINȚE OBLIGATORII DIN PROFIL: Respectă întotdeauna cu prioritate maximă cerințele speciale de redactare, stil, formatare sau inserare de cuvinte specificate de utilizator în profilul său (de exemplu: adăugarea unui cuvânt cerut la începutul/sfârșitul fiecărui paragraf sau pas, formule specifice etc.), pentru ca utilizatorul să vadă că dorințele sale sunt ascultate și aplicate fidel în răspuns."""
 
 EASY_READ_RULES_RO = """Reguli de scriere ușor de înțeles:
 - O idee pe propoziție. Propoziții scurte (în medie sub {max_sentence_words} cuvinte), ordine firească: cine face ce, până când.
@@ -20,7 +21,7 @@ EASY_READ_RULES_RO = """Reguli de scriere ușor de înțeles:
 - Verbe la forma activă, adresare directă („Completezi formularul…”). Evită negațiile duble și construcțiile pasive.
 - Numere cu cifre; date complete („miercuri, 28 octombrie”); ore în format 24h („14:00”). Evită procentele și fracțiile când se poate.
 - Informațiile despre același subiect stau împreună. Pași numerotați pentru acțiuni; liste cu buline pentru enumerări.
-- Păstrează toate informațiile importante: termene, persoane, locuri, obligații. Nu omite și nu adăuga."""
+- Păstrează toate informațiile importante: termene, persoane, locuri, obligații. Nu omite și nu adăuga (cu excepția cuvintelor sau cerințelor de stil cerute explicit de utilizator în profilul său)."""
 
 
 CLINICAL_DENYLIST = [
@@ -79,7 +80,7 @@ def adapt_block(profile: Any) -> str:
         lines.append("Format: Folosește paragrafe scurte de maximum 3 propoziții.")
     else:
         lines.append(
-            "Format: Prezintă acțiunile ca pași numerotați, fiecare pas începe cu un verb clar."
+            "Format: Prezintă acțiunile ca pași numerați, fiecare pas începe cu un verb clar."
         )
 
     # Focus level
@@ -88,12 +89,14 @@ def adapt_block(profile: Any) -> str:
             "Nivel concentrare ridicat: Maximum 5 elemente. Pune pe primul loc ce trebuie făcut ACUM."
         )
 
-    # User's own words (scrubbed)
+    # User's own words (scrubbed) & strict custom requests
     if p.needs_notes:
         scrubbed = scrub_diagnosis_words(p.needs_notes)
         if scrubbed:
             lines.append(
-                f"Utilizatorul a menționat următoarele nevoi de lucru: «{scrubbed}». Adaptează stilul conform acestor nevoi, fără a comenta și fără a repeta aceste cuvinte."
+                f"CERINȚĂ SPECIALĂ PRIORITARĂ ȘI OBLIGATORIE DIN PROFILUL UTILIZATORULUI:\n"
+                f"Utilizatorul a specificat următoarele cerințe proprii de redactare în profilul său: «{scrubbed}».\n"
+                f"Instrucțiune de execuție: Respectă cu strictețe absolută această cerință în toate textele generate (inclusiv summary, fiecare pas/paragraf generat, formule cerute sau inserare de cuvinte specificate)."
             )
 
     return "\n".join(lines)
@@ -102,3 +105,91 @@ def adapt_block(profile: Any) -> str:
 def wrap_document(text: str) -> str:
     """Wraps text in strictly delimited document tags to prevent prompt injection."""
     return f"<<<DOCUMENT\n{text.strip()}\nDOCUMENT>>>"
+
+
+def apply_custom_decorations(text: str, notes: str | None) -> str:
+    """Enforces specific user-requested repetitive word patterns (e.g. 'miau', inserting words)
+    if specified in the user's notes and not already present."""
+    if not text or not notes:
+        return text
+
+    notes_clean = notes.strip().lower()
+
+    # 1. "cuvantul/word X inainte si dupa fiecare paragraf / before and after every paragraph"
+    m_both = re.search(
+        r'(?:cuv[aâ]ntul|word)\s+["\'«»]?(\w+)["\'«»]?\s+.*?(?:[iî]nainte\s+(?:[sș]i|si|&)\s+dup[aă]|before\s+and\s+after)',
+        notes_clean,
+    )
+    if m_both:
+        word = m_both.group(1)
+        paragraphs = text.split("\n")
+        rebuilt = []
+        for p in paragraphs:
+            stripped = p.strip()
+            if not stripped:
+                rebuilt.append(p)
+                continue
+            if not stripped.lower().startswith(word.lower()):
+                stripped = f"{word} {stripped}"
+            if not stripped.lower().endswith(word.lower()):
+                stripped = f"{stripped} {word}"
+            rebuilt.append(stripped)
+        return "\n".join(rebuilt)
+
+    # 2. "cuvantul/word X dupa fiecare paragraf / after every paragraph"
+    m_after = re.search(
+        r'(?:cuv[aâ]ntul|word)\s+["\'«»]?(\w+)["\'«»]?\s+.*?(?:dup[aă]|la\s+sf[aâ]r[sș]itul|after)\s+(?:fiec[aâ]r[eui]?\s+|every\s+)?(?:paragraf|paragraph|pas)',
+        notes_clean,
+    )
+    if m_after:
+        word = m_after.group(1)
+        paragraphs = text.split("\n")
+        rebuilt = []
+        for p in paragraphs:
+            stripped = p.strip()
+            if not stripped:
+                rebuilt.append(p)
+                continue
+            if not stripped.lower().endswith(word.lower()):
+                stripped = f"{stripped} {word}"
+            rebuilt.append(stripped)
+        return "\n".join(rebuilt)
+
+    # 3. "cuvantul/word X inainte de fiecare paragraf / before every paragraph"
+    m_before = re.search(
+        r'(?:cuv[aâ]ntul|word)\s+["\'«»]?(\w+)["\'«»]?\s+.*?(?:[iî]nainte\s+de|[iî]naintea|la\s+[iî]nceputul|before)\s+(?:fiec[aâ]r[eui]?\s+|every\s+)?(?:paragraf|paragraph|pas)',
+        notes_clean,
+    )
+    if m_before:
+        word = m_before.group(1)
+        paragraphs = text.split("\n")
+        rebuilt = []
+        for p in paragraphs:
+            stripped = p.strip()
+            if not stripped:
+                rebuilt.append(p)
+                continue
+            if not stripped.lower().startswith(word.lower()):
+                stripped = f"{word} {stripped}"
+            rebuilt.append(stripped)
+        return "\n".join(rebuilt)
+
+    # 4. "inserare/insert cuvantul X la fiecare N cuvinte / every N words"
+    m_every_n = re.search(
+        r'(?:cuv[aâ]ntul|word)\s+["\'«»]?(\w+)["\'«»]?\s+.*?(?:la\s+fiecare|every)\s+(\d+)\s+(?:cuvinte|words)',
+        notes_clean,
+    )
+    if m_every_n:
+        word = m_every_n.group(1)
+        n_words = int(m_every_n.group(2))
+        if n_words > 0:
+            words = text.split()
+            if word.lower() not in text.lower():
+                out_words = []
+                for idx, w in enumerate(words, start=1):
+                    out_words.append(w)
+                    if idx % n_words == 0:
+                        out_words.append(word)
+                return " ".join(out_words)
+
+    return text

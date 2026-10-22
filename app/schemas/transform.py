@@ -5,7 +5,14 @@ from pydantic import Field
 from app.schemas.common import TolerantModel
 
 TransformMode = Literal[
-    "bullets", "shorter", "tldr", "easy_read", "steps", "questions", "glossary"
+    "bullets",
+    "shorter",
+    "tldr",
+    "easy_read",
+    "rewrite",
+    "steps",
+    "questions",
+    "glossary",
 ]
 
 

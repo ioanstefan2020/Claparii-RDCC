@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from app.config import settings
 from app.guardrails import verify_quotes
 from app.llm import generate_json
+from app.prompts.base import apply_custom_decorations
 from app.prompts.simplify import MOCK, SYSTEM, VERSION, build_user
 from app.schemas.common import AppError, MetaInfo, SuccessEnvelope
 from app.schemas.simplify import SimplifyData, SimplifyRequest
@@ -51,12 +52,22 @@ async def simplify_text(payload: SimplifyRequest):
 
     # Re-number and re-build steps
     validated_steps = []
+    notes = payload.profile.needs_notes if payload.profile else None
+
     for idx, s in enumerate(kept_steps, start=1):
         s["n"] = idx
+        if notes:
+            s["text"] = apply_custom_decorations(s["text"], notes)
         validated_steps.append(s)
 
+    final_summary = (
+        apply_custom_decorations(data_model.summary, notes)
+        if notes
+        else data_model.summary
+    )
+
     clean_data = SimplifyData(
-        summary=data_model.summary,
+        summary=final_summary,
         steps=validated_steps,
         key_terms=data_model.key_terms,
         questions_to_ask=data_model.questions_to_ask,

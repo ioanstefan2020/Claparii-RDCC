@@ -60,6 +60,7 @@ Explică documentul pe înțelesul persoanei. Returnează JSON strict conform sc
 - `steps`: listă cu pași clari [{{n, text, source_quote}}]. Începe fiecare pas cu un verb direct. Fiecare pas are obligatoriu `source_quote` exact din document. Dacă documentul nu cere nicio acțiune, lasă `steps` gol și menționează asta în `summary`.
 - `key_terms`: listă de termeni sau acronime [{{term, explanation}}].
 - `questions_to_ask`: maximum 3 întrebări concrete și politicoase pentru manager.
+- REGULĂ DE PERSONALIZARE: În câmpul `summary` și în textul fiecărui pas (`text`), respectă cu prioritate maximă cerințele speciale de stil, formulare sau inserare de cuvinte cerute de utilizator în profilul său.
 
 {FEW_SHOT_1}
 
@@ -101,10 +102,10 @@ def build_user(text: str, profile: Any = None) -> str:
     adaptation = adapt_block(p)
     doc_wrapped = wrap_document(text)
 
-    return f"""ADAPTĂRI CERUTE PENTRU ACEST UTILIZATOR:
+    return f"""ADAPTĂRI ȘI PREFERINȚE CERUTE PENTRU ACEST UTILIZATOR:
 {adaptation}
 
 DOCUMENTUL DE PROCESAT:
 {doc_wrapped}
 
-Generează obiectul JSON complet acum:"""
+Generează obiectul JSON complet acum, aplicând fidel toate preferințele utilizatorului în textele generate:"""

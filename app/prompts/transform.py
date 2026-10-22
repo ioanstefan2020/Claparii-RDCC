@@ -23,9 +23,11 @@ Transformă documentul primit în funcție de modul cerut:
 - `shorter`: rescriere comprimată la procentul cerut din lungime, păstrând toate termenele, sumele și persoanele. Câmp `text`: string, `items`: null.
 - `tldr`: rezumat ultraconcis în 1–2 propoziții esențiale. Câmp `text`: string, `items`: null.
 - `easy_read`: rescriere completă conform standardelor Ușor de Citit (propoziții scurte, diacritice, fără jargon). Câmp `text`: string, `items`: null.
+- `rewrite`: rescriere completă a întregului document fără a omite absolut nimic. Păstrează toate informațiile, obligațiile, datele, sumele și persoanele, dar reformulează clar și cursiv, respectând strict toate cerințele din profilul utilizatorului (inclusiv reguli speciale de formulare sau cuvinte cerute). Câmp `text`: string complet rescris, `items`: null.
 
 REGULĂ IMPORTANTĂ:
 Păstrează toate datele concrete: zile, ore, sume de bani, nume de persoane și coduri de documente.
+În modurile de tip text (rewrite, easy_read, shorter, tldr), respectă cu prioritate maximă orice instrucțiune specială cerută de utilizator în profilul său.
 Ieșirea trebuie să fie un obiect JSON valid cu structura:
 {{
   "mode": "...",
@@ -85,6 +87,11 @@ MOCKS: dict[str, dict[str, Any]] = {
         "items": None,
         "text": "Luni dimineață mergi la serviciu. La ora 09:00 te așteaptă la recepție în clădirea B. Până miercuri, 28 octombrie, completezi formularul F-12 pe calculator.",
     },
+    "rewrite": {
+        "mode": "rewrite",
+        "items": None,
+        "text": "Luni la ora 09:00 te prezinți la recepția clădirii B pentru a primi ecusonul de acces și laptopul de serviciu. Până miercuri la ora 14:00 trebuie să transmiți la resurse umane buletinul scanat, adeverința medicală și extrasul de cont bancar.",
+    },
 }
 
 
@@ -100,9 +107,10 @@ def build_user(
     return f"""MOD CERUT: {mode}
 LIMITE: max_items={max_items}, target_pct={target_pct}%
 
+ADAPTĂRI ȘI PREFERINȚE CERUTE PENTRU ACEST UTILIZATOR:
 {adapt}
 
 DOCUMENT:
 {doc_wrapped}
 
-Generează doar JSON-ul transformat conform cerințelor modului „{mode}”:"""
+Generează doar JSON-ul transformat conform cerințelor modului „{mode}” și adaptărilor din profil:"""

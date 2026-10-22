@@ -1,6 +1,6 @@
-from typing import Literal, Optional
+from typing import Any, Literal, Optional
 
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, model_validator
 
 from app.schemas.common import TolerantModel
 
@@ -8,8 +8,26 @@ from app.schemas.common import TolerantModel
 class UserProfile(TolerantModel):
     reading_level: Literal["standard", "simple", "very_simple"] = "simple"
     format: Literal["steps", "short_paragraphs", "bullets"] = "steps"
-    needs_notes: Optional[str] = Field(default=None, max_length=500)
+    needs_notes: Optional[str] = Field(default=None, max_length=1000)
     max_sentence_words: Optional[int] = Field(default=12, ge=4, le=50)
+
+    @model_validator(mode="before")
+    @classmethod
+    def populate_aliases(cls, data: Any):
+        if isinstance(data, dict):
+            if not data.get("needs_notes"):
+                raw_notes = (
+                    data.get("freeText")
+                    or data.get("notes")
+                    or data.get("user_words")
+                    or data.get("freeform_needs")
+                    or data.get("custom_instructions")
+                    or data.get("instructions")
+                    or data.get("nevoi")
+                )
+                if raw_notes:
+                    data["needs_notes"] = str(raw_notes).strip()[:1000]
+        return data
 
     @field_validator("reading_level", mode="before")
     @classmethod

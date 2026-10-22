@@ -258,6 +258,13 @@
                         <small>Explică pașii simplu cu citate sursă</small>
                       </div>
                     </button>
+                    <button type="button" role="option" aria-selected="false" class="mode-option mode-tab" data-mode="rewrite" id="tab-rewrite">
+                      <span class="mode-icon" aria-hidden="true">✍️</span>
+                      <div class="dropdown-text">
+                        <strong>Rescriere integrală</strong>
+                        <small>Rescrie tot textul clar, fără omisiuni</small>
+                      </div>
+                    </button>
                     <button type="button" role="option" aria-selected="false" class="mode-option mode-tab" data-mode="plan" id="tab-plan">
                       <span class="mode-icon" aria-hidden="true">📅</span>
                       <div class="dropdown-text">
@@ -293,6 +300,17 @@
             </form>
 
             <div id="home-char-counter" class="char-counter sr-only" aria-live="off">0 / 12.000 caractere</div>
+
+            <!-- File & Text Choice: Simplifică vs Rescrie -->
+            <div id="file-action-pills" class="file-action-pills" style="display: none;" role="group" aria-label="Alege modul de procesare a textului">
+              <span class="file-action-label">Alege acțiunea:</span>
+              <button type="button" id="btn-file-simplify" class="file-action-pill is-active" data-mode="simplify" aria-pressed="true">
+                🔍 Simplifică (Rezumat & Pași)
+              </button>
+              <button type="button" id="btn-file-rewrite" class="file-action-pill" data-mode="rewrite" aria-pressed="false">
+                ✍️ Rescrie complet (Fără omisiuni)
+              </button>
+            </div>
           </div>
 
           <!-- Quick Suggestion Chips below Capsule -->

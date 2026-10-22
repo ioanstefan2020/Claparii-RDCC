@@ -3782,3 +3782,53 @@ mark.quote-highlight {
   display: inline-block;
   margin-top: 4px;
 }
+
+/* File Action Pills (Simplify vs Rewrite) */
+.file-action-pills {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+  padding: var(--space-xxs) var(--space-xs);
+  margin-top: var(--space-xs);
+}
+
+.file-action-label {
+  font-size: 0.88rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--gemini-text-muted);
+}
+
+.file-action-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-height: 38px;
+  padding: var(--space-xxs) var(--space-md);
+  border-radius: var(--radius-full);
+  background-color: var(--gemini-surface-alt);
+  border: 1.5px solid var(--border-color);
+  color: var(--gemini-text-primary);
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.file-action-pill:hover {
+  background-color: var(--bg-surface-hover);
+  border-color: var(--primary);
+}
+
+.file-action-pill.is-active {
+  background-color: var(--primary-subtle);
+  border-color: var(--primary);
+  color: var(--primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.file-action-pill:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}

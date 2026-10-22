@@ -6,6 +6,7 @@ from fastapi import APIRouter
 
 from app.llm import generate_json
 from app.prompts import transform as transform_prompt
+from app.prompts.base import apply_custom_decorations
 from app.schemas.common import ApiResponse, AppError, MetaInfo
 from app.schemas.profile_norm import normalize_profile
 from app.schemas.transform import TransformData, TransformRequest
@@ -13,12 +14,12 @@ from app.schemas.transform import TransformData, TransformRequest
 router = APIRouter(prefix="/api", tags=["transform"])
 
 LIST_MODES = {"bullets", "steps", "questions", "glossary"}
-PROSE_MODES = {"shorter", "tldr", "easy_read"}
+PROSE_MODES = {"shorter", "tldr", "easy_read", "rewrite"}
 
 
 @router.post("/transform", response_model=ApiResponse[TransformData])
 async def transform_text(req: TransformRequest) -> ApiResponse[TransformData]:
-    """Transforms text into bullets, steps, questions, glossary, shorter, tldr, or easy_read.
+    """Transforms text into bullets, steps, questions, glossary, shorter, tldr, easy_read, or rewrite.
 
     Conforms to CONTRACTS-WAVE2 specifications.
     """
@@ -72,6 +73,12 @@ async def transform_text(req: TransformRequest) -> ApiResponse[TransformData]:
 
         if req.max_items and len(items) > req.max_items:
             items = items[: req.max_items]
+
+        if norm_profile.needs_notes and items:
+            items = [
+                apply_custom_decorations(it, norm_profile.needs_notes) for it in items
+            ]
+
         out_text = None
     else:
         # Prose mode
@@ -79,6 +86,9 @@ async def transform_text(req: TransformRequest) -> ApiResponse[TransformData]:
             out_text = " ".join(items)
         elif not out_text:
             out_text = text
+
+        if norm_profile.needs_notes and out_text:
+            out_text = apply_custom_decorations(out_text, norm_profile.needs_notes)
 
         items = None
 
