@@ -23,7 +23,8 @@ export const DEFAULT_A11Y_PREFS = {
   theme: "light",          // "light" | "dark" | "high-contrast"
   textSize: "normal",      // "normal" | "large" | "xlarge"
   spacing: "normal",       // "normal" | "wide"
-  simpleMode: false        // boolean
+  simpleMode: false,       // boolean
+  lineFocus: false         // boolean: reading guide / line focus for cognitive comfort
 };
 
 /**
@@ -167,6 +168,13 @@ export function applyA11yPrefs(prefs = null) {
     root.setAttribute("data-simple-mode", "true");
   } else {
     root.removeAttribute("data-simple-mode");
+  }
+
+  // Line focus mode (T2.8 reading guide)
+  if (p.lineFocus) {
+    root.setAttribute("data-line-focus", "true");
+  } else {
+    root.removeAttribute("data-line-focus");
   }
 }
 

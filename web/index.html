@@ -25,6 +25,7 @@
           <li><a href="/employee/profile.html">Profil &amp; Nevoi</a></li>
           <li><a href="/employee/clarify.html">Clarificare</a></li>
           <li><a href="/employee/plan.html">Planificator</a></li>
+          <li><a href="/employee/meeting.html">Ședințe</a></li>
           <li><a href="/employee/adjustments.html">Adaptări</a></li>
           <li><a href="/employer/index.html">Zona Angajator</a></li>
         </ul>
@@ -74,6 +75,13 @@
             </label>
           </div>
 
+          <div class="control-group">
+            <label for="line-focus-toggle">
+              <input type="checkbox" id="line-focus-toggle" style="width: auto; min-height: auto; margin-right: 0.35rem;">
+              Ghidaj citire (linie)
+            </label>
+          </div>
+
           <div class="control-group" style="margin-left: auto;">
             <button type="button" id="btn-delete-data" class="btn btn-secondary" style="font-size: 0.9rem; padding: 0.4rem 0.8rem;">
               Șterge datele mele
@@ -114,8 +122,11 @@
             <li><strong>Adaptări rezonabile:</strong> Cereri redactate fără date medicale.</li>
           </ul>
           <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-            <a href="/employee/clarify.html" class="btn">Deschide Clarificare Documente</a>
-            <a href="/employee/profile.html" class="btn btn-secondary">Setează Profilul de Lucru</a>
+            <a href="/employee/clarify.html" class="btn">Clarificare</a>
+            <a href="/employee/plan.html" class="btn btn-secondary">Planificator</a>
+            <a href="/employee/meeting.html" class="btn btn-secondary">Ședințe</a>
+            <a href="/employee/adjustments.html" class="btn btn-secondary">Adaptări</a>
+            <a href="/employee/profile.html" class="btn btn-secondary">Profil &amp; Nevoi</a>
           </div>
         </article>
 
@@ -158,6 +169,7 @@
     const textSizeSelect = document.getElementById("text-size-select");
     const spacingToggle = document.getElementById("spacing-toggle");
     const simpleModeToggle = document.getElementById("simple-mode-toggle");
+    const lineFocusToggle = document.getElementById("line-focus-toggle");
     const btnDelete = document.getElementById("btn-delete-data");
     const liveRegion = document.getElementById("status-live");
 
@@ -201,6 +213,14 @@
       });
     }
 
+    if (lineFocusToggle) {
+      lineFocusToggle.checked = Boolean(prefs.lineFocus);
+      lineFocusToggle.addEventListener("change", (e) => {
+        saveA11yPrefs({ lineFocus: e.target.checked });
+        announce(e.target.checked ? "Ghidajul vizual de citire a fost activat." : "Ghidajul vizual de citire a fost dezactivat.");
+      });
+    }
+
     if (btnDelete) {
       btnDelete.addEventListener("click", () => {
         const confirmed = window.confirm("Ești sigur că vrei să ștergi toate datele și preferințele locale de pe acest dispozitiv?");
@@ -210,6 +230,7 @@
           if (textSizeSelect) textSizeSelect.value = "normal";
           if (spacingToggle) spacingToggle.checked = false;
           if (simpleModeToggle) simpleModeToggle.checked = false;
+          if (lineFocusToggle) lineFocusToggle.checked = false;
           announce("Toate datele locale au fost șterse cu succes.");
           alert("Datele tale locale au fost șterse definitiv.");
         }

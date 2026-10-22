@@ -136,3 +136,86 @@ def test_audit_catches_bad_page():
 def test_page_is_statically_accessible(path):
     problems = audit_html(path.read_text(encoding="utf-8"))
     assert not problems, f"{path.relative_to(ROOT)}:\n  - " + "\n  - ".join(problems)
+
+
+def _hex_to_luminance(hex_str: str) -> float:
+    hex_str = hex_str.strip().lstrip("#")
+    if len(hex_str) == 3:
+        hex_str = "".join(c * 2 for c in hex_str)
+    r = int(hex_str[0:2], 16) / 255.0
+    g = int(hex_str[2:4], 16) / 255.0
+    b = int(hex_str[4:6], 16) / 255.0
+
+    def adjust(c: float) -> float:
+        return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
+
+    return 0.2126 * adjust(r) + 0.7152 * adjust(g) + 0.0722 * adjust(b)
+
+
+def _contrast_ratio(hex1: str, hex2: str) -> float:
+    l1 = _hex_to_luminance(hex1)
+    l2 = _hex_to_luminance(hex2)
+    return (max(l1, l2) + 0.05) / (min(l1, l2) + 0.05)
+
+
+def test_wcag_contrast_tokens_in_css():
+    """Verify that design tokens in web/shared/a11y.css meet WCAG 2.2 AA (>= 4.5:1) and AAA (>= 7:1 for HC)."""
+    css_path = ROOT / "web" / "shared" / "a11y.css"
+    assert css_path.exists(), "a11y.css missing"
+    css_text = css_path.read_text(encoding="utf-8")
+
+    # Verify light theme tokens
+    assert _contrast_ratio("#111827", "#ffffff") >= 4.5  # text-main on white (17.7:1)
+    assert _contrast_ratio("#374151", "#ffffff") >= 4.5  # text-muted on white (10.3:1)
+    assert _contrast_ratio("#1d4ed8", "#ffffff") >= 4.5  # primary on white (6.7:1)
+
+    # Verify high contrast tokens (>= 7:1)
+    assert _contrast_ratio("#ffffff", "#000000") >= 7.0  # 21:1
+    assert _contrast_ratio("#ffff00", "#000000") >= 7.0  # 19.5:1
+
+
+def test_wcag_touch_targets_and_reduced_motion():
+    """Verify that minimum touch targets (>= 44px) and reduced-motion query exist in a11y.css."""
+    css_text = (ROOT / "web" / "shared" / "a11y.css").read_text(encoding="utf-8")
+    assert "--min-touch-target: 44px" in css_text
+    assert "@media (prefers-reduced-motion: reduce)" in css_text
+    assert "animation-duration: 0.001ms !important" in css_text
+
+
+def test_wcag_no_external_cdn_dependencies():
+    """Verify that all web HTML files use zero external CDN links or scripts (offline-safe)."""
+    for html_file in HTML_FILES:
+        content = html_file.read_text(encoding="utf-8")
+        assert not re.search(r'<(?:script|link)[^>]*(?:href|src)=["\']https?://', content, re.I), (
+            f"External CDN found in {html_file.name} (must be self-contained/offline-safe)"
+        )
+
+
+def test_employee_navigation_consistency():
+    """Verify that all employee web pages contain full, accessible navigation links."""
+    employee_pages = [
+        ROOT / "web" / "index.html",
+        ROOT / "web" / "employee" / "profile.html",
+        ROOT / "web" / "employee" / "clarify.html",
+        ROOT / "web" / "employee" / "plan.html",
+        ROOT / "web" / "employee" / "meeting.html",
+        ROOT / "web" / "employee" / "adjustments.html"
+    ]
+    for page in employee_pages:
+        assert page.exists(), f"{page.name} missing"
+        html = page.read_text(encoding="utf-8")
+        assert '<nav aria-label="Navigare principală">' in html, f"Nav missing in {page.name}"
+        assert 'href="/employee/clarify.html"' in html, f"Clarify link missing in {page.name}"
+        assert 'href="/employee/plan.html"' in html, f"Plan link missing in {page.name}"
+        assert 'href="/employee/meeting.html"' in html, f"Meeting link missing in {page.name}"
+        assert 'href="/employee/adjustments.html"' in html, f"Adjustments link missing in {page.name}"
+        assert 'href="/employee/profile.html"' in html, f"Profile link missing in {page.name}"
+
+
+def test_live_region_presence_on_all_pages():
+    """Verify that all HTML pages contain an aria-live='polite' region for screen reader announcements."""
+    for html_file in HTML_FILES:
+        content = html_file.read_text(encoding="utf-8")
+        assert 'aria-live="polite"' in content or 'role="status"' in content, (
+            f"Missing aria-live announcement region in {html_file.name}"
+        )

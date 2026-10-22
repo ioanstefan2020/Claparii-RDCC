@@ -27,6 +27,7 @@
           <li><a href="/employee/profile.html" aria-current="page">Profil &amp; Nevoi</a></li>
           <li><a href="/employee/clarify.html">Clarificare</a></li>
           <li><a href="/employee/plan.html">Planificator</a></li>
+          <li><a href="/employee/meeting.html">Ședințe</a></li>
           <li><a href="/employee/adjustments.html">Adaptări</a></li>
           <li><a href="/employer/index.html">Zona Angajator</a></li>
         </ul>
@@ -159,6 +160,11 @@
               <input type="checkbox" id="simple-mode-toggle" style="width: auto; min-height: auto;">
               <span>Mod simplificat (fără elemente decorative)</span>
             </label>
+
+            <label for="line-focus-toggle" style="font-weight: normal; display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+              <input type="checkbox" id="line-focus-toggle" style="width: auto; min-height: auto;">
+              <span>Ghidaj vizual de citire (evidențiere rând/secțiune)</span>
+            </label>
           </div>
         </div>
       </fieldset>
@@ -218,6 +224,7 @@
     const textSizeSelect = document.getElementById("text-size-select");
     const spacingCheckbox = document.getElementById("spacing-toggle");
     const simpleModeCheckbox = document.getElementById("simple-mode-toggle");
+    const lineFocusCheckbox = document.getElementById("line-focus-toggle");
     const btnDelete = document.getElementById("btn-delete-profile");
 
     function announce(msg, isSuccess = true) {
@@ -255,6 +262,7 @@
       if (textSizeSelect) textSizeSelect.value = a.textSize || DEFAULT_A11Y_PREFS.textSize;
       if (spacingCheckbox) spacingCheckbox.checked = a.spacing === "wide";
       if (simpleModeCheckbox) simpleModeCheckbox.checked = Boolean(a.simpleMode);
+      if (lineFocusCheckbox) lineFocusCheckbox.checked = Boolean(a.lineFocus);
     }
 
     // Initialize fields
@@ -285,6 +293,11 @@
         saveA11yPrefs({ simpleMode: e.target.checked });
       });
     }
+    if (lineFocusCheckbox) {
+      lineFocusCheckbox.addEventListener("change", (e) => {
+        saveA11yPrefs({ lineFocus: e.target.checked });
+      });
+    }
 
     // Form submit: save profile preferences
     if (profileForm) {
@@ -306,7 +319,8 @@
           theme: themeSelect.value,
           textSize: textSizeSelect.value,
           spacing: spacingCheckbox.checked ? "wide" : "normal",
-          simpleMode: simpleModeCheckbox.checked
+          simpleMode: simpleModeCheckbox.checked,
+          lineFocus: lineFocusCheckbox.checked
         });
 
         announce("Preferințele tale au fost salvate cu succes pe acest dispozitiv!");

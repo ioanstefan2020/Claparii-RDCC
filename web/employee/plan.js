@@ -6,7 +6,7 @@
 
 import { extractPlan } from "../shared/api.js";
 import { generateIcs, downloadIcsFile } from "../shared/ics.js";
-import { getApiProfile } from "../shared/profile.js";
+import { getApiProfile, getA11yPrefs, applyA11yPrefs } from "../shared/profile.js";
 
 export const STORAGE_KEY = "primazi_planner_tasks";
 
@@ -390,6 +390,9 @@ export function renderTasks(tasks, container, callbacks = {}) {
  */
 export function initPlanPage() {
   if (typeof document === "undefined") return;
+
+  // Apply user accessibility preferences immediately on load
+  applyA11yPrefs(getA11yPrefs());
 
   const planForm = document.getElementById("plan-form");
   const planText = document.getElementById("plan-text");

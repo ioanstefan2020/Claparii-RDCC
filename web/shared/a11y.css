@@ -140,7 +140,7 @@
   --word-spacing: 0.1em;
 }
 
-/* Simple Mode (reduced clutter, maximum readability) */
+/* Simple Mode (reduced clutter, maximum readability - T2.8) */
 [data-simple-mode="true"] {
   --font-scale: 1.25rem;
   --line-height: 1.85;
@@ -148,6 +148,44 @@
 [data-simple-mode="true"] .meta-secondary,
 [data-simple-mode="true"] .decorative {
   display: none !important;
+}
+[data-simple-mode="true"] p,
+[data-simple-mode="true"] li {
+  letter-spacing: 0.02em;
+}
+
+/* Line Focus / Reading Guide (T2.8 Reading Comfort) */
+[data-line-focus="true"] p:hover,
+[data-line-focus="true"] li:hover,
+[data-line-focus="true"] p:focus-within,
+[data-line-focus="true"] li:focus-within,
+[data-line-focus="true"] .card:hover,
+[data-line-focus="true"] .card:focus-within {
+  background-color: rgba(254, 240, 138, 0.35);
+  box-shadow: 0 0 0 3px rgba(254, 240, 138, 0.4);
+  border-radius: var(--radius-sm);
+  outline: 2px solid var(--primary);
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+[data-theme="dark"][data-line-focus="true"] p:hover,
+[data-theme="dark"][data-line-focus="true"] li:hover,
+[data-theme="dark"][data-line-focus="true"] p:focus-within,
+[data-theme="dark"][data-line-focus="true"] li:focus-within,
+[data-theme="dark"][data-line-focus="true"] .card:hover,
+[data-theme="dark"][data-line-focus="true"] .card:focus-within {
+  background-color: rgba(30, 58, 138, 0.45);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4);
+  outline: 2px solid #60a5fa;
+}
+[data-theme="high-contrast"][data-line-focus="true"] p:hover,
+[data-theme="high-contrast"][data-line-focus="true"] li:hover,
+[data-theme="high-contrast"][data-line-focus="true"] p:focus-within,
+[data-theme="high-contrast"][data-line-focus="true"] li:focus-within,
+[data-theme="high-contrast"][data-line-focus="true"] .card:hover,
+[data-theme="high-contrast"][data-line-focus="true"] .card:focus-within {
+  background-color: #1a1a1a;
+  outline: 3px solid #ffff00;
+  box-shadow: none;
 }
 
 /* Global Reset & Base */
