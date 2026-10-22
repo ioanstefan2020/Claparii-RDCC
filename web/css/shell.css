@@ -1497,7 +1497,7 @@ mark.quote-highlight {
 
 .btn-danger:hover:not(:disabled) {
   background-color: var(--error-border);
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .confirm-reset-box {
@@ -1597,7 +1597,7 @@ mark.quote-highlight {
   font-weight: var(--font-weight-semibold);
   font-size: 0.95rem;
   z-index: 10000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--card-shadow-hover);
   max-width: 90vw;
 }
 
