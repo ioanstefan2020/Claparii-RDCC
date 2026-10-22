@@ -119,11 +119,16 @@ function getStoredProfile() {
     const parsed = JSON.parse(raw);
     if (parsed.answers) {
       return {
-        reading_level: parsed.answers.textAmount === "short" ? "simple" : "detailed",
-        format: parsed.answers.stepByStep ? "steps" : "paragraphs"
+        reading_level: parsed.answers.textAmount === "short" ? "simple" : "standard",
+        format: parsed.answers.stepByStep ? "steps" : "short_paragraphs"
       };
     }
-    return parsed.profile || { reading_level: "simple", format: "steps" };
+    const prof = parsed.profile || {};
+    return {
+      reading_level: (prof.reading_level === "detailed" ? "standard" : prof.reading_level) || "simple",
+      format: (prof.format === "paragraphs" ? "short_paragraphs" : prof.format) || "steps",
+      needs_notes: prof.needs_notes || null
+    };
   } catch {
     return { reading_level: "simple", format: "steps" };
   }
