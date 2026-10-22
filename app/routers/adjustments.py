@@ -42,7 +42,7 @@ def get_catalog() -> tuple[CatalogData, dict[str, dict[str, Any]]]:
     if _cached_catalog_data is None or _cached_catalog_map is None:
         if not CATALOG_PATH.exists():
             raise AppError(
-                code="not_found",
+                code="internal",
                 message_ro="Fișierul catalogului de adaptări lipsește.",
                 status_code=500,
             )
@@ -107,6 +107,15 @@ async def generate_adjustments_draft(req: DraftRequest) -> DraftResponse:
         if req.employer_name and req.employer_name.strip()
         else None
     )
+    if employer_name:
+        lower_emp = employer_name.lower()
+        for bad_word in DENY_LIST_DIAGNOSES:
+            if re.search(rf"\b{re.escape(bad_word)}\b", lower_emp):
+                raise AppError(
+                    code="bad_request",
+                    message_ro="Numele angajatorului nu poate conține termeni medicali sau diagnostice.",
+                    status_code=400,
+                )
 
     user_prompt = build_user(
         items=selected_items,

@@ -51,7 +51,7 @@ class DraftRequest(BaseModel):
         description="List of adjustment IDs from the catalog. Must not be empty.",
     )
     context: Literal["interview", "onboarding", "ongoing"] = "onboarding"
-    employer_name: str | None = None
+    employer_name: str | None = Field(default=None, max_length=200)
     tone: Literal["formal", "friendly"] = "friendly"
 
 
