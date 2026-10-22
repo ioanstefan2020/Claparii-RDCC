@@ -74,18 +74,20 @@ def register_routers():
     for _, module_name, is_pkg in pkgutil.iter_modules(package_path):
         if not is_pkg:
             full_module_name = f"app.routers.{module_name}"
-            mod = importlib.import_module(full_module_name)
-            router = getattr(mod, "router", None)
-            if router is not None:
-                app.include_router(router)
+            try:
+                mod = importlib.import_module(full_module_name)
+                router = getattr(mod, "router", None)
+                if router is not None:
+                    app.include_router(router)
+            except Exception as e:
+                logger.error(f"[ROUTER ERROR] Failed to load {full_module_name}: {e}")
 
 
 # Register discovered routers
 try:
     register_routers()
 except Exception as e:
-    # Safe handling during initial bootstrap
-    pass
+    logger.error(f"[ROUTER ERROR] register_routers failed: {e}")
 
 
 # GET /api/health
