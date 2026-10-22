@@ -128,6 +128,36 @@ def test_smoke_plan_extract(client: TestClient, task_email_sample_text: str) -> 
 
 
 # ==============================================================================
+# Meeting Summarize Endpoint (CONTRACTS §3.3)
+# ==============================================================================
+
+
+def test_smoke_meeting_summarize(client: TestClient) -> None:
+    """POST /api/meeting/summarize extracts summary, decisions, action items without emotion."""
+    meeting_sample = SAMPLES_DIR / "meeting_transcript_ro.txt"
+    assert meeting_sample.exists()
+    transcript_text = meeting_sample.read_text(encoding="utf-8")
+
+    payload = {
+        "transcript": transcript_text,
+        "today_iso": "2026-10-22",
+        "profile": {"reading_level": "simple", "format": "steps"},
+    }
+    res = client.post("/api/meeting/summarize", json=payload)
+    assert res.status_code == 200, f"Expected 200, got {res.status_code}: {res.text}"
+    body = res.json()
+    assert body["ok"] is True
+    data = body["data"]
+    assert "summary" in data and len(data["summary"].strip()) > 0
+    assert "decisions" in data and isinstance(data["decisions"], list)
+    assert "action_items" in data and isinstance(data["action_items"], list)
+    assert len(data["action_items"]) > 0
+    for act in data["action_items"]:
+        assert "task" in act
+        assert "source_quote" in act
+
+
+# ==============================================================================
 # Adjustments Catalog & Draft Endpoints (CONTRACTS §3.4 & §3.5)
 # ==============================================================================
 
@@ -269,6 +299,7 @@ def test_smoke_not_found_envelope(client: TestClient) -> None:
         "/",
         "/index.html",
         "/employee/profile.html",
+        "/employee/clarify.html",
         "/employer/index.html",
     ],
 )

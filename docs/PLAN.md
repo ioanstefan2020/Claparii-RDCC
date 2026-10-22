@@ -1,24 +1,23 @@
 # PLAN — shared board (owner: P3). Personal status lives in docs/plan/pN.md.
 
 ## Clock (assumed start Thu 22 Oct 12:00 — EDIT if different)
-| Milestone | Hours | Clock | Meaning |
-|---|---|---|---|
-| Kickoff done | 0:45 | 12:45 | contract frozen, roles/git set |
-| **M1** skeleton on main | 1:30 | 13:30 | app runs in mock mode, check.sh green on all machines |
-| **M2** features on main (mock) | 8:00 | 20:00 | clickable demo path with mock LLM |
-| **M3** real-LLM integration | 14:00 | 02:00 | demo script passes with real LLM |
-| **Harden done** | 19:00 | 07:00 | a11y audit, README, fresh-clone OK |
-| **FREEZE** | 19:00 | 07:00 | no new features |
-| Rehearsal x2 + recording | 19:00–22:00 | 07:00–10:00 | |
-| Submission slack | 22:00–23:00 | 10:00–11:00 | submit early |
-| Stop coding | 24:00 | 12:00 | hard stop |
-Sleep in shifts (2–3 h each) but never all at once; whoever is awake owns the group chat. No big new work after hour 17.
+| Milestone | Hours | Clock | Meaning | Status |
+|---|---|---|---|---|
+| Kickoff done | 0:45 | 12:45 | contract frozen, roles/git set | [x] Complete |
+| **M1** skeleton on main | 1:30 | 13:30 | app runs in mock mode, check.sh green on all machines | [x] Tagged `good-1` |
+| **M2** features on main (mock) | 8:00 | 20:00 | clickable demo path with mock LLM, check.sh green | [x] Complete (All F1-F6 on main) |
+| **M3** real-LLM integration | 14:00 | 02:00 | demo script passes with real LLM bake-off | [ ] In progress |
+| **Harden done** | 19:00 | 07:00 | a11y audit, README, fresh-clone OK | [ ] Next |
+| **FREEZE** | 19:00 | 07:00 | no new features | [ ] |
+| Rehearsal x2 + recording | 19:00–22:00 | 07:00–10:00 | timed runs, backup video | [ ] |
+| Submission slack | 22:00–23:00 | 10:00–11:00 | submit early | [ ] |
+| Stop coding | 24:00 | 12:00 | hard stop | [ ] |
 
 ## Status
-- Current phase: 0 KICKOFF
-- Last green tag on main:
-- Blocking issues:
-- Next merge point:
+- Current phase: **3 INTEGRATE (M2 Complete -> M3 Real LLM Integration)**
+- Last green tag on main: `good-1` (M2 ready for `good-2`)
+- Blocking issues: None (145 tests passing + end-to-end smoke test passing)
+- Next merge point: M3 real-provider demo path check
 
 ## Architecture
 ```
@@ -33,24 +32,23 @@ Browser (web/, vanilla ES modules)                         FastAPI (app/)
 │ ICS built in the browser     │           │ cache (hash → response)   no content logs   │
 └──────────────────────────────┘           └────────────────────────────────────────────┘
 ```
-## Repository layout and owners (see OWNERS for the authoritative list)
-```
-app/                  P1   main.py (router auto-discovery), config.py, guardrails.py, llm/, routers/, schemas/, prompts/
-  routers/employer.py, adjustments.py        P3 (+ their schemas/ and prompts/ files)
-web/                  P2   index.html (hub), employee/, shared/ (a11y.css, api.js, profile.js, speech.js, ics.js), i18n/ro.employee.json
-  web/employer/, i18n/ro.employer.json       P3
-data/                 P3   adjustments_ro.json, samples/*.txt
-tests/                P1   tests/backend/ (each owner has their own test files), test_a11y_static.py (P2), test_smoke.py (P3)
-docs/                 CONTRACTS (P1) · PROJECT/PLAN/evidence/ARCHITECTURE (P3) · plan/ decisions/ per person
-scripts/              frozen: check.sh ship.sh sync.sh ownership.py · smoke.sh (P3)
-```
-Conventions: new router = new file in `app/routers/` exporting `router` (no edits to `main.py`); each task has `app/prompts/<task>.py` exporting `SYSTEM`, `build_user(...)`, `MOCK`; UI strings in per-owner i18n JSON files; employer UI never edits shared CSS (it imports `web/shared/a11y.css` read-only).
 
-## Features
-Tracked in docs/TASKS.md (checkboxes are ticked by each owner in their own docs/plan/pN.md; P3 consolidates here at milestones).
+## Features Progress
+- [x] **F1: Needs Profile (device-only)** — P2 (shipped in `dd79176`, `web/employee/profile.html`, `web/shared/profile.js`)
+- [x] **F2: Clarify Document** — P1 + P2 (shipped in `5fb64cf` + `6ced970`, `/api/simplify` + `web/employee/clarify.html`)
+- [x] **F3: Plan from Documents** — P1 (shipped in `b844995`, `/api/plan/extract`), P2 UI in progress
+- [x] **F4: Meeting Helper** — P1 (shipped in `8f0e19f`, `/api/meeting/summarize`)
+- [x] **F5: Adjustment Request** — P3 (shipped in `11d4a2a`, `/api/adjustments/catalog` & `/draft`)
+- [x] **F6: Employer Accessibility Check** — P3 (shipped in `f71403b` + `709f9bc`, `/api/employer/analyze` & `web/employer/index.html`)
+- [x] **Safety & Guardrails Layer** — P1 (shipped in `4acebf0`, `app/safety.py`)
+- [x] **Smoke Test Suite** — P3 (shipped in `709f9bc`, `scripts/smoke.sh`, `tests/test_smoke.py`)
+- [x] **System Architecture Documentation** — P3 (`docs/ARCHITECTURE.md`)
+- [x] **README & Presentation Docs** — P3 (`README.md`, `docs/evidence/qa-prep.md`)
 
 ## Backlog (not in MVP)
 - S1 interview prep · S2 tone suggestion (text-only, uncertain) · S3 employer adjustments overview · job-platform integration · accounts · hosting
 
 ## Done log (what / why / how to test)
--
+- T1.1-T1.6 (P1): Shipped FastAPI skeleton, Gemini/DeepSeek providers, simplify, plan, meeting, and safety layer (`app/safety.py`). Verified with pytest.
+- T2.1-T2.3 (P2): Shipped accessible shell, tokens (`a11y.css`), profile page, clarify page with quote highlighting and TTS. Verified with static a11y tests.
+- T3.1-T3.6 (P3): Shipped adjustments catalog, drafts, employer analyze endpoint with deterministic readability engine, employer audit web UI, and end-to-end smoke test runner. Verified with `./scripts/check.sh`.

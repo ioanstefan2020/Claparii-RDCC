@@ -26,13 +26,13 @@
 **R:** Arhitectura este modulară (FastAPI + ES modules independente), cu costuri de rulare minime prin caching deterministic pe hash de intrare și un strat agnostic de LLM care permite utilizarea oricărui model open-source sau comercial găzduit în UE. Nu avem o bază de date centralizată greoaie, scalarea orizontală fiind trivială.
 
 ### 8. Ce ați testat efectiv pe partea de accesibilitate (WCAG)?
-**R:** Am verificat static structura semantică HTML pe fiecare commit (`test_a11y_static.py`), am asigurat navigare completă exclusiv din tastatură (focus vizibil, skip links, trap-uri evitate), moduri de contrast ridicat și compatibilitate cu mărirea textului până la 200%. [De completat după testul cu cititor de ecran: softul utilizat - Orca / NVDA].
+**R:** Am verificat static structura semantică HTML pe fiecare commit prin `tests/test_a11y_static.py` (limbă română, landmark-uri `<main>`, `<nav>`, `<header>`, skip links obligatorii, asociere explicită etichetă-input, butoane cu nume accesibile, zero `tabindex` pozitiv, scalare viewport permisă). Am asigurat navigare completă exclusiv din tastatură (focus ring vizibil de 3px, dialoguri fără keyboard traps), moduri de contrast ridicat (contrast $\ge 7:1$) și compatibilitate cu mărirea textului până la 200%. În plus, testul cap-la-cap `scripts/smoke.sh` și `tests/test_smoke.py` verifică servirea corectă a fiecărui ecran HTML.
 
 ### 9. Ce NU ați reușit să validați încă?
-**R:** Nu am derulat încă un studiu longitudinal pe 3-6 luni privind impactul direct asupra ratei de retenție la locul de muncă. De asemenea, analiza de documente este testată pe fișiere text uzuale de onboarding, nu pe sisteme proprietare enterprise de gestionare a documentelor.
+**R:** Nu am derulat încă un studiu longitudinal pe 3-6 luni privind impactul direct asupra ratei de retenție la locul de muncă. De asemenea, sinteza vocală depinde de vocile de limba română instalate pe dispozitivul utilizatorului, iar analiza de documente este optimizată pe formate text (.txt / paste), nu pe fișiere binare complexe (.pdf cu tabele multiple sau .docx protejate).
 
 ### 10. Ce face aplicația dacă documentul conține prompt injection sau instrucțiuni malițioase?
-**R:** Documentul de intrare este tratat strict ca date pasive, niciodată ca instrucțiuni de sistem (`system prompt`). Structura de ieșire este constrânsă rigid prin JSON schema și Pydantic, iar tentativele de deturnare sunt respinse fără a altera formatul răspunsului.
+**R:** Documentul de intrare este tratat strict ca date pasive, niciodată ca instrucțiuni de sistem (`system prompt`). Structura de ieșire este constrânsă rigid prin scheme Pydantic v2 cu `extra="forbid"`, modulul `app/safety.py` conține euristici de detecție a tentativelor de override și redactare a conținutului din jurnale (`LOG_CONTENT=false`), iar tentativele de deturnare sunt respinse fără a altera formatul răspunsului.
 
 ### 11. Ce se întâmplă dacă utilizatorul nu are internet sau pică serverul de AI?
 **R:** Aplicația include un mod de rezervă complet (`LLM_PROVIDER=mock`) și caching pe disc pentru exemplele demonstrative. În UI există stări clare de eroare în limba română (`aria-live="assertive"`) cu posibilitate de reîncercare și avertizare de sistem indisponibil.

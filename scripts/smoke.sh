@@ -84,7 +84,7 @@ echo "$SIMPLIFY_RESP" | grep -q '"steps"' || { echo "!! Simplify missing steps: 
 echo "    [PASS] Simplify endpoint returned structured summary and steps"
 
 # Check 3: Plan extraction endpoint
-echo "==> [3/8] Checking POST /api/plan/extract"
+echo "==> [3/9] Checking POST /api/plan/extract"
 PAYLOAD_PLAN=$(python3 -c '
 import json
 text = open("data/samples/task_email_ro.txt", encoding="utf-8").read()
@@ -97,16 +97,32 @@ echo "$PLAN_RESP" | grep -q '"ok":true' || { echo "!! Plan extract failed: $PLAN
 echo "$PLAN_RESP" | grep -q '"tasks"' || { echo "!! Plan extract missing tasks: $PLAN_RESP"; exit 1; }
 echo "    [PASS] Plan extract endpoint returned task breakdown"
 
-# Check 4: Adjustments catalog endpoint
-echo "==> [4/8] Checking GET /api/adjustments/catalog"
+# Check 4: Meeting summarization endpoint
+echo "==> [4/9] Checking POST /api/meeting/summarize"
+PAYLOAD_MEETING=$(python3 -c '
+import json
+text = open("data/samples/meeting_transcript_ro.txt", encoding="utf-8").read()
+print(json.dumps({"transcript": text, "today_iso": "2026-10-22", "profile": {"reading_level": "simple", "format": "steps"}}))
+')
+MEETING_RESP=$(curl -sf -X POST "http://127.0.0.1:$PORT/api/meeting/summarize" \
+  -H "Content-Type: application/json" \
+  -d "$PAYLOAD_MEETING")
+echo "$MEETING_RESP" | grep -q '"ok":true' || { echo "!! Meeting summarize failed: $MEETING_RESP"; exit 1; }
+echo "$MEETING_RESP" | grep -q '"summary"' || { echo "!! Meeting summarize missing summary: $MEETING_RESP"; exit 1; }
+echo "$MEETING_RESP" | grep -q '"decisions"' || { echo "!! Meeting summarize missing decisions: $MEETING_RESP"; exit 1; }
+echo "$MEETING_RESP" | grep -q '"action_items"' || { echo "!! Meeting summarize missing action_items: $MEETING_RESP"; exit 1; }
+echo "    [PASS] Meeting summarize endpoint returned summary, decisions, and action items"
+
+# Check 5: Adjustments catalog endpoint
+echo "==> [5/9] Checking GET /api/adjustments/catalog"
 CATALOG_RESP=$(curl -sf "http://127.0.0.1:$PORT/api/adjustments/catalog")
 echo "$CATALOG_RESP" | grep -q '"ok":true' || { echo "!! Catalog failed: $CATALOG_RESP"; exit 1; }
 echo "$CATALOG_RESP" | grep -q '"written_instructions"' || { echo "!! Missing written_instructions: $CATALOG_RESP"; exit 1; }
 echo "$CATALOG_RESP" | grep -q '"extra_time"' || { echo "!! Missing extra_time: $CATALOG_RESP"; exit 1; }
 echo "    [PASS] Adjustments catalog returned >= 12 catalog items with disclaimer"
 
-# Check 5: Adjustments draft endpoint
-echo "==> [5/8] Checking POST /api/adjustments/draft"
+# Check 6: Adjustments draft endpoint
+echo "==> [6/9] Checking POST /api/adjustments/draft"
 DRAFT_RESP=$(curl -sf -X POST "http://127.0.0.1:$PORT/api/adjustments/draft" \
   -H "Content-Type: application/json" \
   -d '{"need_ids": ["written_instructions", "extra_time"], "context": "onboarding", "tone": "friendly"}')
@@ -115,8 +131,8 @@ echo "$DRAFT_RESP" | grep -q '"subject"' || { echo "!! Draft missing subject: $D
 echo "$DRAFT_RESP" | grep -q '"body_ro"' || { echo "!! Draft missing body_ro: $DRAFT_RESP"; exit 1; }
 echo "    [PASS] Adjustments draft endpoint generated subject and body"
 
-# Check 6: Employer document analysis endpoint
-echo "==> [6/8] Checking POST /api/employer/analyze"
+# Check 7: Employer document analysis endpoint
+echo "==> [7/9] Checking POST /api/employer/analyze"
 PAYLOAD_EMPLOYER=$(python3 -c '
 import json
 text = open("data/samples/onboarding_ro.txt", encoding="utf-8").read()
@@ -132,8 +148,8 @@ echo "$EMPLOYER_RESP" | grep -q '"issues"' || { echo "!! Missing issues: $EMPLOY
 echo "$EMPLOYER_RESP" | grep -q '"easy_read_ro"' || { echo "!! Missing easy_read_ro: $EMPLOYER_RESP"; exit 1; }
 echo "    [PASS] Employer analyze computed readability score and detected issues"
 
-# Check 7: Negative error handling (empty input validation)
-echo "==> [7/8] Checking error envelope on empty input"
+# Check 8: Negative error handling (empty input validation)
+echo "==> [8/9] Checking error envelope on empty input"
 STATUS_CODE=$(curl -s -o /tmp/smoke_err.json -w "%{http_code}" -X POST "http://127.0.0.1:$PORT/api/employer/analyze" \
   -H "Content-Type: application/json" \
   -d '{"text": "   ", "doc_type": "onboarding"}')
@@ -145,9 +161,9 @@ grep -q '"empty_input"' /tmp/smoke_err.json || { echo "!! Expected code empty_in
 grep -q '"ok":false' /tmp/smoke_err.json || { echo "!! Expected ok:false: $(cat /tmp/smoke_err.json)"; exit 1; }
 echo "    [PASS] Empty input produced HTTP 400 with code=empty_input envelope"
 
-# Check 8: Static HTML web page serving
-echo "==> [8/8] Checking static HTML web page serving"
-PAGES=("/" "/index.html" "/employee/profile.html" "/employer/index.html")
+# Check 9: Static HTML web page serving
+echo "==> [9/9] Checking static HTML web page serving"
+PAGES=("/" "/index.html" "/employee/profile.html" "/employee/clarify.html" "/employer/index.html")
 for page in "${PAGES[@]}"; do
   PAGE_RESP=$(curl -sf "http://127.0.0.1:$PORT$page")
   echo "$PAGE_RESP" | grep -qi '<html' || { echo "!! Page $page did not return HTML"; exit 1; }
