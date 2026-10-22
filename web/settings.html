@@ -177,7 +177,19 @@
         <div class="settings-layout">
           <!-- Controls Column -->
           <div class="settings-controls-col">
-            <form id="settings-form" novalidate onsubmit="return false;">
+                        <form id="settings-form" novalidate onsubmit="return false;">
+              <!-- Section 0: Adaptare automată din nevoi -->
+              <fieldset class="settings-section" style="border-left: 4px solid var(--primary); background: var(--bg-surface-alt); padding: 1.25rem; margin-bottom: 1.5rem;">
+                <legend class="settings-legend">Adaptare automată din nevoile tale de lucru</legend>
+                <div class="setting-item">
+                  <label for="pref-freeform-needs" class="setting-label">Descrie nevoile tale în propriile cuvinte (fără diagnostice medicale):</label>
+                  <textarea id="pref-freeform-needs" rows="3" style="width: 100%; box-sizing: border-box; min-height: 80px; padding: 0.5rem; font-family: inherit; border: 1.5px solid var(--border-color); border-radius: var(--radius-sm);" placeholder="Exemplu: Am nevoie de font mare, contrast bun, instrucțiuni scurte pas cu pas și cuvinte cheie accentuate."></textarea>
+                  <button type="button" id="btn-ai-auto-adapt" class="btn btn-primary" style="margin-top: 0.75rem; width: 100%;">
+                    Adaptează site-ul automat din textul meu
+                  </button>
+                  <div id="ai-adapt-feedback" style="display: none; margin-top: 0.5rem; font-size: 0.9rem; color: var(--primary);"></div>
+                </div>
+              </fieldset>
               <!-- Section 1: Aspect vizual și contrast -->
               <fieldset class="settings-section">
                 <legend class="settings-legend">1. Aspect vizual și contrast</legend>
@@ -210,6 +222,7 @@
                     <option value="m">Mediu (18px — standard)</option>
                     <option value="l">Mare (20px — confortabil)</option>
                     <option value="xl">Foarte mare (22.4px — relaxat)</option>
+                    <option value="xxl">Extra mare (26px — vizibilitate maximă)</option>
                   </select>
                 </div>
 
@@ -226,6 +239,8 @@
                   <select id="pref-font" class="setting-select" name="font">
                     <option value="default">Implicit de sistem (curat, optimizat pentru ecran)</option>
                     <option value="readable">Optimizat pentru citire (caractere distincte, spațiat)</option>
+                    <option value="opendyslexic">OpenDyslexic (asistență dislexie)</option>
+                    <option value="lexend">Lexend (fluență lectură &amp; ADHD)</option>
                   </select>
                 </div>
               </fieldset>

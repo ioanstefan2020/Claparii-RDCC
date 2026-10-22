@@ -1,3 +1,4 @@
+import { renderAccessibleText } from "../shared/a11y-text.js";
 /**
  * meeting.js - Meeting Helper Screen Module (F4)
  * Owner: p2
@@ -118,7 +119,7 @@ export function renderMeetingResults(data, container, callbacks = {}) {
 
   // 1. Render Summary
   const summaryCont = container.querySelector ? container.querySelector("#summary-content") : null;
-  const summaryHtml = `<p style="margin: 0; line-height: 1.6;">${escapeHtml(summary || "Fără rezumat.")}</p>`;
+  const summaryHtml = `<p style="margin: 0; line-height: 1.6;">${renderAccessibleText(summary || "Fără rezumat.")}</p>`;
   if (summaryCont) {
     summaryCont.innerHTML = summaryHtml;
   }
@@ -133,7 +134,7 @@ export function renderMeetingResults(data, container, callbacks = {}) {
       .map(
         d => `
         <div class="decision-item">
-          <div style="font-weight: 600; color: var(--text-main); font-size: 1rem;">${escapeHtml(d.text)}</div>
+          <div style="font-weight: 600; color: var(--text-main); font-size: 1rem;">${renderAccessibleText(d.text)}</div>
           ${
             d.source_quote
               ? `<div class="meta-secondary" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.35rem;">
@@ -175,7 +176,7 @@ export function renderMeetingResults(data, container, callbacks = {}) {
               ${dueNote}
             </div>
             <div style="font-size: 1.05rem; font-weight: 600; color: var(--text-main); margin-top: 0.25rem;">
-              ${escapeHtml(item.task)}
+              ${renderAccessibleText(item.task)}
             </div>
             ${
               item.source_quote

@@ -1,476 +1,1496 @@
 <!doctype html>
 <html lang="ro">
-<head>
-  <meta charset="utf-8">
-  <title>Profil &amp; Nevoi de Lucru — PrimaZi</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Inline <head> loader script reading wp.prefs.v1 to eliminate FOUC -->
-  <script>
-    (function() {
-      try {
-        var raw = localStorage.getItem('wp.prefs.v1');
-        if (raw) {
-          var data = JSON.parse(raw);
-          var p = data && data.prefs ? data.prefs : {};
-          var root = document.documentElement;
-          if (p.theme) root.setAttribute('data-theme', p.theme);
-          if (p.textSize) root.setAttribute('data-text', p.textSize);
-          if (p.spacing) root.setAttribute('data-spacing', p.spacing);
-          if (p.contrast) root.setAttribute('data-contrast', p.contrast);
-          if (p.motion) root.setAttribute('data-motion', p.motion);
-          if (p.font) root.setAttribute('data-font', p.font);
-          if (p.density) root.setAttribute('data-density', p.density);
-          if (p.sidebar) root.setAttribute('data-sidebar', p.sidebar);
-        }
-      } catch (e) {}
-    })();
-  </script>
-  <link rel="stylesheet" href="/shared/a11y.css">
-  <link rel="stylesheet" href="/css/tokens.css">
-  <link rel="stylesheet" href="/css/shell.css">
-</head>
-<body>
-  <!-- Skip link for keyboard navigation -->
-  <a href="#main" class="skip-link">Sari la conținutul principal</a>
+    <head>
+        <meta charset="utf-8" />
+        <title>Profil &amp; Nevoi de Lucru — PrimaZi</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <!-- Inline <head> loader script reading wp.prefs.v1 to eliminate FOUC -->
+        <script>
+            (function () {
+                try {
+                    var raw = localStorage.getItem("wp.prefs.v1");
+                    if (raw) {
+                        var data = JSON.parse(raw);
+                        var p = data && data.prefs ? data.prefs : {};
+                        var root = document.documentElement;
+                        if (p.theme) root.setAttribute("data-theme", p.theme);
+                        if (p.textSize)
+                            root.setAttribute("data-text", p.textSize);
+                        if (p.spacing)
+                            root.setAttribute("data-spacing", p.spacing);
+                        if (p.contrast)
+                            root.setAttribute("data-contrast", p.contrast);
+                        if (p.motion)
+                            root.setAttribute("data-motion", p.motion);
+                        if (p.font) root.setAttribute("data-font", p.font);
+                        if (p.density)
+                            root.setAttribute("data-density", p.density);
+                        if (p.sidebar)
+                            root.setAttribute("data-sidebar", p.sidebar);
+                        if (typeof p.bionic !== "undefined")
+                            root.setAttribute(
+                                "data-bionic",
+                                p.bionic ? "true" : "false",
+                            );
+                        if (typeof p.highlightKeyTerms !== "undefined")
+                            root.setAttribute(
+                                "data-highlight-terms",
+                                p.highlightKeyTerms ? "true" : "false",
+                            );
+                    }
+                } catch (e) {}
+            })();
+        </script>
+        <link rel="stylesheet" href="/shared/a11y.css" />
+        <link rel="stylesheet" href="/css/tokens.css" />
+        <link rel="stylesheet" href="/css/shell.css" />
+    </head>
+    <body>
+        <!-- Skip link for keyboard navigation -->
+        <a href="#main" class="skip-link">Sari la conținutul principal</a>
 
-  <div class="app-container">
-    <!-- Mobile Backdrop -->
-    <div id="sidebar-backdrop" class="sidebar-backdrop" tabindex="-1" aria-hidden="true"></div>
+        <div class="app-container">
+            <!-- Mobile Backdrop -->
+            <div
+                id="sidebar-backdrop"
+                class="sidebar-backdrop"
+                tabindex="-1"
+                aria-hidden="true"
+            ></div>
 
             <!-- Collapsible Gemini Sidebar -->
-    <aside id="app-sidebar" class="app-sidebar" aria-label="Bara laterală de navigare">
-      <!-- Top Brand Header with Logo and Collapse Toggle -->
-      <div class="sidebar-header">
-        <a href="/" class="sidebar-brand" aria-label="PrimaZi Acasă">
-          <span class="brand-badge" aria-hidden="true">PZ</span>
-          <span class="sidebar-brand-text">PrimaZi</span>
-        </a>
-        <button type="button" id="btn-sidebar-collapse" class="btn-sidebar-toggle" aria-expanded="true" aria-label="Comută bara laterală" title="Comută bara laterală">
-          <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>
-        </button>
-      </div>
+            <aside
+                id="app-sidebar"
+                class="app-sidebar"
+                aria-label="Bara laterală de navigare"
+            >
+                <!-- Top Brand Header with Logo and Collapse Toggle -->
+                <div class="sidebar-header">
+                    <a
+                        href="/"
+                        class="sidebar-brand"
+                        aria-label="PrimaZi Acasă"
+                    >
+                        <span class="brand-badge" aria-hidden="true">PZ</span>
+                        <span class="sidebar-brand-text">PrimaZi</span>
+                    </a>
+                    <button
+                        type="button"
+                        id="btn-sidebar-collapse"
+                        class="btn-sidebar-toggle"
+                        aria-expanded="true"
+                        aria-label="Comută bara laterală"
+                        title="Comută bara laterală"
+                    >
+                        <svg
+                            class="nav-icon"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                    </button>
+                </div>
 
-      <div class="sidebar-content">
-        <div class="sidebar-action-container">
-          <a href="/employee/clarify.html" class="sidebar-new-pill" aria-label="Pornește o clarificare nouă">
-            <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            <span class="btn-new-text">Conversație nouă</span>
-          </a>
+                <div class="sidebar-content">
+                    <div class="sidebar-action-container">
+                        <a
+                            href="/employee/clarify.html"
+                            class="sidebar-new-pill"
+                            aria-label="Pornește o clarificare nouă"
+                        >
+                            <svg
+                                class="nav-icon"
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            <span class="btn-new-text">Conversație nouă</span>
+                        </a>
+                    </div>
+
+                    <!-- Main Navigation Landmark with all required links -->
+                    <nav aria-label="Navigare principală">
+                        <ul class="sidebar-nav">
+                            <li>
+                                <a href="/" class="nav-link">
+                                    <svg
+                                        class="nav-icon"
+                                        viewBox="0 0 24 24"
+                                        aria-hidden="true"
+                                    >
+                                        <path
+                                            d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+                                        ></path>
+                                        <polyline
+                                            points="9 22 9 12 15 12 15 22"
+                                        ></polyline>
+                                    </svg>
+                                    <span class="nav-text">Acasă</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/library.html" class="nav-link">
+                                    <svg
+                                        class="nav-icon"
+                                        viewBox="0 0 24 24"
+                                        aria-hidden="true"
+                                    >
+                                        <path
+                                            d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"
+                                        ></path>
+                                        <path
+                                            d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
+                                        ></path>
+                                    </svg>
+                                    <span class="nav-text">Bibliotecă</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="/employee/clarify.html"
+                                    class="nav-link"
+                                >
+                                    <svg
+                                        class="nav-icon"
+                                        viewBox="0 0 24 24"
+                                        aria-hidden="true"
+                                    >
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <path
+                                            d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"
+                                        ></path>
+                                        <line
+                                            x1="12"
+                                            y1="17"
+                                            x2="12.01"
+                                            y2="17"
+                                        ></line>
+                                    </svg>
+                                    <span class="nav-text">Clarificare</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/employee/plan.html" class="nav-link">
+                                    <svg
+                                        class="nav-icon"
+                                        viewBox="0 0 24 24"
+                                        aria-hidden="true"
+                                    >
+                                        <rect
+                                            x="3"
+                                            y="4"
+                                            width="18"
+                                            height="18"
+                                            rx="2"
+                                            ry="2"
+                                        ></rect>
+                                        <line
+                                            x1="16"
+                                            y1="2"
+                                            x2="16"
+                                            y2="6"
+                                        ></line>
+                                        <line
+                                            x1="8"
+                                            y1="2"
+                                            x2="8"
+                                            y2="6"
+                                        ></line>
+                                        <line
+                                            x1="3"
+                                            y1="10"
+                                            x2="21"
+                                            y2="10"
+                                        ></line>
+                                    </svg>
+                                    <span class="nav-text">Planificator</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="/employee/meeting.html"
+                                    class="nav-link"
+                                >
+                                    <svg
+                                        class="nav-icon"
+                                        viewBox="0 0 24 24"
+                                        aria-hidden="true"
+                                    >
+                                        <path
+                                            d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"
+                                        ></path>
+                                        <circle cx="9" cy="7" r="4"></circle>
+                                        <path
+                                            d="M23 21v-2a4 4 0 0 0-3-3.87"
+                                        ></path>
+                                        <path
+                                            d="M16 3.13a4 4 0 0 1 0 7.75"
+                                        ></path>
+                                    </svg>
+                                    <span class="nav-text">Ședințe</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="/employee/adjustments.html"
+                                    class="nav-link"
+                                >
+                                    <svg
+                                        class="nav-icon"
+                                        viewBox="0 0 24 24"
+                                        aria-hidden="true"
+                                    >
+                                        <circle cx="12" cy="4" r="2"></circle>
+                                        <path
+                                            d="M4 9h16M12 9v12M7 13l-3 8M17 13l3 8"
+                                        ></path>
+                                    </svg>
+                                    <span class="nav-text">Adaptări</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="/employee/profile.html"
+                                    aria-current="page"
+                                    class="nav-link active"
+                                >
+                                    <svg
+                                        class="nav-icon"
+                                        viewBox="0 0 24 24"
+                                        aria-hidden="true"
+                                    >
+                                        <path
+                                            d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
+                                        ></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                    <span class="nav-text"
+                                        >Profil &amp; Nevoi</span
+                                    >
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/employer/index.html" class="nav-link">
+                                    <svg
+                                        class="nav-icon"
+                                        viewBox="0 0 24 24"
+                                        aria-hidden="true"
+                                    >
+                                        <rect
+                                            x="2"
+                                            y="7"
+                                            width="20"
+                                            height="14"
+                                            rx="2"
+                                            ry="2"
+                                        ></rect>
+                                        <path
+                                            d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"
+                                        ></path>
+                                    </svg>
+                                    <span class="nav-text">Zona Angajator</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/settings.html" class="nav-link">
+                                    <svg
+                                        class="nav-icon"
+                                        viewBox="0 0 24 24"
+                                        aria-hidden="true"
+                                    >
+                                        <line
+                                            x1="4"
+                                            y1="21"
+                                            x2="4"
+                                            y2="14"
+                                        ></line>
+                                        <line
+                                            x1="4"
+                                            y1="10"
+                                            x2="4"
+                                            y2="3"
+                                        ></line>
+                                        <line
+                                            x1="12"
+                                            y1="21"
+                                            x2="12"
+                                            y2="12"
+                                        ></line>
+                                        <line
+                                            x1="12"
+                                            y1="8"
+                                            x2="12"
+                                            y2="3"
+                                        ></line>
+                                        <line
+                                            x1="20"
+                                            y1="21"
+                                            x2="20"
+                                            y2="16"
+                                        ></line>
+                                        <line
+                                            x1="20"
+                                            y1="12"
+                                            x2="20"
+                                            y2="3"
+                                        ></line>
+                                        <line
+                                            x1="1"
+                                            y1="14"
+                                            x2="7"
+                                            y2="14"
+                                        ></line>
+                                        <line
+                                            x1="9"
+                                            y1="8"
+                                            x2="15"
+                                            y2="8"
+                                        ></line>
+                                        <line
+                                            x1="17"
+                                            y1="16"
+                                            x2="23"
+                                            y2="16"
+                                        ></line>
+                                    </svg>
+                                    <span class="nav-text">Setări Confort</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+
+                <div class="sidebar-footer">
+                    <button
+                        type="button"
+                        class="btn-sidebar-toggle"
+                        aria-expanded="true"
+                        aria-label="Restrânge bara laterală"
+                    >
+                        <svg
+                            class="nav-icon"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                        <span class="collapse-text">Restrânge meniul</span>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <div class="app-main-area">
+                <!-- Top Bar -->
+                <header class="app-topbar" role="banner">
+                    <div class="topbar-left">
+                        <button
+                            type="button"
+                            id="btn-menu-toggle"
+                            class="btn-menu-toggle"
+                            aria-expanded="false"
+                            aria-controls="app-sidebar"
+                            aria-label="Deschide meniul de navigare"
+                        >
+                            <svg
+                                class="nav-icon"
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+                                <line x1="3" y1="12" x2="21" y2="12"></line>
+                                <line x1="3" y1="6" x2="21" y2="6"></line>
+                                <line x1="3" y1="18" x2="21" y2="18"></line>
+                            </svg>
+                            <span>Meniu</span>
+                        </button>
+                        <span class="topbar-title">Profil &amp; Nevoi</span>
+                    </div>
+                    <div class="topbar-right">
+                        <!-- Persistent Accessibility Header Toolbar -->
+                        <div
+                            class="a11y-header-toolbar"
+                            role="toolbar"
+                            aria-label="Ajustări rapide de accesibilitate"
+                        >
+                            <button
+                                type="button"
+                                id="btn-header-contrast"
+                                class="a11y-toolbar-btn"
+                                aria-label="Comută modul de contrast: Cald, Întunecat sau Luminos"
+                            >
+                                <span>Contrast: Cald</span>
+                            </button>
+                            <button
+                                type="button"
+                                id="btn-header-text"
+                                class="a11y-toolbar-btn"
+                                aria-label="Comută dimensiunea textului: Mediu, Mare sau Foarte Mare"
+                            >
+                                <span>Text: Mediu</span>
+                            </button>
+                            <button
+                                type="button"
+                                id="btn-header-audio"
+                                class="a11y-toolbar-btn"
+                                aria-label="Controlează redarea audio: Pauză sau Continuă"
+                            >
+                                <span>Audio: Pauză</span>
+                            </button>
+                            <button
+                                type="button"
+                                id="btn-header-dyslexia"
+                                class="a11y-toolbar-btn"
+                                aria-pressed="false"
+                                aria-label="Comută fontul pentru dislexie"
+                            >
+                                <span>Dislexie: Oprită</span>
+                            </button>
+                        </div>
+
+                        <a
+                            href="/welcome.html"
+                            class="btn-comfort"
+                            aria-label="Deschide chestionarul de configurare confort"
+                        >
+                            <span>Chestionar</span>
+                        </a>
+                        <a
+                            href="/settings.html"
+                            class="btn-comfort"
+                            aria-label="Deschide setările de confort și personalizare"
+                        >
+                            <svg
+                                class="nav-icon"
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path
+                                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+                                ></path>
+                            </svg>
+                            <span>Setări</span>
+                        </a>
+                    </div>
+                </header>
+
+                <!-- Main Content -->
+                <main id="main">
+                    <!-- Live region for screen readers -->
+                    <div
+                        id="status-live"
+                        class="sr-only"
+                        aria-live="polite"
+                        aria-atomic="true"
+                    ></div>
+
+                    <!-- Visible notification banner (visual only, announced via #status-live) -->
+                    <div
+                        id="status-banner"
+                        aria-hidden="true"
+                        style="display: none"
+                    ></div>
+
+                    <section class="hero-section">
+                        <h1 class="page-title">
+                            Profilul tău de lucru și confidențialitate
+                        </h1>
+                        <p class="page-lead">
+                            Personalizează modul în care asistentul AI îți
+                            simplifică materialele și adaptează afișarea la
+                            nevoile tale. Toate setările sunt confidențiale și
+                            rămân exclusiv pe acest dispozitiv.
+                        </p>
+                    </section>
+
+                    <!-- Plain-language Romanian AI Transparency & Responsible AI notice -->
+                    <section
+                        class="feature-card primary-card"
+                        aria-labelledby="transparency-notice-heading"
+                        style="
+                            border-left: 6px solid var(--primary);
+                            background-color: var(--primary-subtle);
+                            margin-bottom: 1.5rem;
+                        "
+                    >
+                        <h2 id="transparency-notice-heading" class="card-title">
+                            Cum funcționează asistentul și confidențialitatea datelor tale
+                        </h2>
+                        <ul
+                            class="card-desc"
+                            style="
+                                margin: 0;
+                                padding-left: 1.25rem;
+                                display: flex;
+                                flex-direction: column;
+                                gap: 0.6rem;
+                            "
+                        >
+                            <li>
+                                <strong
+                                    >100% Confidențial pe dispozitivul tău:</strong
+                                >
+                                Datele tale nu sunt stocate pe servere externe
+                                și nu există conturi de utilizator. Totul se
+                                păstrează local în browserul tău.
+                            </li>
+                            <li>
+                                <strong>Fără diagnostice medicale:</strong> Nu
+                                cerem, nu stocăm și nu deducem niciun fel de
+                                diagnostic sau date de sănătate. Îți exprimi
+                                cerințele practice în propriile cuvinte (de
+                                exemplu: „am nevoie de sarcini scrise pas cu
+                                pas”).
+                            </li>
+                            <li>
+                                <strong
+                                    >Transparență AI și control total:</strong
+                                >
+                                AI-ul doar simplifică frazele și extrage
+                                termenele indicate explicit în document.
+                                Verifică întotdeauna citatele originale din
+                                text.
+                            </li>
+                            <li>
+                                <strong>Ștergere completă oricând:</strong> Poți
+                                apăsa oricând pe butonul „Șterge toate datele
+                                mele” pentru a reseta definitiv tot ce s-a
+                                salvat pe acest dispozitiv.
+                            </li>
+                        </ul>
+                    </section>
+
+                    <!-- Profile and Preferences Form -->
+                    <form id="profile-form">
+                        <!-- Section 1: AI Simplification Preferences -->
+                        <fieldset
+                            class="feature-card"
+                            style="
+                                border: 1.5px solid var(--border-color);
+                                padding: var(--space-lg);
+                                margin-bottom: 1.5rem;
+                            "
+                        >
+                            <legend class="card-title">
+                                Preferințe pentru simplificarea sarcinilor (AI)
+                            </legend>
+
+                            <div style="margin-top: 0.75rem">
+                                <label for="reading-level-select"
+                                    >Nivel de claritate și detaliu:</label
+                                >
+                                <p
+                                    id="reading-level-desc"
+                                    class="meta-secondary"
+                                    style="
+                                        font-size: 0.9rem;
+                                        color: var(--text-muted);
+                                        margin-bottom: 0.4rem;
+                                    "
+                                >
+                                    Alege cât de direct și simplu dorești să fie
+                                    reformulate explicațiile sarcinilor.
+                                </p>
+                                <select
+                                    id="reading-level-select"
+                                    aria-describedby="reading-level-desc"
+                                    style="width: 100%; box-sizing: border-box"
+                                >
+                                    <option value="simple">
+                                        Simplu — limbaj clar și prietenos
+                                        (recomandat)
+                                    </option>
+                                    <option value="very_simple">
+                                        Foarte simplu — propoziții foarte scurte
+                                        și directe
+                                    </option>
+                                    <option value="standard">
+                                        Standard — păstrează mai multe detalii
+                                        din context
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div style="margin-top: 1.25rem">
+                                <label for="format-select"
+                                    >Formatul preferat pentru
+                                    instrucțiuni:</label
+                                >
+                                <p
+                                    id="format-desc"
+                                    class="meta-secondary"
+                                    style="
+                                        font-size: 0.9rem;
+                                        color: var(--text-muted);
+                                        margin-bottom: 0.4rem;
+                                    "
+                                >
+                                    Cum dorești să fie structurate sarcinile de
+                                    lucru simplificate.
+                                </p>
+                                <select
+                                    id="format-select"
+                                    aria-describedby="format-desc"
+                                    style="width: 100%; box-sizing: border-box"
+                                >
+                                    <option value="steps">
+                                        Pași numerotați (1, 2, 3) — ordonați
+                                        secvențial
+                                    </option>
+                                    <option value="short_paragraphs">
+                                        Paragrafe scurte — text cursiv defalcat
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div style="margin-top: 1.25rem">
+                                <label for="max-sentence-words"
+                                    >Lungimea maximă a unei fraze
+                                    (cuvinte):</label
+                                >
+                                <p
+                                    id="max-sentence-words-desc"
+                                    class="meta-secondary"
+                                    style="
+                                        font-size: 0.9rem;
+                                        color: var(--text-muted);
+                                        margin-bottom: 0.4rem;
+                                    "
+                                >
+                                    Numărul maxim recomandat de cuvinte per
+                                    propoziție (între 6 și 30 cuvinte; standard
+                                    12).
+                                </p>
+                                <input
+                                    type="number"
+                                    id="max-sentence-words"
+                                    min="6"
+                                    max="30"
+                                    value="12"
+                                    aria-describedby="max-sentence-words-desc"
+                                    style="width: 100%; box-sizing: border-box"
+                                />
+                            </div>
+
+                            <div style="margin-top: 1.25rem">
+                                <label
+                                    for="read-aloud-default"
+                                    style="
+                                        display: inline-flex;
+                                        align-items: center;
+                                        gap: 0.5rem;
+                                        font-weight: normal;
+                                        cursor: pointer;
+                                    "
+                                >
+                                    <input
+                                        type="checkbox"
+                                        id="read-aloud-default"
+                                        style="width: auto; min-height: auto"
+                                    />
+                                    <span
+                                        ><strong>Citire audio automată:</strong>
+                                        Activează implicit butonul de citire cu
+                                        voce tare (Text-to-Speech) la afișarea
+                                        rezultatelor</span
+                                    >
+                                </label>
+                            </div>
+
+                            <div style="margin-top: 1.25rem">
+                                <label for="needs-notes"
+                                    >Nevoile tale de lucru în propriile cuvinte
+                                    (opțional, max. 500 caractere):</label
+                                >
+                                <p
+                                    id="needs-notes-desc"
+                                    class="meta-secondary"
+                                    style="
+                                        font-size: 0.9rem;
+                                        color: var(--text-muted);
+                                        margin-bottom: 0.4rem;
+                                    "
+                                >
+                                    Descrie ce te ajută la birou (de exemplu:
+                                    „prefer instrucțiuni scrise pas cu pas”, „am
+                                    ADHD și mă pierd la texte lungi”, „mă
+                                    deranjează lumina puternică”). Nu include
+                                    date medicale sau diagnostice.
+                                </p>
+                                <textarea
+                                    id="needs-notes"
+                                    maxlength="500"
+                                    rows="4"
+                                    aria-describedby="needs-notes-desc needs-notes-counter"
+                                    placeholder="Exemplu: Mă ajută mult să primesc instrucțiunile în scris, defalcate pe pași mici, cu font mare și cuvinte cheie accentuate."
+                                    style="width: 100%; box-sizing: border-box"
+                                ></textarea>
+                                <div
+                                    id="needs-notes-counter"
+                                    style="
+                                        font-size: 0.85rem;
+                                        color: var(--text-muted);
+                                        text-align: right;
+                                        margin-top: 0.25rem;
+                                    "
+                                >
+                                    0 / 500 caractere
+                                </div>
+
+                                <!-- Dedicated AI Adaptation Recommender Button -->
+                                <div style="margin-top: 0.85rem">
+                                    <button
+                                        type="button"
+                                        id="btn-recommend-adaptations"
+                                        class="btn btn-primary"
+                                        style="
+                                            display: inline-flex;
+                                            align-items: center;
+                                            gap: 0.5rem;
+                                        "
+                                    >
+                                        <span
+                                            >Adaptează site-ul automat din
+                                            nevoile mele</span
+                                        >
+                                    </button>
+                                </div>
+
+                                <!-- Recommendation Feedback Container -->
+                                <div
+                                    id="recommendations-box"
+                                    role="region"
+                                    aria-label="Adaptări recomandate"
+                                    style="
+                                        display: none;
+                                        margin-top: 1.25rem;
+                                        padding: 1.25rem;
+                                        background: var(--bg-surface-alt);
+                                        border-radius: var(--radius-md);
+                                        border-left: 4px solid var(--primary);
+                                    "
+                                ></div>
+                            </div>
+                        </fieldset>
+
+                        <!-- Section 2: Visual & Ergonomic Preferences -->
+                        <fieldset
+                            class="feature-card"
+                            style="
+                                border: 1.5px solid var(--border-color);
+                                padding: var(--space-lg);
+                                margin-bottom: 1.5rem;
+                            "
+                        >
+                            <legend class="card-title">
+                                Confort vizual și accesibilitate afișare
+                            </legend>
+
+                            <div class="card-grid" style="margin-top: 0.5rem">
+                                <div>
+                                    <label for="theme-select"
+                                        >Temă cromatică:</label
+                                    >
+                                    <select
+                                        id="theme-select"
+                                        style="
+                                            width: 100%;
+                                            box-sizing: border-box;
+                                        "
+                                    >
+                                        <option value="light">
+                                            Luminoasă (standard cald)
+                                        </option>
+                                        <option value="dark">
+                                            Întunecată (odihnitor pentru ochi)
+                                        </option>
+                                        <option value="high-contrast">
+                                            Contrast ridicat (fond negru, text
+                                            contrastant)
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label for="text-size-select"
+                                        >Dimensiune font:</label
+                                    >
+                                    <select
+                                        id="text-size-select"
+                                        style="
+                                            width: 100%;
+                                            box-sizing: border-box;
+                                        "
+                                    >
+                                        <option value="normal">
+                                            Standard (100%)
+                                        </option>
+                                        <option value="large">
+                                            Mare (115%)
+                                        </option>
+                                        <option value="xlarge">
+                                            Foarte mare (130%)
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label for="font-select">Stil Font:</label>
+                                    <select
+                                        id="font-select"
+                                        style="
+                                            width: 100%;
+                                            box-sizing: border-box;
+                                        "
+                                    >
+                                        <option value="default">
+                                            Standard curat
+                                        </option>
+                                        <option value="readable">
+                                            Optimizat citire (Atkinson
+                                            Hyperlegible)
+                                        </option>
+                                        <option value="opendyslexic">
+                                            OpenDyslexic (asistență dislexie)
+                                        </option>
+                                        <option value="lexend">
+                                            Lexend (fluență lectură &amp; ADHD)
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div
+                                    style="
+                                        display: flex;
+                                        flex-direction: column;
+                                        gap: 0.75rem;
+                                        justify-content: center;
+                                    "
+                                >
+                                    <label
+                                        for="spacing-toggle"
+                                        style="
+                                            font-weight: normal;
+                                            display: inline-flex;
+                                            align-items: center;
+                                            gap: 0.5rem;
+                                            cursor: pointer;
+                                        "
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            id="spacing-toggle"
+                                            style="
+                                                width: auto;
+                                                min-height: auto;
+                                            "
+                                        />
+                                        <span
+                                            >Spațiere mărită între rânduri și
+                                            litere</span
+                                        >
+                                    </label>
+
+                                    <label
+                                        for="simple-mode-toggle"
+                                        style="
+                                            font-weight: normal;
+                                            display: inline-flex;
+                                            align-items: center;
+                                            gap: 0.5rem;
+                                            cursor: pointer;
+                                        "
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            id="simple-mode-toggle"
+                                            style="
+                                                width: auto;
+                                                min-height: auto;
+                                            "
+                                        />
+                                        <span
+                                            >Mod simplificat (fără elemente
+                                            decorative)</span
+                                        >
+                                    </label>
+
+                                    <label
+                                        for="line-focus-toggle"
+                                        style="
+                                            font-weight: normal;
+                                            display: inline-flex;
+                                            align-items: center;
+                                            gap: 0.5rem;
+                                            cursor: pointer;
+                                        "
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            id="line-focus-toggle"
+                                            style="
+                                                width: auto;
+                                                min-height: auto;
+                                            "
+                                        />
+                                        <span
+                                            >Ghidaj vizual de citire (Reading
+                                            Ruler)</span
+                                        >
+                                    </label>
+
+                                    <label
+                                        for="bionic-toggle"
+                                        style="
+                                            font-weight: normal;
+                                            display: inline-flex;
+                                            align-items: center;
+                                            gap: 0.5rem;
+                                            cursor: pointer;
+                                        "
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            id="bionic-toggle"
+                                            style="
+                                                width: auto;
+                                                min-height: auto;
+                                            "
+                                        />
+                                        <span
+                                            ><strong>Citire Bionică:</strong>
+                                            accentuează începutul
+                                            cuvintelor</span
+                                        >
+                                    </label>
+
+                                    <label
+                                        for="highlight-terms-toggle"
+                                        style="
+                                            font-weight: normal;
+                                            display: inline-flex;
+                                            align-items: center;
+                                            gap: 0.5rem;
+                                            cursor: pointer;
+                                        "
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            id="highlight-terms-toggle"
+                                            style="
+                                                width: auto;
+                                                min-height: auto;
+                                            "
+                                        />
+                                        <span
+                                            ><strong>Evidențiere ADHD:</strong>
+                                            cuvinte cheie mărite și
+                                            conturate</span
+                                        >
+                                    </label>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <!-- Actions -->
+                        <div
+                            style="
+                                display: flex;
+                                flex-wrap: wrap;
+                                gap: 1rem;
+                                align-items: center;
+                                margin-top: 1.5rem;
+                            "
+                        >
+                            <button
+                                type="submit"
+                                id="btn-save-profile"
+                                class="btn btn-primary"
+                            >
+                                Salvează preferințele
+                            </button>
+                            <a href="/" class="btn btn-secondary">
+                                Înapoi la pagina principală
+                            </a>
+                            <button
+                                type="button"
+                                id="btn-delete-profile"
+                                class="btn btn-secondary"
+                                style="
+                                    margin-left: auto;
+                                    border-color: var(--error-border);
+                                    color: var(--error-text);
+                                "
+                            >
+                                Șterge toate datele mele
+                            </button>
+                        </div>
+                    </form>
+                </main>
+
+                <!-- Footer -->
+                <footer class="app-footer" role="contentinfo">
+                    <p>
+                        PrimaZi — Asistent accesibil pentru primul loc de muncă.
+                        Creat pentru AccessABILITY Hackathon 2026.
+                    </p>
+                </footer>
+            </div>
         </div>
 
-        <!-- Main Navigation Landmark with all required links -->
-        <nav aria-label="Navigare principală">
-          <ul class="sidebar-nav">
-            <li>
-              <a href="/" class="nav-link">
-                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                <span class="nav-text">Acasă</span>
-              </a>
-            </li>
-            <li>
-              <a href="/library.html" class="nav-link">
-                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-                <span class="nav-text">Bibliotecă</span>
-              </a>
-            </li>
-            <li>
-              <a href="/employee/clarify.html" class="nav-link">
-                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                <span class="nav-text">Clarificare</span>
-              </a>
-            </li>
-            <li>
-              <a href="/employee/plan.html" class="nav-link">
-                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                <span class="nav-text">Planificator</span>
-              </a>
-            </li>
-            <li>
-              <a href="/employee/meeting.html" class="nav-link">
-                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                <span class="nav-text">Ședințe</span>
-              </a>
-            </li>
-            <li>
-              <a href="/employee/adjustments.html" class="nav-link">
-                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="4" r="2"></circle><path d="M4 9h16M12 9v12M7 13l-3 8M17 13l3 8"></path></svg>
-                <span class="nav-text">Adaptări</span>
-              </a>
-            </li>
-            <li>
-              <a href="/employee/profile.html" aria-current="page" class="nav-link active">
-                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                <span class="nav-text">Profil &amp; Nevoi</span>
-              </a>
-            </li>
-            <li>
-              <a href="/employer/index.html" class="nav-link">
-                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
-                <span class="nav-text">Zona Angajator</span>
-              </a>
-            </li>
-            <li>
-              <a href="/settings.html" class="nav-link">
-                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
-                <span class="nav-text">Setări Confort</span>
-              </a>
-            </li>
-          </ul>
-        </nav>
-      </div>
+        <!-- Wiring Script -->
+        <script type="module" src="/js/shell.js"></script>
+        <script type="module">
+            import {
+                getProfile,
+                saveProfile,
+                getA11yPrefs,
+                saveA11yPrefs,
+                applyA11yPrefs,
+                deleteAllUserData,
+                DEFAULT_PROFILE,
+                DEFAULT_A11Y_PREFS,
+            } from "/shared/profile.js";
+            import { toggleReadingRuler } from "/shared/a11y-text.js";
 
-      <div class="sidebar-footer">
-        <button type="button" class="btn-sidebar-toggle" aria-expanded="true" aria-label="Restrânge bara laterală">
-          <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>
-          <span class="collapse-text">Restrânge meniul</span>
-        </button>
-      </div>
-    </aside>
+            // Apply accessibility preferences immediately
+            const currentA11y = getA11yPrefs();
+            applyA11yPrefs(currentA11y);
 
-    <!-- Main Content Area -->
-    <div class="app-main-area">
-      <!-- Top Bar -->
-      <header class="app-topbar" role="banner">
-        <div class="topbar-left">
-          <button type="button" id="btn-menu-toggle" class="btn-menu-toggle" aria-expanded="false" aria-controls="app-sidebar" aria-label="Deschide meniul de navigare">
-            <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-            <span>Meniu</span>
-          </button>
-          <span class="topbar-title">Profil &amp; Nevoi</span>
-        </div>
-        <div class="topbar-right">
-          <!-- Persistent Accessibility Header Toolbar -->
-          <div class="a11y-header-toolbar" role="toolbar" aria-label="Ajustări rapide de accesibilitate">
-            <button type="button" id="btn-header-contrast" class="a11y-toolbar-btn" aria-label="Comută modul de contrast: Cald, Întunecat sau Luminos">
-              <span>Contrast: Cald</span>
-            </button>
-            <button type="button" id="btn-header-text" class="a11y-toolbar-btn" aria-label="Comută dimensiunea textului: Mediu, Mare sau Foarte Mare">
-              <span>Text: Mediu</span>
-            </button>
-            <button type="button" id="btn-header-audio" class="a11y-toolbar-btn" aria-label="Controlează redarea audio: Pauză sau Continuă">
-              <span>Audio: Pauză</span>
-            </button>
-            <button type="button" id="btn-header-dyslexia" class="a11y-toolbar-btn" aria-pressed="false" aria-label="Comută fontul pentru dislexie">
-              <span>Dislexie: Oprită</span>
-            </button>
-          </div>
+            // DOM Elements
+            const liveRegion = document.getElementById("status-live");
+            const statusBanner = document.getElementById("status-banner");
+            const profileForm = document.getElementById("profile-form");
 
-          <a href="/welcome.html" class="btn-comfort" aria-label="Deschide chestionarul de configurare confort">
-            <span>Chestionar</span>
-          </a>
-          <a href="/settings.html" class="btn-comfort" aria-label="Deschide setările de confort și personalizare">
-            <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-            <span>Setări</span>
-          </a>
-        </div>
-      </header>
+            const readingLevelSelect = document.getElementById(
+                "reading-level-select",
+            );
+            const formatSelect = document.getElementById("format-select");
+            const maxSentenceWordsInput =
+                document.getElementById("max-sentence-words");
+            const readAloudCheckbox =
+                document.getElementById("read-aloud-default");
+            const needsNotesTextarea = document.getElementById("needs-notes");
+            const counterDiv = document.getElementById("needs-notes-counter");
 
-      <!-- Main Content -->
-      <main id="main">
-        <!-- Live region for screen readers -->
-        <div id="status-live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+            const themeSelect = document.getElementById("theme-select");
+            const textSizeSelect = document.getElementById("text-size-select");
+            const fontSelect = document.getElementById("font-select");
+            const spacingCheckbox = document.getElementById("spacing-toggle");
+            const simpleModeCheckbox =
+                document.getElementById("simple-mode-toggle");
+            const lineFocusCheckbox =
+                document.getElementById("line-focus-toggle");
+            const bionicCheckbox = document.getElementById("bionic-toggle");
+            const highlightTermsCheckbox = document.getElementById(
+                "highlight-terms-toggle",
+            );
 
-        <!-- Visible notification banner (visual only, announced via #status-live) -->
-        <div id="status-banner" aria-hidden="true" style="display: none;"></div>
+            const btnRecommend = document.getElementById(
+                "btn-recommend-adaptations",
+            );
+            const recommendationsBox = document.getElementById(
+                "recommendations-box",
+            );
+            const btnDelete = document.getElementById("btn-delete-profile");
 
-        <section class="hero-section">
-          <h1 class="page-title">Profilul tău de lucru și confidențialitate</h1>
-          <p class="page-lead">
-            Personalizează modul în care asistentul AI îți simplifică materialele și adaptează afișarea la nevoile tale. Toate setările sunt confidențiale și rămân exclusiv pe acest dispozitiv.
-          </p>
-        </section>
+            function announce(msg, isSuccess = true) {
+                if (liveRegion) {
+                    liveRegion.textContent = "";
+                    setTimeout(() => {
+                        liveRegion.textContent = msg;
+                    }, 50);
+                }
+                if (statusBanner) {
+                    statusBanner.className = `status-message ${isSuccess ? "status-success" : "status-warning"}`;
+                    statusBanner.textContent = msg;
+                    statusBanner.style.display = "block";
+                    statusBanner.scrollIntoView({
+                        behavior: "smooth",
+                        block: "nearest",
+                    });
+                }
+            }
 
-        <!-- Plain-language Romanian AI Transparency & Responsible AI notice -->
-        <section class="feature-card primary-card" aria-labelledby="transparency-notice-heading" style="border-left: 6px solid var(--primary); background-color: var(--primary-subtle); margin-bottom: 1.5rem;">
-          <h2 id="transparency-notice-heading" class="card-title">
-            Cum funcționează asistentul și confidențialitatea datelor tale
-          </h2>
-          <ul class="card-desc" style="margin: 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.6rem;">
-            <li>
-              <strong>100% Confidențial pe dispozitivul tău:</strong> Datele tale nu sunt stocate pe servere externe și nu există conturi de utilizator. Totul se păstrează local în browserul tău.
-            </li>
-            <li>
-              <strong>Fără diagnostice medicale:</strong> Nu cerem, nu stocăm și nu deducem niciun fel de diagnostic sau date de sănătate. Îți exprimi cerințele practice în propriile cuvinte (de exemplu: „am nevoie de sarcini scrise pas cu pas”).
-            </li>
-            <li>
-              <strong>Transparență AI și control total:</strong> AI-ul doar simplifică frazele și extrage termenele indicate explicit în document. Verifică întotdeauna citatele originale din text.
-            </li>
-            <li>
-              <strong>Ștergere completă oricând:</strong> Poți apăsa oricând pe butonul „Șterge toate datele mele” pentru a reseta definitiv tot ce s-a salvat pe acest dispozitiv.
-            </li>
-          </ul>
-        </section>
+            function updateCounter() {
+                if (needsNotesTextarea && counterDiv) {
+                    const len = needsNotesTextarea.value.length;
+                    counterDiv.textContent = `${len} / 500 caractere`;
+                }
+            }
 
-        <!-- Profile and Preferences Form -->
-        <form id="profile-form">
-          <!-- Section 1: AI Simplification Preferences -->
-          <fieldset class="feature-card" style="border: 1.5px solid var(--border-color); padding: var(--space-lg); margin-bottom: 1.5rem;">
-            <legend class="card-title">Preferințe pentru simplificarea sarcinilor (AI)</legend>
+            function readGlobalPrefs() {
+                try {
+                    const raw = localStorage.getItem("wp.prefs.v1");
+                    if (!raw) return {};
+                    const p = JSON.parse(raw);
+                    return p && p.prefs ? p.prefs : {};
+                } catch {
+                    return {};
+                }
+            }
 
-            <div style="margin-top: 0.75rem;">
-              <label for="reading-level-select">Nivel de claritate și detaliu:</label>
-              <p id="reading-level-desc" class="meta-secondary" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.4rem;">
-                Alege cât de direct și simplu dorești să fie reformulate explicațiile sarcinilor.
-              </p>
-              <select id="reading-level-select" aria-describedby="reading-level-desc" style="width: 100%; box-sizing: border-box;">
-                <option value="simple">Simplu — limbaj clar și prietenos (recomandat)</option>
-                <option value="very_simple">Foarte simplu — propoziții foarte scurte și directe</option>
-                <option value="standard">Standard — păstrează mai multe detalii din context</option>
-              </select>
-            </div>
+            function saveGlobalPrefs(updates) {
+                try {
+                    const raw = localStorage.getItem("wp.prefs.v1");
+                    const state = raw
+                        ? JSON.parse(raw)
+                        : { version: 1, prefs: {} };
+                    if (!state.prefs) state.prefs = {};
+                    Object.assign(state.prefs, updates);
+                    state.updatedAt = new Date().toISOString();
+                    localStorage.setItem("wp.prefs.v1", JSON.stringify(state));
+                } catch {}
+            }
 
-            <div style="margin-top: 1.25rem;">
-              <label for="format-select">Formatul preferat pentru instrucțiuni:</label>
-              <p id="format-desc" class="meta-secondary" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.4rem;">
-                Cum dorești să fie structurate sarcinile de lucru simplificate.
-              </p>
-              <select id="format-select" aria-describedby="format-desc" style="width: 100%; box-sizing: border-box;">
-                <option value="steps">Pași numerotați (1, 2, 3) — ordonați secvențial</option>
-                <option value="short_paragraphs">Paragrafe scurte — text cursiv defalcat</option>
-              </select>
-            </div>
+            function populateForm() {
+                const p = getProfile();
+                const a = getA11yPrefs();
+                const g = readGlobalPrefs();
 
-            <div style="margin-top: 1.25rem;">
-              <label for="max-sentence-words">Lungimea maximă a unei fraze (cuvinte):</label>
-              <p id="max-sentence-words-desc" class="meta-secondary" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.4rem;">
-                Numărul maxim recomandat de cuvinte per propoziție (între 6 și 30 cuvinte; standard 12).
-              </p>
-              <input type="number" id="max-sentence-words" min="6" max="30" value="12" aria-describedby="max-sentence-words-desc" style="width: 100%; box-sizing: border-box;">
-            </div>
+                if (readingLevelSelect)
+                    readingLevelSelect.value =
+                        p.reading_level || DEFAULT_PROFILE.reading_level;
+                if (formatSelect)
+                    formatSelect.value = p.format || DEFAULT_PROFILE.format;
+                if (maxSentenceWordsInput)
+                    maxSentenceWordsInput.value =
+                        p.max_sentence_words ||
+                        DEFAULT_PROFILE.max_sentence_words;
+                if (readAloudCheckbox)
+                    readAloudCheckbox.checked = Boolean(p.read_aloud_default);
+                if (needsNotesTextarea)
+                    needsNotesTextarea.value = p.needs_notes || "";
+                updateCounter();
 
-            <div style="margin-top: 1.25rem;">
-              <label for="read-aloud-default" style="display: inline-flex; align-items: center; gap: 0.5rem; font-weight: normal; cursor: pointer;">
-                <input type="checkbox" id="read-aloud-default" style="width: auto; min-height: auto;">
-                <span><strong>Citire audio automată:</strong> Activează implicit butonul de citire cu voce tare (Text-to-Speech) la afișarea rezultatelor</span>
-              </label>
-            </div>
+                if (themeSelect)
+                    themeSelect.value =
+                        g.theme || a.theme || DEFAULT_A11Y_PREFS.theme;
+                if (textSizeSelect) {
+                    const sz =
+                        g.textSize || a.textSize || DEFAULT_A11Y_PREFS.textSize;
+                    textSizeSelect.value =
+                        sz === "xl"
+                            ? "xlarge"
+                            : sz === "l"
+                              ? "large"
+                              : sz === "xxl"
+                                ? "xlarge"
+                                : a.textSize || "normal";
+                }
+                if (fontSelect) fontSelect.value = g.font || "default";
+                if (spacingCheckbox)
+                    spacingCheckbox.checked =
+                        g.spacing === "roomy" || a.spacing === "wide";
+                if (simpleModeCheckbox)
+                    simpleModeCheckbox.checked = Boolean(a.simpleMode);
+                if (lineFocusCheckbox)
+                    lineFocusCheckbox.checked = Boolean(
+                        g.readingRuler || a.lineFocus,
+                    );
+                if (bionicCheckbox) bionicCheckbox.checked = Boolean(g.bionic);
+                if (highlightTermsCheckbox)
+                    highlightTermsCheckbox.checked = Boolean(
+                        g.highlightKeyTerms,
+                    );
+            }
 
-            <div style="margin-top: 1.25rem;">
-              <label for="needs-notes">Nevoile tale de lucru în propriile cuvinte (opțional, max. 500 caractere):</label>
-              <p id="needs-notes-desc" class="meta-secondary" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.4rem;">
-                Descrie ce te ajută la birou (de exemplu: „prefer instrucțiuni scrise”, „am nevoie de pauze regulate”, „ajută-mă cu termene clare”). Nu include date medicale sau diagnostice.
-              </p>
-              <textarea id="needs-notes" maxlength="500" rows="4" aria-describedby="needs-notes-desc needs-notes-counter" placeholder="Exemplu: Mă ajută mult să primesc instrucțiunile în scris, defalcate pe pași mici și cu termene precise." style="width: 100%; box-sizing: border-box;"></textarea>
-              <div id="needs-notes-counter" style="font-size: 0.85rem; color: var(--text-muted); text-align: right; margin-top: 0.25rem;">
-                0 / 500 caractere
+            // Initialize fields
+            populateForm();
+
+            if (needsNotesTextarea) {
+                needsNotesTextarea.addEventListener("input", updateCounter);
+            }
+
+            // Real-time visual updates
+            if (themeSelect) {
+                themeSelect.addEventListener("change", (e) => {
+                    saveA11yPrefs({ theme: e.target.value });
+                    saveGlobalPrefs({ theme: e.target.value });
+                });
+            }
+            if (textSizeSelect) {
+                textSizeSelect.addEventListener("change", (e) => {
+                    const val =
+                        e.target.value === "xlarge"
+                            ? "xl"
+                            : e.target.value === "large"
+                              ? "l"
+                              : "m";
+                    saveA11yPrefs({ textSize: e.target.value });
+                    saveGlobalPrefs({ textSize: val });
+                    document.documentElement.setAttribute("data-text", val);
+                });
+            }
+            if (fontSelect) {
+                fontSelect.addEventListener("change", (e) => {
+                    saveGlobalPrefs({ font: e.target.value });
+                    document.documentElement.setAttribute(
+                        "data-font",
+                        e.target.value,
+                    );
+                });
+            }
+            if (spacingCheckbox) {
+                spacingCheckbox.addEventListener("change", (e) => {
+                    const val = e.target.checked ? "roomy" : "comfortable";
+                    saveA11yPrefs({
+                        spacing: e.target.checked ? "wide" : "normal",
+                    });
+                    saveGlobalPrefs({ spacing: val });
+                    document.documentElement.setAttribute("data-spacing", val);
+                });
+            }
+            if (simpleModeCheckbox) {
+                simpleModeCheckbox.addEventListener("change", (e) => {
+                    saveA11yPrefs({ simpleMode: e.target.checked });
+                });
+            }
+            if (lineFocusCheckbox) {
+                lineFocusCheckbox.addEventListener("change", (e) => {
+                    saveA11yPrefs({ lineFocus: e.target.checked });
+                    saveGlobalPrefs({ readingRuler: e.target.checked });
+                    toggleReadingRuler(e.target.checked);
+                });
+            }
+            if (bionicCheckbox) {
+                bionicCheckbox.addEventListener("change", (e) => {
+                    saveGlobalPrefs({ bionic: e.target.checked });
+                    document.documentElement.setAttribute(
+                        "data-bionic",
+                        e.target.checked ? "true" : "false",
+                    );
+                });
+            }
+            if (highlightTermsCheckbox) {
+                highlightTermsCheckbox.addEventListener("change", (e) => {
+                    saveGlobalPrefs({ highlightKeyTerms: e.target.checked });
+                    document.documentElement.setAttribute(
+                        "data-highlight-terms",
+                        e.target.checked ? "true" : "false",
+                    );
+                });
+            }
+
+            // Automatic Adaptation Recommender from Freeform Needs
+            if (btnRecommend) {
+                btnRecommend.addEventListener("click", async () => {
+                    const freeform = needsNotesTextarea
+                        ? needsNotesTextarea.value.trim()
+                        : "";
+                    if (!freeform) {
+                        announce(
+                            "Te rugăm să scrii mai întâi câteva cuvinte despre ce te ajută la muncă în câmpul de mai sus.",
+                            false,
+                        );
+                        if (needsNotesTextarea) needsNotesTextarea.focus();
+                        return;
+                    }
+
+                    btnRecommend.disabled = true;
+                    btnRecommend.innerHTML =
+                        "<span>Se analizează nevoile tale...</span>";
+                    announce("Se calculează adaptările ergonomice optime...");
+
+                    try {
+                        const res = await fetch(
+                            "/api/profile/recommend-adaptations",
+                            {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    freeform_needs: freeform,
+                                    current_prefs: readGlobalPrefs(),
+                                }),
+                            },
+                        );
+
+                        const json = await res.json();
+                        if (!json.ok || !json.data) {
+                            announce(
+                                "Nu s-au putut recomanda adaptări automat. Te rugăm să reîncerci.",
+                                false,
+                            );
+                            return;
+                        }
+
+                        const data = json.data;
+                        const ui = data.ui_prefs || {};
+
+                        // Apply to DOM attributes immediately
+                        const root = document.documentElement;
+                        if (ui.textSize)
+                            root.setAttribute("data-text", ui.textSize);
+                        if (ui.font) root.setAttribute("data-font", ui.font);
+                        if (ui.contrast && ui.contrast === "high")
+                            root.setAttribute("data-contrast", "high");
+                        if (ui.spacing)
+                            root.setAttribute("data-spacing", ui.spacing);
+                        if (typeof ui.bionic !== "undefined")
+                            root.setAttribute(
+                                "data-bionic",
+                                ui.bionic ? "true" : "false",
+                            );
+                        if (typeof ui.highlightKeyTerms !== "undefined")
+                            root.setAttribute(
+                                "data-highlight-terms",
+                                ui.highlightKeyTerms ? "true" : "false",
+                            );
+
+                        // Save to persistent storage
+                        saveGlobalPrefs({
+                            textSize: ui.textSize || "m",
+                            font: ui.font || "default",
+                            contrast: ui.contrast || "normal",
+                            spacing: ui.spacing || "comfortable",
+                            bionic: Boolean(ui.bionic),
+                            highlightKeyTerms: Boolean(ui.highlightKeyTerms),
+                            motion: ui.motion || "full",
+                        });
+
+                        // Update local profile AI schema
+                        saveProfile({
+                            reading_level: ui.readingLevel || "simple",
+                            format: ui.format || "steps",
+                            needs_notes: freeform,
+                        });
+
+                        // Reflect in UI controls
+                        populateForm();
+
+                        // Render feedback box
+                        if (recommendationsBox) {
+                            const adjHtml = (data.workplace_adjustments || [])
+                                .map(
+                                    (a) => `
+                <div style="background: var(--bg-surface); padding: 0.75rem 1rem; border-radius: var(--radius-sm); margin-top: 0.5rem; border: 1px solid var(--border-color);">
+                  <strong style="color: var(--primary);">${a.title}</strong>
+                  <p style="margin: 0.25rem 0 0 0; font-size: 0.9rem; color: var(--text-muted);">${a.reason_ro}</p>
+                </div>
+              `,
+                                )
+                                .join("");
+
+                            recommendationsBox.innerHTML = `
+              <div style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); margin-bottom: 0.5rem;">
+                Adaptări configurate cu succes!
               </div>
-            </div>
-          </fieldset>
+              <p style="margin: 0 0 0.75rem 0; font-size: 0.95rem;">${data.explanation_ro || "Setările tale vizuale au fost optimizate."}</p>
+              ${
+                  data.workplace_adjustments &&
+                  data.workplace_adjustments.length > 0
+                      ? `
+                <div style="margin-top: 0.75rem;">
+                  <span style="font-weight: 600; font-size: 0.95rem;">Adaptări recomandate pentru locul de muncă:</span>
+                  ${adjHtml}
+                </div>
+              `
+                      : ""
+              }
+            `;
+                            recommendationsBox.style.display = "block";
+                            recommendationsBox.scrollIntoView({
+                                behavior: "smooth",
+                                block: "nearest",
+                            });
+                        }
 
-          <!-- Section 2: Visual & Ergonomic Preferences -->
-          <fieldset class="feature-card" style="border: 1.5px solid var(--border-color); padding: var(--space-lg); margin-bottom: 1.5rem;">
-            <legend class="card-title">Confort vizual și accesibilitate afișare</legend>
+                        announce(
+                            "Adaptările ergonomice au fost aplicate și salvate cu succes pe acest dispozitiv!",
+                        );
+                    } catch (err) {
+                        console.error(
+                            "Eroare la recomandarea adaptărilor:",
+                            err,
+                        );
+                        announce(
+                            "A apărut o problemă la comunicarea cu asistentul.",
+                            false,
+                        );
+                    } finally {
+                        btnRecommend.disabled = false;
+                        btnRecommend.innerHTML =
+                            "<span>Adaptează site-ul automat din nevoile mele</span>";
+                    }
+                });
+            }
 
-            <div class="card-grid" style="margin-top: 0.5rem;">
-              <div>
-                <label for="theme-select">Temă cromatică:</label>
-                <select id="theme-select" style="width: 100%; box-sizing: border-box;">
-                  <option value="light">Luminoasă (standard)</option>
-                  <option value="dark">Întunecată (odihnitor pentru ochi)</option>
-                  <option value="high-contrast">Contrast ridicat (fond negru, text contrastant)</option>
-                </select>
-              </div>
+            // Form submit: save profile preferences
+            if (profileForm) {
+                profileForm.addEventListener("submit", (e) => {
+                    e.preventDefault();
 
-              <div>
-                <label for="text-size-select">Dimensiune font:</label>
-                <select id="text-size-select" style="width: 100%; box-sizing: border-box;">
-                  <option value="normal">Standard (100%)</option>
-                  <option value="large">Mare (115%)</option>
-                  <option value="xlarge">Foarte mare (130%)</option>
-                </select>
-              </div>
+                    const wordsVal = parseInt(maxSentenceWordsInput.value, 10);
+                    const maxWords = isNaN(wordsVal)
+                        ? 12
+                        : Math.min(Math.max(wordsVal, 6), 30);
 
-              <div style="display: flex; flex-direction: column; gap: 0.75rem; justify-content: center;">
-                <label for="spacing-toggle" style="font-weight: normal; display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                  <input type="checkbox" id="spacing-toggle" style="width: auto; min-height: auto;">
-                  <span>Spațiere mărită între rânduri și litere</span>
-                </label>
+                    saveProfile({
+                        reading_level: readingLevelSelect.value,
+                        format: formatSelect.value,
+                        max_sentence_words: maxWords,
+                        read_aloud_default: readAloudCheckbox.checked,
+                        needs_notes: needsNotesTextarea.value.trim(),
+                    });
 
-                <label for="simple-mode-toggle" style="font-weight: normal; display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                  <input type="checkbox" id="simple-mode-toggle" style="width: auto; min-height: auto;">
-                  <span>Mod simplificat (fără elemente decorative)</span>
-                </label>
+                    const textVal =
+                        textSizeSelect.value === "xlarge"
+                            ? "xl"
+                            : textSizeSelect.value === "large"
+                              ? "l"
+                              : "m";
+                    saveGlobalPrefs({
+                        theme: themeSelect.value,
+                        textSize: textVal,
+                        font: fontSelect ? fontSelect.value : "default",
+                        spacing: spacingCheckbox.checked
+                            ? "roomy"
+                            : "comfortable",
+                        bionic: Boolean(
+                            bionicCheckbox && bionicCheckbox.checked,
+                        ),
+                        highlightKeyTerms: Boolean(
+                            highlightTermsCheckbox &&
+                            highlightTermsCheckbox.checked,
+                        ),
+                        readingRuler: Boolean(
+                            lineFocusCheckbox && lineFocusCheckbox.checked,
+                        ),
+                    });
 
-                <label for="line-focus-toggle" style="font-weight: normal; display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                  <input type="checkbox" id="line-focus-toggle" style="width: auto; min-height: auto;">
-                  <span>Ghidaj vizual de citire (evidențiere rând/secțiune)</span>
-                </label>
-              </div>
-            </div>
-          </fieldset>
+                    saveA11yPrefs({
+                        theme: themeSelect.value,
+                        textSize: textSizeSelect.value,
+                        spacing: spacingCheckbox.checked ? "wide" : "normal",
+                        simpleMode: simpleModeCheckbox.checked,
+                        lineFocus: lineFocusCheckbox.checked,
+                    });
 
-          <!-- Actions -->
-          <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; margin-top: 1.5rem;">
-            <button type="submit" id="btn-save-profile" class="btn btn-primary">
-              Salvează preferințele
-            </button>
-            <a href="/" class="btn btn-secondary">
-              Înapoi la pagina principală
-            </a>
-            <button type="button" id="btn-delete-profile" class="btn btn-secondary" style="margin-left: auto; border-color: var(--error-border); color: var(--error-text);">
-              Șterge toate datele mele
-            </button>
-          </div>
-        </form>
-      </main>
+                    announce(
+                        "Preferințele tale au fost salvate cu succes pe acest dispozitiv!",
+                    );
+                });
+            }
 
-      <!-- Footer -->
-      <footer class="app-footer" role="contentinfo">
-        <p>PrimaZi — Asistent accesibil pentru primul loc de muncă. Creat pentru AccessABILITY Hackathon 2026.</p>
-      </footer>
-    </div>
-  </div>
-
-  <!-- Wiring Script -->
-  <script type="module" src="/js/shell.js"></script>
-  <script type="module">
-    import {
-      getProfile,
-      saveProfile,
-      getA11yPrefs,
-      saveA11yPrefs,
-      applyA11yPrefs,
-      deleteAllUserData,
-      DEFAULT_PROFILE,
-      DEFAULT_A11Y_PREFS
-    } from "/shared/profile.js";
-
-    // Apply accessibility preferences immediately
-    const currentA11y = getA11yPrefs();
-    applyA11yPrefs(currentA11y);
-
-    // DOM Elements
-    const liveRegion = document.getElementById("status-live");
-    const statusBanner = document.getElementById("status-banner");
-    const profileForm = document.getElementById("profile-form");
-
-    const readingLevelSelect = document.getElementById("reading-level-select");
-    const formatSelect = document.getElementById("format-select");
-    const maxSentenceWordsInput = document.getElementById("max-sentence-words");
-    const readAloudCheckbox = document.getElementById("read-aloud-default");
-    const needsNotesTextarea = document.getElementById("needs-notes");
-    const counterDiv = document.getElementById("needs-notes-counter");
-
-    const themeSelect = document.getElementById("theme-select");
-    const textSizeSelect = document.getElementById("text-size-select");
-    const spacingCheckbox = document.getElementById("spacing-toggle");
-    const simpleModeCheckbox = document.getElementById("simple-mode-toggle");
-    const lineFocusCheckbox = document.getElementById("line-focus-toggle");
-    const btnDelete = document.getElementById("btn-delete-profile");
-
-    function announce(msg, isSuccess = true) {
-      if (liveRegion) {
-        liveRegion.textContent = "";
-        setTimeout(() => { liveRegion.textContent = msg; }, 50);
-      }
-      if (statusBanner) {
-        statusBanner.className = `status-message ${isSuccess ? "status-success" : "status-warning"}`;
-        statusBanner.textContent = msg;
-        statusBanner.style.display = "block";
-        statusBanner.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      }
-    }
-
-    function updateCounter() {
-      if (needsNotesTextarea && counterDiv) {
-        const len = needsNotesTextarea.value.length;
-        counterDiv.textContent = `${len} / 500 caractere`;
-      }
-    }
-
-    function populateForm() {
-      const p = getProfile();
-      const a = getA11yPrefs();
-
-      if (readingLevelSelect) readingLevelSelect.value = p.reading_level || DEFAULT_PROFILE.reading_level;
-      if (formatSelect) formatSelect.value = p.format || DEFAULT_PROFILE.format;
-      if (maxSentenceWordsInput) maxSentenceWordsInput.value = p.max_sentence_words || DEFAULT_PROFILE.max_sentence_words;
-      if (readAloudCheckbox) readAloudCheckbox.checked = Boolean(p.read_aloud_default);
-      if (needsNotesTextarea) needsNotesTextarea.value = p.needs_notes || "";
-      updateCounter();
-
-      if (themeSelect) themeSelect.value = a.theme || DEFAULT_A11Y_PREFS.theme;
-      if (textSizeSelect) textSizeSelect.value = a.textSize || DEFAULT_A11Y_PREFS.textSize;
-      if (spacingCheckbox) spacingCheckbox.checked = a.spacing === "wide";
-      if (simpleModeCheckbox) simpleModeCheckbox.checked = Boolean(a.simpleMode);
-      if (lineFocusCheckbox) lineFocusCheckbox.checked = Boolean(a.lineFocus);
-    }
-
-    // Initialize fields
-    populateForm();
-
-    if (needsNotesTextarea) {
-      needsNotesTextarea.addEventListener("input", updateCounter);
-    }
-
-    // Real-time visual updates
-    if (themeSelect) {
-      themeSelect.addEventListener("change", (e) => {
-        saveA11yPrefs({ theme: e.target.value });
-      });
-    }
-    if (textSizeSelect) {
-      textSizeSelect.addEventListener("change", (e) => {
-        saveA11yPrefs({ textSize: e.target.value });
-      });
-    }
-    if (spacingCheckbox) {
-      spacingCheckbox.addEventListener("change", (e) => {
-        saveA11yPrefs({ spacing: e.target.checked ? "wide" : "normal" });
-      });
-    }
-    if (simpleModeCheckbox) {
-      simpleModeCheckbox.addEventListener("change", (e) => {
-        saveA11yPrefs({ simpleMode: e.target.checked });
-      });
-    }
-    if (lineFocusCheckbox) {
-      lineFocusCheckbox.addEventListener("change", (e) => {
-        saveA11yPrefs({ lineFocus: e.target.checked });
-      });
-    }
-
-    // Form submit: save profile preferences
-    if (profileForm) {
-      profileForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-
-        const wordsVal = parseInt(maxSentenceWordsInput.value, 10);
-        const maxWords = isNaN(wordsVal) ? 12 : Math.min(Math.max(wordsVal, 6), 30);
-
-        saveProfile({
-          reading_level: readingLevelSelect.value,
-          format: formatSelect.value,
-          max_sentence_words: maxWords,
-          read_aloud_default: readAloudCheckbox.checked,
-          needs_notes: needsNotesTextarea.value.trim()
-        });
-
-        saveA11yPrefs({
-          theme: themeSelect.value,
-          textSize: textSizeSelect.value,
-          spacing: spacingCheckbox.checked ? "wide" : "normal",
-          simpleMode: simpleModeCheckbox.checked,
-          lineFocus: lineFocusCheckbox.checked
-        });
-
-        announce("Preferințele tale au fost salvate cu succes pe acest dispozitiv!");
-      });
-    }
-
-    // Wipe data
-    if (btnDelete) {
-      btnDelete.addEventListener("click", () => {
-        const confirmed = window.confirm(
-          "Ești sigur că vrei să ștergi toate datele și preferințele locale de pe acest dispozitiv? Această acțiune nu poate fi anulată."
-        );
-        if (confirmed) {
-          deleteAllUserData();
-          populateForm();
-          announce("Toate datele și preferințele tale locale au fost șterse definitiv.", false);
-        }
-      });
-    }
-  </script>
-</body>
+            // Wipe data
+            if (btnDelete) {
+                btnDelete.addEventListener("click", () => {
+                    const confirmed = window.confirm(
+                        "Ești sigur că vrei să ștergi toate datele și preferințele locale de pe acest dispozitiv? Această acțiune nu poate fi anulată.",
+                    );
+                    if (confirmed) {
+                        deleteAllUserData();
+                        populateForm();
+                        announce(
+                            "Toate datele și preferințele tale locale au fost șterse definitiv.",
+                            false,
+                        );
+                    }
+                });
+            }
+        </script>
+    </body>
 </html>

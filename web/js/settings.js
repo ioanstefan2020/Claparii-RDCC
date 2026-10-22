@@ -291,9 +291,72 @@ function initSettings() {
       reader.readAsText(file);
     });
   }
+
+  // 8. Wire AI Auto-Adaptation from Freeform Needs
+  const btnAiAuto = document.getElementById("btn-ai-auto-adapt");
+  const freeformNeeds = document.getElementById("pref-freeform-needs");
+  const aiFeedback = document.getElementById("ai-adapt-feedback");
+
+  if (btnAiAuto && freeformNeeds) {
+    btnAiAuto.addEventListener("click", async () => {
+      const text = freeformNeeds.value.trim();
+      if (!text) {
+        showToast("Scrie câteva cuvinte despre nevoile tale înainte de adaptare.", true);
+        freeformNeeds.focus();
+        return;
+      }
+
+      btnAiAuto.disabled = true;
+      btnAiAuto.textContent = "Se analizează nevoile...";
+      announce("Se calculează adaptările ergonomice optime...");
+
+      try {
+        const res = await fetch("/api/profile/recommend-adaptations", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            freeform_needs: text,
+            current_prefs: currentState.prefs
+          })
+        });
+        const json = await res.json();
+        if (json.ok && json.data) {
+          const ui = json.data.ui_prefs || {};
+
+          // Apply to currentState
+          if (ui.theme) currentState.prefs.theme = ui.theme;
+          if (ui.textSize) currentState.prefs.textSize = ui.textSize;
+          if (ui.font) currentState.prefs.font = ui.font;
+          if (ui.contrast && ui.contrast === "high") currentState.prefs.contrast = "high";
+          if (ui.spacing) currentState.prefs.spacing = ui.spacing;
+          if (typeof ui.bionic !== "undefined") currentState.prefs.bionic = Boolean(ui.bionic);
+          if (typeof ui.highlightKeyTerms !== "undefined") currentState.prefs.highlightKeyTerms = Boolean(ui.highlightKeyTerms);
+
+          currentState = savePrefs(currentState);
+          applyPrefs(currentState.prefs, document.documentElement);
+          populateForm(currentState);
+          updatePreview(currentState);
+
+          if (aiFeedback) {
+            aiFeedback.textContent = json.data.explanation_ro || "Adaptările au fost aplicate cu succes!";
+            aiFeedback.style.display = "block";
+          }
+          showToast("Adaptările au fost configurate și aplicate!");
+          announce("Setările au fost optimizate automat pe baza nevoilor tale.");
+        }
+      } catch (err) {
+        console.error(err);
+        showToast("Eroare la recomandarea adaptărilor.", true);
+      } finally {
+        btnAiAuto.disabled = false;
+        btnAiAuto.textContent = "✨ Adaptează site-ul automat din textul meu";
+      }
+    });
+  }
 }
 
 if (document.readyState === "loading") {
+
   document.addEventListener("DOMContentLoaded", initSettings);
 } else {
   initSettings();

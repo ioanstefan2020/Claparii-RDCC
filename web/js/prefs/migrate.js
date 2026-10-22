@@ -31,9 +31,12 @@ export function migrate(raw) {
   }
 
   // Validate answers
-  const rawAnswers = (raw.answers && typeof raw.answers === "object" && !Array.isArray(raw.answers))
-    ? raw.answers
-    : {};
+  const rawAnswers =
+    raw.answers &&
+    typeof raw.answers === "object" &&
+    !Array.isArray(raw.answers)
+      ? raw.answers
+      : {};
   const cleanAnswers = { ...DEFAULT_ANSWERS };
 
   for (const [key, allowed] of Object.entries(VALID_ANSWERS)) {
@@ -49,16 +52,19 @@ export function migrate(raw) {
   const rawOverrides = Array.isArray(raw.overrides) ? raw.overrides : [];
   const cleanOverrides = Array.from(
     new Set(
-      rawOverrides.filter((k) =>
-        typeof k === "string" && Object.prototype.hasOwnProperty.call(VALID_PREFS, k)
-      )
-    )
+      rawOverrides.filter(
+        (k) =>
+          typeof k === "string" &&
+          Object.prototype.hasOwnProperty.call(VALID_PREFS, k),
+      ),
+    ),
   );
 
   // Validate or derive prefs
-  const rawPrefs = (raw.prefs && typeof raw.prefs === "object" && !Array.isArray(raw.prefs))
-    ? raw.prefs
-    : null;
+  const rawPrefs =
+    raw.prefs && typeof raw.prefs === "object" && !Array.isArray(raw.prefs)
+      ? raw.prefs
+      : null;
 
   let cleanPrefs;
   if (!rawPrefs || Object.keys(rawPrefs).length === 0) {
@@ -73,6 +79,12 @@ export function migrate(raw) {
         }
       }
     }
+    if (typeof rawPrefs.bionic === "boolean")
+      cleanPrefs.bionic = rawPrefs.bionic;
+    if (typeof rawPrefs.highlightKeyTerms === "boolean")
+      cleanPrefs.highlightKeyTerms = rawPrefs.highlightKeyTerms;
+    if (typeof rawPrefs.readingRuler === "boolean")
+      cleanPrefs.readingRuler = rawPrefs.readingRuler;
   }
 
   // Validate updatedAt
@@ -115,4 +127,3 @@ export function resetToAnswers(state) {
 export function resetAll() {
   return createDefaultState();
 }
-

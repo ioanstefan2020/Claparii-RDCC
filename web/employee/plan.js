@@ -1,3 +1,4 @@
+import { renderAccessibleText } from "../shared/a11y-text.js";
 /**
  * plan.js - Tasks & Deadlines Planner Screen Module (F3)
  * Owner: p2
@@ -238,7 +239,7 @@ export function renderTasks(tasks, container, callbacks = {}) {
       titleLabel.style.textDecoration = "line-through";
       titleLabel.style.opacity = "0.7";
     }
-    titleLabel.textContent = task.title;
+    titleLabel.innerHTML = renderAccessibleText(task.title);
 
     const badge = document.createElement("span");
     badge.className = "badge";
@@ -336,6 +337,88 @@ export function renderTasks(tasks, container, callbacks = {}) {
       dueBox.style.fontSize = "0.95rem";
       dueBox.innerHTML = `<strong>Termen:</strong> <span>${escapeHtml(formatDateRo(task.due_iso))}</span>`;
       article.appendChild(dueBox);
+
+      // Fast Calendar Integration Buttons
+      const calRow = document.createElement("div");
+      calRow.style.display = "flex";
+      calRow.style.gap = "0.5rem";
+      calRow.style.margin = "0.5rem 0";
+      calRow.style.flexWrap = "wrap";
+
+      const btnGCal = document.createElement("button");
+      btnGCal.type = "button";
+      btnGCal.className = "btn btn-secondary";
+      btnGCal.style.fontSize = "0.85rem";
+      btnGCal.style.padding = "0.3rem 0.65rem";
+      btnGCal.style.minHeight = "36px";
+      btnGCal.textContent = "📅 Salvează în Google Calendar";
+      btnGCal.setAttribute("aria-label", `Salvează în Google Calendar: ${task.title}`);
+      btnGCal.addEventListener("click", async () => {
+        try {
+          btnGCal.disabled = true;
+          btnGCal.textContent = "Se generează linkul...";
+          const res = await fetch("/api/plan/calendar-link", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              title: task.title,
+              due_iso: task.due_iso,
+              description: task.steps && task.steps.length > 0 ? task.steps.join("\n") : (task.source_quote || "")
+            })
+          });
+          const json = await res.json();
+          if (json.ok && json.data && json.data.google_calendar_url) {
+            window.open(json.data.google_calendar_url, "_blank", "noopener,noreferrer");
+          }
+        } catch (err) {
+          console.error(err);
+        } finally {
+          btnGCal.disabled = false;
+          btnGCal.textContent = "📅 Salvează în Google Calendar";
+        }
+      });
+      calRow.appendChild(btnGCal);
+
+      const btnTaskIcs = document.createElement("button");
+      btnTaskIcs.type = "button";
+      btnTaskIcs.className = "btn btn-secondary";
+      btnTaskIcs.style.fontSize = "0.85rem";
+      btnTaskIcs.style.padding = "0.3rem 0.65rem";
+      btnTaskIcs.style.minHeight = "36px";
+      btnTaskIcs.textContent = "📥 Descarcă .ics";
+      btnTaskIcs.setAttribute("aria-label", `Descarcă fișierul .ics pentru: ${task.title}`);
+      btnTaskIcs.addEventListener("click", async () => {
+        try {
+          btnTaskIcs.disabled = true;
+          btnTaskIcs.textContent = "Se descarcă...";
+          const res = await fetch("/api/plan/calendar-link", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              title: task.title,
+              due_iso: task.due_iso,
+              description: task.steps && task.steps.length > 0 ? task.steps.join("\n") : (task.source_quote || "")
+            })
+          });
+          const json = await res.json();
+          if (json.ok && json.data && json.data.ics_content) {
+            const blob = new Blob([json.data.ics_content], { type: "text/calendar;charset=utf-8" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = json.data.ics_filename || "sarcină.ics";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }
+        } catch (err) {
+          console.error(err);
+        } finally {
+          btnTaskIcs.disabled = false;
+          btnTaskIcs.textContent = "📥 Descarcă .ics";
+        }
+      });
+      calRow.appendChild(btnTaskIcs);
+      article.appendChild(calRow);
     } else {
       const noDue = document.createElement("div");
       noDue.style.margin = "0.5rem 0";
@@ -361,7 +444,7 @@ export function renderTasks(tasks, container, callbacks = {}) {
       task.steps.forEach(stepText => {
         const li = document.createElement("li");
         li.style.marginBottom = "0.2rem";
-        li.textContent = stepText;
+        li.innerHTML = renderAccessibleText(stepText);
         ol.appendChild(li);
       });
       stepsDiv.appendChild(ol);

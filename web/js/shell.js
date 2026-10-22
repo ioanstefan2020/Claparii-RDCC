@@ -10,18 +10,30 @@
  *   2. Text Size (Mediu 17px -> Mare 20px -> Foarte mare 23px)
  *   3. Audio Control (Pauză / Continuă / Oprește via speech.js)
  *   4. Dyslexia Switch (OpenDyslexic font toggle)
+ * - In-Browser Reminders / Task Deadlines Notification System
+ * - Reading Ruler & Saccade Assist Initialization
  */
 
-import { pauseSpeaking, resumeSpeaking, stopSpeaking, isSpeaking, isPaused } from "../shared/speech.js";
+import {
+  pauseSpeaking,
+  resumeSpeaking,
+  stopSpeaking,
+  isSpeaking,
+  isPaused,
+} from "../shared/speech.js";
+import { toggleReadingRuler } from "../shared/a11y-text.js";
 
 const STORAGE_KEY = "wp.prefs.v1";
+const PLANNER_STORAGE_KEY = "primazi_planner_tasks";
 
 function readPrefs() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return { version: 1, prefs: { sidebar: "open" } };
     const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === "object" ? parsed : { version: 1, prefs: { sidebar: "open" } };
+    return parsed && typeof parsed === "object"
+      ? parsed
+      : { version: 1, prefs: { sidebar: "open" } };
   } catch (err) {
     return { version: 1, prefs: { sidebar: "open" } };
   }
@@ -43,10 +55,72 @@ function updatePref(key, value) {
   }
 }
 
+/**
+ * Periodically checks for pending tasks due today and alerts the user.
+ */
+function startTaskReminderRunner(announce) {
+  let notifiedTaskIds = new Set();
+
+  function checkDeadlines() {
+    try {
+      const raw = localStorage.getItem(PLANNER_STORAGE_KEY);
+      if (!raw) return;
+      const tasks = JSON.parse(raw);
+      if (!Array.isArray(tasks) || tasks.length === 0) return;
+
+      const todayStr = new Date().toISOString().slice(0, 10);
+      const pendingToday = tasks.filter(
+        (t) => t && t.due_iso === todayStr && !t.completed,
+      );
+
+      pendingToday.forEach((task) => {
+        if (!notifiedTaskIds.has(task.id)) {
+          notifiedTaskIds.add(task.id);
+
+          const banner =
+            document.getElementById("status-banner") ||
+            document.getElementById("status-toast");
+          const msg = `Memento PrimaZi: Ai o sarcină cu termen astăzi: „${task.title}”!`;
+
+          if (banner) {
+            banner.className = "status-message status-warning";
+            banner.textContent = msg;
+            banner.style.display = "block";
+          }
+          announce(msg);
+
+          if (
+            typeof window !== "undefined" &&
+            "Notification" in window &&
+            Notification.permission === "granted"
+          ) {
+            try {
+              new Notification("PrimaZi: Memento sarcină", {
+                body: `${task.title} are termen astăzi!`,
+                icon: "/favicon.ico",
+              });
+            } catch (e) {
+              // Ignore notification errors
+            }
+          }
+        }
+      });
+    } catch (err) {
+      // Ignore check errors
+    }
+  }
+
+  // Initial check after 3 seconds, then every 60 seconds
+  setTimeout(checkDeadlines, 3000);
+  setInterval(checkDeadlines, 60000);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const root = document.documentElement;
   const menuToggle = document.getElementById("btn-menu-toggle");
-  const sidebarCollapseButtons = document.querySelectorAll("#btn-sidebar-collapse, .btn-sidebar-toggle");
+  const sidebarCollapseButtons = document.querySelectorAll(
+    "#btn-sidebar-collapse, .btn-sidebar-toggle",
+  );
   const sidebar = document.getElementById("app-sidebar");
   const backdrop = document.getElementById("sidebar-backdrop");
   const liveRegion = document.getElementById("status-live");
@@ -54,9 +128,29 @@ document.addEventListener("DOMContentLoaded", () => {
   function announce(msg) {
     if (liveRegion) {
       liveRegion.textContent = "";
-      setTimeout(() => { liveRegion.textContent = msg; }, 50);
+      setTimeout(() => {
+        liveRegion.textContent = msg;
+      }, 50);
     }
   }
+
+  // Apply stored reading ruler and cognitive attributes
+  const currentPrefs = readPrefs().prefs || {};
+  if (currentPrefs.readingRuler) {
+    toggleReadingRuler(true);
+  }
+  if (typeof currentPrefs.bionic !== "undefined") {
+    root.setAttribute("data-bionic", currentPrefs.bionic ? "true" : "false");
+  }
+  if (typeof currentPrefs.highlightKeyTerms !== "undefined") {
+    root.setAttribute(
+      "data-highlight-terms",
+      currentPrefs.highlightKeyTerms ? "true" : "false",
+    );
+  }
+
+  // Start background task reminders
+  startTaskReminderRunner(announce);
 
   // 1. Mobile Drawer Toggle (<768px)
   function openDrawer() {
@@ -92,15 +186,27 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       return;
     }
-    const isCurrentlyCollapsed = root.getAttribute("data-sidebar") === "collapsed";
+    const isCurrentlyCollapsed =
+      root.getAttribute("data-sidebar") === "collapsed";
     const nextState = isCurrentlyCollapsed ? "open" : "collapsed";
     root.setAttribute("data-sidebar", nextState);
-    sidebarCollapseButtons.forEach(btn => {
-      btn.setAttribute("aria-expanded", nextState === "open" ? "true" : "false");
+    sidebarCollapseButtons.forEach((btn) => {
+      btn.setAttribute(
+        "aria-expanded",
+        nextState === "open" ? "true" : "false",
+      );
     });
-    if (menuToggle) menuToggle.setAttribute("aria-expanded", nextState === "open" ? "true" : "false");
+    if (menuToggle)
+      menuToggle.setAttribute(
+        "aria-expanded",
+        nextState === "open" ? "true" : "false",
+      );
     updatePref("sidebar", nextState);
-    announce(nextState === "collapsed" ? "Bara laterală a fost restrânsă." : "Bara laterală a fost extinsă.");
+    announce(
+      nextState === "collapsed"
+        ? "Bara laterală a fost restrânsă."
+        : "Bara laterală a fost extinsă.",
+    );
   }
 
   if (menuToggle) {
@@ -132,7 +238,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // 2. Desktop Sidebar Collapse Toggle
-  sidebarCollapseButtons.forEach(btn => {
+  sidebarCollapseButtons.forEach((btn) => {
     btn.addEventListener("click", toggleSidebarCollapse);
   });
 
@@ -217,7 +323,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       } else {
         stopSpeaking();
-        announce("Niciun text în redare. Apasă pe «Ascultă» la orice secțiune pentru a porni lectura.");
+        announce(
+          "Niciun text în redare. Apasă pe «Ascultă» la orice secțiune pentru a porni lectura.",
+        );
       }
     });
   }
@@ -235,7 +343,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (span) span.textContent = label;
       btnDyslexia.setAttribute("aria-pressed", isDyslexic ? "false" : "true");
       updatePref("font", nextFont);
-      announce(isDyslexic ? "Fontul pentru dislexie a fost dezactivat." : "Fontul pentru dislexie a fost activat.");
+      announce(
+        isDyslexic
+          ? "Fontul pentru dislexie a fost dezactivat."
+          : "Fontul pentru dislexie a fost activat.",
+      );
     });
   }
 });

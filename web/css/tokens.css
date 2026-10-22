@@ -319,3 +319,53 @@
     scroll-behavior: auto !important;
   }
 }
+
+
+/* Extra Large Font Scale XXL (140%) */
+[data-text="xxl"],
+[data-text-size="xxlarge"] {
+  --font-scale: 1.65rem;   /* 26.4px */
+}
+
+/* Lexend font (Designed specifically for reading fluency & cognitive load reduction) */
+[data-font="lexend"] {
+  --font-family: "Lexend", "Atkinson Hyperlegible", system-ui, sans-serif;
+  --letter-spacing: 0.025em;
+  --word-spacing: 0.05em;
+  --line-height: 1.7;
+}
+
+[data-font="opendyslexic"] {
+  --font-family: "OpenDyslexic", "Comic Sans MS", "Atkinson Hyperlegible", sans-serif;
+  --letter-spacing: 0.06em;
+  --line-height: 1.75;
+}
+
+/* Cognitive & ADHD Salience Enhancements */
+.a11y-key-term {
+  font-weight: 700 !important;
+  font-size: 1.05em;
+  background-color: rgba(254, 240, 138, 0.35);
+  padding: 0.1em 0.3em;
+  border-radius: var(--radius-xs);
+  border-bottom: 2px solid var(--primary);
+  display: inline-block;
+  color: inherit;
+}
+
+.bionic-fixation {
+  font-weight: 800 !important;
+  opacity: 1 !important;
+}
+
+/* Accessible focus ring and touch targets */
+button, .btn, a.btn, input, select, textarea {
+  min-height: var(--min-touch-target);
+  touch-action: manipulation;
+}
+
+/* Prevent text overflow across small viewports */
+p, span, div, li, article, h1, h2, h3, h4 {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}

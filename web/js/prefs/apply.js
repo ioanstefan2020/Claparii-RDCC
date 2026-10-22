@@ -9,13 +9,17 @@ import { STORAGE_KEY } from "./types.js";
 /**
  * Applies preferences to the root DOM element (usually <html>).
  * Sets data-theme, data-text, data-spacing, data-contrast, data-motion,
- * data-font, data-density, data-sidebar, and lang.
+ * data-font, data-density, data-sidebar, data-bionic, data-highlight-terms, and lang.
  *
  * @param {object} prefs - Preferences dictionary
  * @param {HTMLElement|null} [rootElement=null] - Target root element (default document.documentElement)
  */
 export function applyPrefs(prefs, rootElement = null) {
-  const root = rootElement || (typeof globalThis.document !== "undefined" ? globalThis.document.documentElement : null);
+  const root =
+    rootElement ||
+    (typeof globalThis.document !== "undefined"
+      ? globalThis.document.documentElement
+      : null);
   if (!root || typeof root.setAttribute !== "function") {
     return;
   }
@@ -25,7 +29,8 @@ export function applyPrefs(prefs, rootElement = null) {
   }
 
   // Defensively support passing either state or state.prefs
-  const targetPrefs = (prefs.prefs && typeof prefs.prefs === "object") ? prefs.prefs : prefs;
+  const targetPrefs =
+    prefs.prefs && typeof prefs.prefs === "object" ? prefs.prefs : prefs;
 
   const mapping = {
     "data-theme": targetPrefs.theme,
@@ -44,7 +49,26 @@ export function applyPrefs(prefs, rootElement = null) {
     }
   }
 
-  if (typeof targetPrefs.language === "string" && targetPrefs.language.length > 0) {
+  if (typeof targetPrefs.bionic !== "undefined") {
+    root.setAttribute("data-bionic", targetPrefs.bionic ? "true" : "false");
+  }
+  if (typeof targetPrefs.highlightKeyTerms !== "undefined") {
+    root.setAttribute(
+      "data-highlight-terms",
+      targetPrefs.highlightKeyTerms ? "true" : "false",
+    );
+  }
+  if (typeof targetPrefs.readingRuler !== "undefined") {
+    root.setAttribute(
+      "data-reading-ruler",
+      targetPrefs.readingRuler ? "true" : "false",
+    );
+  }
+
+  if (
+    typeof targetPrefs.language === "string" &&
+    targetPrefs.language.length > 0
+  ) {
     root.setAttribute("lang", targetPrefs.language);
     if ("lang" in root) {
       try {
@@ -79,6 +103,8 @@ export function getInlineHeadScript() {
     if (p.font) doc.setAttribute("data-font", p.font);
     if (p.density) doc.setAttribute("data-density", p.density);
     if (p.sidebar) doc.setAttribute("data-sidebar", p.sidebar);
+    if (typeof p.bionic !== "undefined") doc.setAttribute("data-bionic", p.bionic ? "true" : "false");
+    if (typeof p.highlightKeyTerms !== "undefined") doc.setAttribute("data-highlight-terms", p.highlightKeyTerms ? "true" : "false");
     if (p.language) {
       doc.setAttribute("lang", p.language);
       doc.lang = p.language;
@@ -88,4 +114,3 @@ export function getInlineHeadScript() {
   }
 })();`;
 }
-

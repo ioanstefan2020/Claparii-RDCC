@@ -5,7 +5,7 @@ import uuid
 from typing import Any
 
 from fastapi import APIRouter
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from app.config import settings
 from app.guardrails import verify_quotes
@@ -21,20 +21,45 @@ class CalendarLinkRequest(BaseModel):
     title: str = Field(
         ..., max_length=200, description="Titlul sarcinii sau al evenimentului"
     )
-    date_iso: str = Field(..., description="Data în format YYYY-MM-DD")
+    date_iso: str | None = Field(None, description="Data în format YYYY-MM-DD")
+    due_iso: str | None = Field(None, description="Alias pentru date_iso")
     time_start: str | None = Field(
         None, description="Ora de început opțională în format HH:MM"
     )
+    due_time: str | None = Field(None, description="Alias pentru time_start")
     duration_minutes: int = Field(60, ge=5, le=1440)
     details: str | None = Field(None, max_length=2000)
+    description: str | None = Field(None, max_length=2000)
     location: str | None = Field(None, max_length=300)
+
+    @model_validator(mode="after")
+    def sync_aliases(self) -> CalendarLinkRequest:
+        if not self.date_iso and self.due_iso:
+            self.date_iso = self.due_iso
+        if not self.time_start and self.due_time:
+            self.time_start = self.due_time
+        if not self.details and self.description:
+            self.details = self.description
+        if not self.date_iso:
+            self.date_iso = datetime.date.today().isoformat()
+        return self
 
 
 class CalendarLinkResponse(BaseModel):
     google_calendar_url: str
     ics_content: str
     suggested_filename: str
-    reminder_minutes: int
+    ics_filename: str | None = None
+    reminder_minutes: int = 30
+    title: str | None = None
+    due_iso: str | None = None
+    start_iso: str | None = None
+
+    @model_validator(mode="after")
+    def sync_response_aliases(self) -> CalendarLinkResponse:
+        if not self.ics_filename:
+            self.ics_filename = self.suggested_filename
+        return self
 
 
 @router.post("/extract", response_model=SuccessEnvelope[PlanExtractData])

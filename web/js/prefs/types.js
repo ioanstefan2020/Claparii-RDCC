@@ -8,25 +8,28 @@ export const STORAGE_KEY = "wp.prefs.v1";
 export const SCHEMA_VERSION = 1;
 
 export const DEFAULT_ANSWERS = Object.freeze({
-  readingPace: "medium",      // "slow" | "medium" | "fast"
-  textAmount: "medium",       // "short" | "medium" | "full"
-  stepByStep: true,           // boolean
-  visualNoise: "normal",      // "low" | "normal"
-  sensory: "normal",          // "quiet" | "normal"
-  language: "ro",             // "ro" | "en"
-  timeToDecide: "normal",     // "need-more-time" | "normal"
+  readingPace: "medium", // "slow" | "medium" | "fast"
+  textAmount: "medium", // "short" | "medium" | "full"
+  stepByStep: true, // boolean
+  visualNoise: "normal", // "low" | "normal"
+  sensory: "normal", // "quiet" | "normal"
+  language: "ro", // "ro" | "en"
+  timeToDecide: "normal", // "need-more-time" | "normal"
 });
 
 export const DEFAULT_PREFS = Object.freeze({
-  theme: "system",            // "light" | "dark" | "high-contrast-light" | "system"
-  textSize: "m",              // "m" | "l" | "xl"
-  spacing: "comfortable",     // "comfortable" | "roomy"
-  contrast: "normal",         // "normal" | "high" | "high-dark" | "high-light"
-  motion: "full",             // "reduced" | "full"
-  font: "default",            // "default" | "readable" | "dyslexic"
-  density: "full",            // "focused" | "full"
-  language: "ro",             // "ro" | "en"
-  sidebar: "open",            // "open" | "collapsed"
+  theme: "system", // "light" | "dark" | "high-contrast-light" | "system" | "high-contrast"
+  textSize: "m", // "m" | "l" | "xl" | "xxl"
+  spacing: "comfortable", // "comfortable" | "roomy"
+  contrast: "normal", // "normal" | "high" | "high-dark" | "high-light"
+  motion: "full", // "reduced" | "full"
+  font: "default", // "default" | "readable" | "dyslexic" | "opendyslexic" | "lexend"
+  density: "full", // "focused" | "full"
+  language: "ro", // "ro" | "en"
+  sidebar: "open", // "open" | "collapsed"
+  bionic: false,
+  highlightKeyTerms: false,
+  readingRuler: false,
 });
 
 export const VALID_ANSWERS = Object.freeze({
@@ -40,12 +43,12 @@ export const VALID_ANSWERS = Object.freeze({
 });
 
 export const VALID_PREFS = Object.freeze({
-  theme: ["light", "dark", "high-contrast-light", "system"],
-  textSize: ["m", "l", "xl"],
+  theme: ["light", "dark", "high-contrast-light", "system", "high-contrast"],
+  textSize: ["m", "l", "xl", "xxl"],
   spacing: ["comfortable", "roomy"],
   contrast: ["normal", "high", "high-dark", "high-light"],
   motion: ["reduced", "full"],
-  font: ["default", "readable", "dyslexic"],
+  font: ["default", "readable", "dyslexic", "opendyslexic", "lexend"],
   density: ["focused", "full"],
   language: ["ro", "en"],
   sidebar: ["open", "collapsed"],

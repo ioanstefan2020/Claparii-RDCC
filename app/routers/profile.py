@@ -268,7 +268,7 @@ def build_heuristic_profile_recommendation(
     response_model=SuccessEnvelope[ProfileNeedsRecommendation],
 )
 async def recommend_adaptations(payload: ProfileNeedsRequest):
-    user_words = payload.user_words.strip()
+    user_words = (payload.user_words or payload.freeform_needs or "").strip()
     if not user_words:
         raise AppError(
             code="empty_input",

@@ -51,21 +51,17 @@ for i in $(seq 1 30); do
 done
 
 if [ "$READY" -ne 1 ]; then
-  echo "!! ERROR: Server failed to start on port $PORT within 15 seconds."
-  echo "--- uvicorn log ---"
-  cat /tmp/smoke_uvicorn.log
+  echo "!! ERROR: Server failed to start within 15 seconds"
   exit 1
 fi
 echo "==> Server is up and accepting requests."
-
-# 5. Execute smoke checks
 echo
 
-# Check 1: Health
+# Check 1: Health check endpoint
 echo "==> [1/8] Checking GET /api/health"
 HEALTH_RESP=$(curl -sf "http://127.0.0.1:$PORT/api/health")
 echo "$HEALTH_RESP" | grep -q '"ok":true' || { echo "!! Health check failed: $HEALTH_RESP"; exit 1; }
-echo "$HEALTH_RESP" | grep -q '"provider":"mock"' || { echo "!! Provider is not mock: $HEALTH_RESP"; exit 1; }
+echo "$HEALTH_RESP" | grep -q '"provider":"mock"' || { echo "!! Expected mock provider: $HEALTH_RESP"; exit 1; }
 echo "    [PASS] Health check verified (ok=true, provider=mock)"
 
 # Check 2: Simplify endpoint
@@ -166,7 +162,7 @@ echo "==> [9/9] Checking static HTML web page serving"
 PAGES=("/" "/index.html" "/welcome.html" "/settings.html" "/library.html" "/employee/profile.html" "/employee/clarify.html" "/employee/plan.html" "/employee/meeting.html" "/employee/adjustments.html" "/employer/index.html")
 for page in "${PAGES[@]}"; do
   PAGE_RESP=$(curl -sf "http://127.0.0.1:$PORT$page")
-  echo "$PAGE_RESP" | grep -qi '<html' || { echo "!! Page $page did not return HTML"; exit 1; }
+  echo "$PAGE_RESP" | grep -i '<html' >/dev/null || { echo "!! Page $page did not return HTML"; exit 1; }
   echo "    [PASS] GET $page returned HTTP 200 with HTML"
 done
 
@@ -175,4 +171,3 @@ echo "================================================================"
 echo "  SMOKE: PASS (All end-to-end smoke checks passed successfully)"
 echo "================================================================"
 exit 0
-
