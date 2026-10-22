@@ -1,8 +1,8 @@
 # PrimaZi — AI Evaluation & Benchmark Report (N1.2 & P1-29)
 
-> Evaluated on: **2026-10-22 18:20:43**
-> Active Provider: `mock`
-> Model: ``
+> Evaluated on: **2026-10-22 19:04:27**
+> Active Provider: `deepseek`
+> Model: `deepseek-chat`
 > Total Test Cases: **33** | Passed: **33** | Failed: **0** | Total Duration: **0.01s**
 
 ## 1. Property-Based Criteria Checked

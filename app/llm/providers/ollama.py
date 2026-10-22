@@ -16,7 +16,11 @@ async def call_ollama(
     """Calls local Ollama OpenAI-compatible chat completions API enforcing JSON output."""
     base_url = os.getenv("OLLAMA_BASE_URL", settings.OLLAMA_BASE_URL).rstrip("/")
     url = f"{base_url}/chat/completions"
-    model_name = model or settings.OLLAMA_MODEL or "qwen2.5:3b"
+    model_name = (
+        model
+        if model and not model.startswith("deepseek")
+        else settings.OLLAMA_MODEL or "qwen2.5:7b"
+    )
     effective_timeout = int(os.getenv("OLLAMA_TIMEOUT_SECONDS", str(max(timeout, 90))))
 
     json_schema_prompt = (

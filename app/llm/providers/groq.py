@@ -19,7 +19,11 @@ async def call_groq(
 
     base_url = os.getenv("GROQ_BASE_URL", settings.GROQ_BASE_URL).rstrip("/")
     url = f"{base_url}/chat/completions"
-    model_name = model or settings.GROQ_MODEL or "llama-3.3-70b-versatile"
+    model_name = (
+        model
+        if model and not model.startswith("deepseek")
+        else settings.GROQ_MODEL or "qwen/qwen3.8-27b"
+    )
 
     json_schema_prompt = (
         f"{system}\n\nIMPORTANT: You must respond ONLY with a valid JSON object strictly "

@@ -17,16 +17,24 @@ async def call_gemini(
     if not api_key:
         raise LLMUnavailable("GEMINI_API_KEY lipsește din configurare / mediu.")
 
-    # Default to gemini-2.0-flash or gemini-1.5-flash which are the standard production endpoints
-    model_name = model or settings.LLM_MODEL or "gemini-2.0-flash"
+    # Default to gemini-2.0-flash or gemini-1.5-flash
+    model_name = (
+        model
+        if model and not model.startswith("deepseek")
+        else settings.LLM_MODEL or "gemini-2.0-flash"
+    )
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
+
+    json_schema_prompt = (
+        f"{system}\n\nIMPORTANT: Respond ONLY with a valid JSON object matching this JSON schema:\n"
+        f"{json.dumps(schema.model_json_schema(), ensure_ascii=False)}"
+    )
 
     payload = {
         "contents": [{"role": "user", "parts": [{"text": user}]}],
-        "systemInstruction": {"parts": [{"text": system}]},
+        "systemInstruction": {"parts": [{"text": json_schema_prompt}]},
         "generationConfig": {
             "responseMimeType": "application/json",
-            "responseSchema": schema.model_json_schema(),
         },
     }
 
