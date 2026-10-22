@@ -19,7 +19,7 @@ class DummyOutputSchema(BaseModel):
 async def test_gemini_missing_api_key(monkeypatch):
     monkeypatch.setenv("GEMINI_API_KEY", "")
     with pytest.raises(LLMUnavailable) as exc:
-        await call_gemini("sys", "usr", DummyOutputSchema, "gemini-2.5-flash", 10)
+        await call_gemini("sys", "usr", DummyOutputSchema, "gemini-2.0-flash", 10)
     assert "GEMINI_API_KEY lipsește" in str(exc.value)
 
 
@@ -41,7 +41,7 @@ async def test_gemini_network_error_maps_to_llm_unavailable(monkeypatch):
     monkeypatch.setattr(httpx.AsyncClient, "post", mock_post)
 
     with pytest.raises(LLMUnavailable):
-        await call_gemini("sys", "usr", DummyOutputSchema, "gemini-2.5-flash", 10)
+        await call_gemini("sys", "usr", DummyOutputSchema, "gemini-2.0-flash", 10)
 
 
 @pytest.mark.anyio

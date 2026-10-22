@@ -17,7 +17,8 @@ async def call_gemini(
     if not api_key:
         raise LLMUnavailable("GEMINI_API_KEY lipsește din configurare / mediu.")
 
-    model_name = model or settings.LLM_MODEL or "gemini-2.5-flash"
+    # Default to gemini-2.0-flash or gemini-1.5-flash which are the standard production endpoints
+    model_name = model or settings.LLM_MODEL or "gemini-2.0-flash"
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
 
     payload = {
