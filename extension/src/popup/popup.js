@@ -7,7 +7,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // 1. Get active tab's hostname
   try {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const [tab] = await chrome.tabs.query({
+      active: true,
+      currentWindow: true,
+    });
     if (tab?.url) {
       const url = new URL(tab.url);
       activeHostname = url.hostname;
@@ -16,11 +19,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   } catch (_) {}
 
-  // 2. Fetch current config & prefs
-  chrome.runtime.sendMessage({ type: "PREFS_GET" }, (res) => {
-    if (!res) return;
-    const config = res.config || {};
-    const prefs = res.prefs || {};
+  // 2. Fetch current config & prefs directly from chrome.storage.local
+  try {
+    const stored = await chrome.storage.local.get([
+      "wp.ext.config",
+      "wp.ext.prefs.v1",
+    ]);
+    const config = stored["wp.ext.config"] || { disabledSites: [] };
+    const prefs = stored["wp.ext.prefs.v1"] || { prefs: { reading_level: 2 } };
 
     const siteEnabledCheckbox = document.getElementById("siteEnabledCheckbox");
     const readingLevelSelect = document.getElementById("readingLevelSelect");
@@ -30,19 +36,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     const disabledSites = config.disabledSites || [];
     if (siteEnabledCheckbox) {
       siteEnabledCheckbox.checked = !disabledSites.includes(activeHostname);
-      siteEnabledCheckbox.addEventListener("change", () => {
+      siteEnabledCheckbox.addEventListener("change", async () => {
         let updatedDisabled = [...disabledSites];
         if (siteEnabledCheckbox.checked) {
-          updatedDisabled = updatedDisabled.filter(h => h !== activeHostname);
+          updatedDisabled = updatedDisabled.filter((h) => h !== activeHostname);
         } else {
           if (!updatedDisabled.includes(activeHostname)) {
             updatedDisabled.push(activeHostname);
           }
         }
-        chrome.runtime.sendMessage({
-          type: "CONFIG_SET",
-          config: { disabledSites: updatedDisabled }
-        });
+        const updatedConfig = { ...config, disabledSites: updatedDisabled };
+        await chrome.storage.local.set({ "wp.ext.config": updatedConfig });
       });
     }
 
@@ -50,33 +54,34 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (readingLevelSelect) {
       const currentLvl = prefs.prefs?.reading_level || 2;
       readingLevelSelect.value = String(currentLvl);
-      readingLevelSelect.addEventListener("change", () => {
+      readingLevelSelect.addEventListener("change", async () => {
         const newLvl = Number(readingLevelSelect.value);
         const updatedPrefs = {
           ...prefs,
+          updatedAt: new Date().toISOString(),
           prefs: {
             ...(prefs.prefs || {}),
-            reading_level: newLvl
-          }
+            reading_level: newLvl,
+          },
         };
-        chrome.runtime.sendMessage({
-          type: "PREFS_SET",
-          prefs: updatedPrefs
-        });
+        await chrome.storage.local.set({ "wp.ext.prefs.v1": updatedPrefs });
       });
     }
 
     // Local only
     if (localOnlyCheckbox) {
       localOnlyCheckbox.checked = !!config.localOnly;
-      localOnlyCheckbox.addEventListener("change", () => {
-        chrome.runtime.sendMessage({
-          type: "CONFIG_SET",
-          config: { localOnly: localOnlyCheckbox.checked }
-        });
+      localOnlyCheckbox.addEventListener("change", async () => {
+        const updatedConfig = {
+          ...config,
+          localOnly: localOnlyCheckbox.checked,
+        };
+        await chrome.storage.local.set({ "wp.ext.config": updatedConfig });
       });
     }
-  });
+  } catch (err) {
+    console.error("Popup storage error:", err);
+  }
 
   // Open settings
   const openSettingsBtn = document.getElementById("openSettingsBtn");

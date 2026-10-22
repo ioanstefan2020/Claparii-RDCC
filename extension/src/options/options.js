@@ -6,17 +6,18 @@
 
 import { QUESTIONNAIRE_RO } from "../shared/prefs/questionnaire.js";
 import { derivePrefs } from "../shared/prefs/derive.js";
+import { DEFAULT_ANSWERS } from "../shared/prefs/types.js";
 
 const DEFAULT_CONFIG = {
   backendUrl: "http://localhost:8000",
   token: "primazi-demo-2026",
   siteOrigins: ["http://localhost:8000", "http://127.0.0.1:8000"],
   localOnly: false,
-  disabledSites: []
+  disabledSites: [],
 };
 
-let currentAnswers = {};
-let currentPrefs = {};
+let currentAnswers = { ...DEFAULT_ANSWERS };
+let currentPrefs = derivePrefs(currentAnswers);
 let currentConfig = { ...DEFAULT_CONFIG };
 let currentFreeText = "";
 
@@ -28,34 +29,49 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 async function loadStoredData() {
-  return new Promise((resolve) => {
-    chrome.runtime.sendMessage({ type: "PREFS_GET" }, (res) => {
-      if (res) {
-        const storedPrefs = res.prefs || {};
-        currentAnswers = storedPrefs.answers || {};
-        currentPrefs = storedPrefs.prefs || {};
-        currentFreeText = storedPrefs.freeText || "";
-        currentConfig = { ...DEFAULT_CONFIG, ...(res.config || {}) };
+  try {
+    const stored = await chrome.storage.local.get([
+      "wp.ext.prefs.v1",
+      "wp.ext.config",
+    ]);
+    const storedPrefs = stored["wp.ext.prefs.v1"] || {};
 
-        // Populate form inputs
-        const freeTextInput = document.getElementById("freeTextInput");
-        if (freeTextInput) {
-          freeTextInput.value = currentFreeText;
-          updateCharCount(currentFreeText);
-        }
+    currentAnswers = {
+      ...DEFAULT_ANSWERS,
+      ...(storedPrefs.answers || {}),
+    };
+    currentPrefs = storedPrefs.prefs || derivePrefs(currentAnswers);
+    currentFreeText = storedPrefs.freeText || "";
+    currentConfig = {
+      ...DEFAULT_CONFIG,
+      ...(stored["wp.ext.config"] || {}),
+    };
 
-        const backendUrlInput = document.getElementById("backendUrlInput");
-        if (backendUrlInput) backendUrlInput.value = currentConfig.backendUrl || "http://localhost:8000";
+    // Populate form inputs
+    const freeTextInput = document.getElementById("freeTextInput");
+    if (freeTextInput) {
+      freeTextInput.value = currentFreeText;
+      updateCharCount(currentFreeText);
+    }
 
-        const tokenInput = document.getElementById("tokenInput");
-        if (tokenInput) tokenInput.value = currentConfig.token || "primazi-demo-2026";
+    const backendUrlInput = document.getElementById("backendUrlInput");
+    if (backendUrlInput) {
+      backendUrlInput.value =
+        currentConfig.backendUrl || "http://localhost:8000";
+    }
 
-        const localOnlyCheckbox = document.getElementById("localOnlyCheckbox");
-        if (localOnlyCheckbox) localOnlyCheckbox.checked = !!currentConfig.localOnly;
-      }
-      resolve();
-    });
-  });
+    const tokenInput = document.getElementById("tokenInput");
+    if (tokenInput) {
+      tokenInput.value = currentConfig.token || "primazi-demo-2026";
+    }
+
+    const localOnlyCheckbox = document.getElementById("localOnlyCheckbox");
+    if (localOnlyCheckbox) {
+      localOnlyCheckbox.checked = !!currentConfig.localOnly;
+    }
+  } catch (err) {
+    console.error("Error loading settings from storage:", err);
+  }
 }
 
 function renderQuestions() {
@@ -86,7 +102,7 @@ function renderQuestions() {
 
     for (const opt of q.options) {
       const card = document.createElement("label");
-      const isChecked = currentAnswers[q.id] === opt.value;
+      const isChecked = String(currentAnswers[q.id]) === String(opt.value);
       card.className = `radio-card ${isChecked ? "selected" : ""}`;
 
       const radio = document.createElement("input");
@@ -96,9 +112,9 @@ function renderQuestions() {
       radio.checked = isChecked;
 
       radio.addEventListener("change", () => {
-        // Update selection class on siblings
+        // Update visual selection on sibling cards
         const allCards = grid.querySelectorAll(".radio-card");
-        allCards.forEach(c => c.classList.remove("selected"));
+        allCards.forEach((c) => c.classList.remove("selected"));
         card.classList.add("selected");
 
         // Parse boolean if needed
@@ -197,23 +213,23 @@ function setupEventListeners() {
     });
   }
 
-  // Save Settings
+  // Save Settings directly into chrome.storage.local
   const saveBtn = document.getElementById("saveBtn");
   if (saveBtn) {
-    saveBtn.addEventListener("click", () => {
-      const backendUrl = (document.getElementById("backendUrlInput")?.value || "http://localhost:8000").trim();
-      const token = (document.getElementById("tokenInput")?.value || "primazi-demo-2026").trim();
+    saveBtn.addEventListener("click", async () => {
+      const backendUrl = (
+        document.getElementById("backendUrlInput")?.value ||
+        "http://localhost:8000"
+      ).trim();
+      const token = (
+        document.getElementById("tokenInput")?.value || "primazi-demo-2026"
+      ).trim();
       const localOnly = !!document.getElementById("localOnlyCheckbox")?.checked;
 
       // Update config
       currentConfig.backendUrl = backendUrl;
       currentConfig.token = token;
       currentConfig.localOnly = localOnly;
-
-      chrome.runtime.sendMessage({
-        type: "CONFIG_SET",
-        config: currentConfig
-      });
 
       // Update prefs
       const payload = {
@@ -223,15 +239,29 @@ function setupEventListeners() {
         answers: currentAnswers,
         prefs: currentPrefs,
         overrides: Object.keys(currentPrefs || {}),
-        freeText: currentFreeText
+        freeText: currentFreeText,
       };
 
-      chrome.runtime.sendMessage({
-        type: "PREFS_SET",
-        prefs: payload
-      }, () => {
-        showToast("✓ Toate preferințele și conexiunea au fost salvate cu succes!");
-      });
+      try {
+        await chrome.storage.local.set({
+          "wp.ext.config": currentConfig,
+          "wp.ext.prefs.v1": payload,
+        });
+
+        showToast(
+          "✓ Toate preferințele și conexiunea au fost salvate cu succes!",
+        );
+
+        try {
+          chrome.runtime.sendMessage({
+            type: "PREFS_SET",
+            prefs: payload,
+          });
+        } catch (_) {}
+      } catch (err) {
+        console.error("Save error:", err);
+        showToast("❌ Eroare la salvarea setărilor în memorie.");
+      }
     });
   }
 
@@ -248,11 +278,13 @@ function setupEventListeners() {
         freeText: currentFreeText,
         config: {
           backendUrl: currentConfig.backendUrl,
-          localOnly: currentConfig.localOnly
-        }
+          localOnly: currentConfig.localOnly,
+        },
       };
 
-      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+        type: "application/json",
+      });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -273,19 +305,35 @@ function setupEventListeners() {
       if (!file) return;
 
       const reader = new FileReader();
-      reader.onload = (event) => {
+      reader.onload = async (event) => {
         try {
           const parsed = JSON.parse(event.target.result);
-          if (parsed.answers) currentAnswers = parsed.answers;
+          if (parsed.answers)
+            currentAnswers = { ...DEFAULT_ANSWERS, ...parsed.answers };
           if (parsed.prefs) currentPrefs = parsed.prefs;
           if (parsed.freeText) currentFreeText = parsed.freeText;
-          if (parsed.config) currentConfig = { ...currentConfig, ...parsed.config };
+          if (parsed.config)
+            currentConfig = { ...currentConfig, ...parsed.config };
 
           renderQuestions();
           if (freeTextInput) freeTextInput.value = currentFreeText;
           updateCharCount(currentFreeText);
           updateLivePreview();
-          showToast("✓ Setările au fost importate cu succes! Apasă 'Salvează setările'.");
+
+          // Auto-persist imported configuration
+          await chrome.storage.local.set({
+            "wp.ext.config": currentConfig,
+            "wp.ext.prefs.v1": {
+              version: 1,
+              source: "imported",
+              updatedAt: new Date().toISOString(),
+              answers: currentAnswers,
+              prefs: currentPrefs,
+              freeText: currentFreeText,
+            },
+          });
+
+          showToast("✓ Setările au fost importate și salvate cu succes!");
         } catch (err) {
           showToast("❌ Fișierul selectat nu este un JSON valid.");
         }
@@ -297,12 +345,28 @@ function setupEventListeners() {
   // Reset
   const resetBtn = document.getElementById("resetBtn");
   if (resetBtn) {
-    resetBtn.addEventListener("click", () => {
-      if (confirm("Sigur dorești să resetezi toate preferințele la setările inițiale?")) {
-        currentAnswers = {};
-        currentPrefs = derivePrefs({});
+    resetBtn.addEventListener("click", async () => {
+      if (
+        confirm(
+          "Sigur dorești să resetezi toate preferințele la setările inițiale?",
+        )
+      ) {
+        currentAnswers = { ...DEFAULT_ANSWERS };
+        currentPrefs = derivePrefs(currentAnswers);
         currentFreeText = "";
         currentConfig = { ...DEFAULT_CONFIG };
+
+        await chrome.storage.local.set({
+          "wp.ext.config": currentConfig,
+          "wp.ext.prefs.v1": {
+            version: 1,
+            source: "default",
+            updatedAt: new Date().toISOString(),
+            answers: currentAnswers,
+            prefs: currentPrefs,
+            freeText: "",
+          },
+        });
 
         renderQuestions();
         if (freeTextInput) freeTextInput.value = "";

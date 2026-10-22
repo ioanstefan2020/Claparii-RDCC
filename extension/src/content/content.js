@@ -7,6 +7,7 @@
  *  - Password field detection & bypass (security rule)
  *  - Closed Shadow DOM button & dialog via CardManager
  *  - Site preferences auto-import from website origin
+ *  - Live preferences sync via chrome.storage.onChanged
  *  - Message routing with service worker and local fallback
  */
 
@@ -27,14 +28,35 @@ class PrimaZiContentScript {
   }
 
   async init() {
-    // 1. Fetch current preferences and config from background service worker
-    chrome.runtime.sendMessage({ type: "PREFS_GET" }, (res) => {
-      if (res && res.prefs) {
-        this.userPrefs = res.prefs;
-        this.config = res.config;
+    // 1. Fetch current preferences and config directly from chrome.storage.local
+    try {
+      const stored = await chrome.storage.local.get([
+        "wp.ext.prefs.v1",
+        "wp.ext.config",
+      ]);
+      if (stored["wp.ext.prefs.v1"]) {
+        this.userPrefs = stored["wp.ext.prefs.v1"];
         this.cardManager.setUserPrefs(this.userPrefs);
       }
-    });
+      if (stored["wp.ext.config"]) {
+        this.config = stored["wp.ext.config"];
+      }
+    } catch (_) {}
+
+    // Live sync when user updates settings in options or popup
+    if (chrome.storage && chrome.storage.onChanged) {
+      chrome.storage.onChanged.addListener((changes, area) => {
+        if (area === "local") {
+          if (changes["wp.ext.prefs.v1"]?.newValue) {
+            this.userPrefs = changes["wp.ext.prefs.v1"].newValue;
+            this.cardManager.setUserPrefs(this.userPrefs);
+          }
+          if (changes["wp.ext.config"]?.newValue) {
+            this.config = changes["wp.ext.config"].newValue;
+          }
+        }
+      });
+    }
 
     // 2. Check site auto-import if running on website origin
     this.checkSiteOriginSync();
@@ -42,7 +64,11 @@ class PrimaZiContentScript {
     // 3. Attach selection event listeners
     document.addEventListener("mouseup", (e) => this.onSelectionChange(e));
     document.addEventListener("keyup", (e) => {
-      if (e.key === "Shift" || e.key === "ArrowLeft" || e.key === "ArrowRight") {
+      if (
+        e.key === "Shift" ||
+        e.key === "ArrowLeft" ||
+        e.key === "ArrowRight"
+      ) {
         this.onSelectionChange(e);
       }
     });
@@ -62,13 +88,15 @@ class PrimaZiContentScript {
   checkSiteOriginSync() {
     try {
       const siteStorageKey = "primazi.settings.v2";
-      const raw = localStorage.getItem(siteStorageKey) || localStorage.getItem("wp.prefs.v1");
+      const raw =
+        localStorage.getItem(siteStorageKey) ||
+        localStorage.getItem("wp.prefs.v1");
       if (raw) {
         const parsed = JSON.parse(raw);
         chrome.runtime.sendMessage({
           type: "PREFS_FROM_SITE",
           prefs: parsed,
-          updatedAt: parsed.updatedAt || new Date().toISOString()
+          updatedAt: parsed.updatedAt || new Date().toISOString(),
         });
       }
     } catch (_) {
@@ -112,7 +140,11 @@ class PrimaZiContentScript {
     if (e.target && e.target.id === "primazi-ext-root") return;
 
     // Check active site disabled list
-    if (this.config && this.config.disabledSites && this.config.disabledSites.includes(window.location.hostname)) {
+    if (
+      this.config &&
+      this.config.disabledSites &&
+      this.config.disabledSites.includes(window.location.hostname)
+    ) {
       this.cardManager.hideFloatingButton();
       return;
     }
@@ -132,8 +164,14 @@ class PrimaZiContentScript {
     // Check if selection is inside a password field
     const anchorNode = sel.anchorNode;
     const focusNode = sel.focusNode;
-    const anchorEl = anchorNode?.nodeType === Node.ELEMENT_NODE ? anchorNode : anchorNode?.parentElement;
-    const focusEl = focusNode?.nodeType === Node.ELEMENT_NODE ? focusNode : focusNode?.parentElement;
+    const anchorEl =
+      anchorNode?.nodeType === Node.ELEMENT_NODE
+        ? anchorNode
+        : anchorNode?.parentElement;
+    const focusEl =
+      focusNode?.nodeType === Node.ELEMENT_NODE
+        ? focusNode
+        : focusNode?.parentElement;
 
     if (this.isSensitiveElement(anchorEl) || this.isSensitiveElement(focusEl)) {
       this.cardManager.hideFloatingButton();
@@ -174,12 +212,19 @@ class PrimaZiContentScript {
     const requestId = `req-${Date.now()}`;
     const truncatedText = this.sanitizeAndTruncate(text);
 
+    // If local only, adapt locally immediately
+    if (this.config && this.config.localOnly) {
+      const localData = adaptLocally(truncatedText, mode);
+      this.cardManager.showCard(localData, truncatedText);
+      return;
+    }
+
     chrome.runtime.sendMessage(
       {
         type: "ADAPT",
         requestId: requestId,
         text: truncatedText,
-        action: mode
+        action: mode,
       },
       (res) => {
         if (chrome.runtime.lastError || !res || res.type === "ERROR") {
@@ -195,14 +240,17 @@ class PrimaZiContentScript {
           const localData = adaptLocally(truncatedText, mode);
           this.cardManager.showCard(localData, truncatedText);
         }
-      }
+      },
     );
   }
 }
 
 // Instantiate on document load
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", () => new PrimaZiContentScript());
+  document.addEventListener(
+    "DOMContentLoaded",
+    () => new PrimaZiContentScript(),
+  );
 } else {
   new PrimaZiContentScript();
 }

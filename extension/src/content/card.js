@@ -11,6 +11,7 @@
  */
 
 import { normalizeRomanianForSpeech } from "../shared/tts-normalize-ro.js";
+import { adaptLocally, extractKeyPhrases } from "./local_mode.js";
 
 const CARD_STYLES = `
   :host {
@@ -353,12 +354,22 @@ export class CardManager {
     this.currentData = null;
     this.originalText = "";
     this.showingOriginal = false;
-    this.viewMode = "text"; // "text" | "bullets"
+    this.viewMode = "text"; // "text" | "bullets" | "shorter"
     this.isSpeaking = false;
     this.currentUtterance = null;
     this.userPrefs = {};
 
     this.initShadowHost();
+    this.initSpeechVoices();
+  }
+
+  initSpeechVoices() {
+    if (typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = () => {
+        if (window.speechSynthesis) window.speechSynthesis.getVoices();
+      };
+    }
   }
 
   initShadowHost() {
@@ -454,7 +465,10 @@ export class CardManager {
     this.originalText = originalText || this.originalText;
     this.lastActiveElement = document.activeElement;
     this.showingOriginal = false;
-    this.viewMode = data.bullets && data.bullets.length > 0 && !data.text ? "bullets" : "text";
+    this.viewMode =
+      data.bullets && data.bullets.length > 0 && !data.text
+        ? "bullets"
+        : "text";
 
     const overlay = document.createElement("div");
     overlay.className = "primazi-overlay";
@@ -527,18 +541,37 @@ export class CardManager {
     bulletsBtn.addEventListener("click", () => {
       this.viewMode = this.viewMode === "bullets" ? "text" : "bullets";
       bulletsBtn.classList.toggle("active", this.viewMode === "bullets");
+      if (this.viewMode === "bullets") {
+        shorterBtn.classList.remove("active");
+      }
       this.renderBodyContent(bodyContainer);
-      this.announce(this.viewMode === "bullets" ? "Afișat ca listă de buline." : "Afișat ca text continuu.");
+      this.announce(
+        this.viewMode === "bullets"
+          ? "Afișat ca listă de buline."
+          : "Afișat ca text continuu.",
+      );
     });
     actions.appendChild(bulletsBtn);
 
-    // Shorter Button
+    // Shorter Button (toggles compressed view instantly!)
     const shorterBtn = document.createElement("button");
     shorterBtn.className = "primazi-btn";
     shorterBtn.setAttribute("type", "button");
     shorterBtn.textContent = "✂️ Mai scurt";
     shorterBtn.addEventListener("click", () => {
-      if (this.onActionCallback) {
+      this.viewMode = this.viewMode === "shorter" ? "text" : "shorter";
+      shorterBtn.classList.toggle("active", this.viewMode === "shorter");
+      if (this.viewMode === "shorter") {
+        bulletsBtn.classList.remove("active");
+      }
+      this.renderBodyContent(bodyContainer);
+      this.announce(
+        this.viewMode === "shorter"
+          ? "Afișat în format mai scurt și comprimat."
+          : "Afișat ca text continuu.",
+      );
+
+      if (this.onActionCallback && this.viewMode === "shorter") {
         this.onActionCallback("adapt", this.originalText, "shorter");
       }
     });
@@ -550,10 +583,27 @@ export class CardManager {
     copyBtn.setAttribute("type", "button");
     copyBtn.textContent = "📋 Copiază";
     copyBtn.addEventListener("click", () => {
-      const textToCopy = this.showingOriginal ? this.originalText : (data.text || (data.bullets || []).join("\n"));
+      let textToCopy = "";
+      if (this.showingOriginal) {
+        textToCopy = this.originalText;
+      } else if (this.viewMode === "shorter") {
+        textToCopy =
+          this.currentData?.shorterText ||
+          adaptLocally(this.originalText, "shorter").text;
+      } else if (
+        this.viewMode === "bullets" &&
+        this.currentData?.bullets?.length
+      ) {
+        textToCopy = this.currentData.bullets.join("\n");
+      } else {
+        textToCopy = this.currentData?.text || this.originalText;
+      }
+
       navigator.clipboard.writeText(textToCopy).then(() => {
         copyBtn.textContent = "✓ Copiat!";
-        setTimeout(() => { copyBtn.textContent = "📋 Copiază"; }, 2000);
+        setTimeout(() => {
+          copyBtn.textContent = "📋 Copiază";
+        }, 2000);
         this.announce("Textul a fost copiat în clipboard.");
       });
     });
@@ -568,7 +618,11 @@ export class CardManager {
       this.showingOriginal = !this.showingOriginal;
       origBtn.classList.toggle("active", this.showingOriginal);
       this.renderBodyContent(bodyContainer);
-      this.announce(this.showingOriginal ? "Se afișează textul original neschimbat." : "Se afișează textul adaptat.");
+      this.announce(
+        this.showingOriginal
+          ? "Se afișează textul original neschimbat."
+          : "Se afișează textul adaptat.",
+      );
     });
     actions.appendChild(origBtn);
 
@@ -622,7 +676,9 @@ export class CardManager {
 
     // Focus first action button
     listenBtn.focus();
-    this.announce(`Textul a fost clarificat. ${data.key_phrases?.length || 0} concepte importante evidențiate.`);
+    this.announce(
+      `Textul a fost clarificat. ${data.key_phrases?.length || 0} concepte importante evidențiate.`,
+    );
   }
 
   /**
@@ -642,7 +698,22 @@ export class CardManager {
     const data = this.currentData;
     if (!data) return;
 
-    if (this.viewMode === "bullets" && data.bullets && data.bullets.length > 0) {
+    if (this.viewMode === "shorter") {
+      // Shorter condensed view
+      const p = document.createElement("p");
+      p.className = "primazi-text";
+      const shorterText =
+        data.shorterText || adaptLocally(this.originalText, "shorter").text;
+      const keyPhrases = data.key_phrases?.length
+        ? data.key_phrases
+        : extractKeyPhrases(shorterText);
+      this.renderTextWithHighlights(p, shorterText, keyPhrases);
+      container.appendChild(p);
+    } else if (
+      this.viewMode === "bullets" &&
+      data.bullets &&
+      data.bullets.length > 0
+    ) {
       const ul = document.createElement("ul");
       ul.className = "primazi-bullets-list";
       for (const bullet of data.bullets) {
@@ -670,16 +741,19 @@ export class CardManager {
 
         const badge = document.createElement("span");
         badge.className = "primazi-note-badge";
-        const kindLabel = {
-          indirect_request: "Cerere politicoasă:",
-          possible_joke: "Posibilă glumă (nesigur):",
-          idiom: "Expresie figurată:",
-          urgency: "Urgență:",
-          softener: "Nuanță:"
-        }[noteItem.kind] || "Notă:";
+        const kindLabel =
+          {
+            indirect_request: "Cerere politicoasă:",
+            possible_joke: "Posibilă glumă (nesigur):",
+            idiom: "Expresie figurată:",
+            urgency: "Urgență:",
+            softener: "Nuanță:",
+          }[noteItem.kind] || "Notă:";
         badge.textContent = kindLabel;
 
-        const noteText = document.createTextNode(` „${noteItem.quote}” — ${noteItem.note}`);
+        const noteText = document.createTextNode(
+          ` „${noteItem.quote}” — ${noteItem.note}`,
+        );
         noteBox.appendChild(badge);
         noteBox.appendChild(noteText);
         notesContainer.appendChild(noteBox);
@@ -698,9 +772,8 @@ export class CardManager {
       return;
     }
 
-    // Sort key phrases by length descending to match longest first
     const sorted = [...new Set(keyPhrases)]
-      .filter(p => p && p.trim().length > 1)
+      .filter((p) => p && p.trim().length > 1)
       .sort((a, b) => b.length - a.length);
 
     if (sorted.length === 0) {
@@ -708,14 +781,17 @@ export class CardManager {
       return;
     }
 
-    // Escape regex characters
-    const pattern = sorted.map(p => p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|");
+    const pattern = sorted
+      .map((p) => p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+      .join("|");
     const regex = new RegExp(`(${pattern})`, "gi");
 
     const parts = text.split(regex);
     for (const part of parts) {
       if (!part) continue;
-      const isMatch = sorted.some(k => k.toLowerCase() === part.toLowerCase());
+      const isMatch = sorted.some(
+        (k) => k.toLowerCase() === part.toLowerCase(),
+      );
       if (isMatch) {
         const mark = document.createElement("mark");
         mark.className = "primazi-highlight";
@@ -731,7 +807,9 @@ export class CardManager {
    * Trap Tab focus inside the active card
    */
   trapFocus(e, card) {
-    const focusable = card.querySelectorAll("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
+    const focusable = card.querySelectorAll(
+      "button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])",
+    );
     if (!focusable.length) return;
     const first = focusable[0];
     const last = focusable[focusable.length - 1];
@@ -746,49 +824,103 @@ export class CardManager {
   }
 
   /**
-   * Romanian speech synthesis read aloud
+   * Reliable Romanian speech synthesis with cross-platform fallback
    */
   toggleReadAloud(btn) {
     if (this.isSpeaking) {
-      window.speechSynthesis.cancel();
+      if (typeof window !== "undefined" && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
       this.isSpeaking = false;
       btn.textContent = "🔊 Ascultă";
       this.announce("Redarea vocală a fost oprită.");
       return;
     }
 
-    const textToRead = this.showingOriginal ? this.originalText : (this.currentData?.text || (this.currentData?.bullets || []).join(". "));
+    if (typeof window === "undefined" || !window.speechSynthesis) {
+      this.announce("Sinteza vocală nu este suportată în acest browser.");
+      return;
+    }
+
+    let textToRead = "";
+    if (this.showingOriginal) {
+      textToRead = this.originalText;
+    } else if (this.viewMode === "shorter") {
+      textToRead =
+        this.currentData?.shorterText ||
+        adaptLocally(this.originalText, "shorter").text;
+    } else if (
+      this.viewMode === "bullets" &&
+      this.currentData?.bullets?.length
+    ) {
+      textToRead = this.currentData.bullets.join(". ");
+    } else {
+      textToRead = this.currentData?.text || this.originalText;
+    }
+
     if (!textToRead) return;
 
+    // Normalise Romanian spoken numbers, dates, codes
     const normalized = normalizeRomanianForSpeech(textToRead);
     const utterance = new SpeechSynthesisUtterance(normalized);
-    utterance.lang = "ro-RO";
     utterance.rate = Number(this.userPrefs.prefs?.speech_rate) || 1.0;
 
-    // Pick best Romanian voice if available
-    const voices = window.speechSynthesis.getVoices();
-    const roVoice = voices.find(v => v.lang.startsWith("ro") || v.name.toLowerCase().includes("romanian"));
-    if (roVoice) utterance.voice = roVoice;
+    // Retrieve voices
+    const voices = window.speechSynthesis.getVoices() || [];
+    const roVoice = voices.find(
+      (v) =>
+        v.lang.startsWith("ro") ||
+        v.name.toLowerCase().includes("romanian") ||
+        v.name.toLowerCase().includes("alina") ||
+        v.name.toLowerCase().includes("emil"),
+    );
+
+    if (roVoice) {
+      utterance.voice = roVoice;
+      utterance.lang = roVoice.lang;
+    } else {
+      // Fallback: pick default voice
+      const defaultVoice = voices.find((v) => v.default) || voices[0];
+      if (defaultVoice) {
+        utterance.voice = defaultVoice;
+        utterance.lang = defaultVoice.lang;
+      }
+    }
+
+    utterance.onstart = () => {
+      this.isSpeaking = true;
+      btn.textContent = "⏹️ Oprește";
+    };
 
     utterance.onend = () => {
       this.isSpeaking = false;
       btn.textContent = "🔊 Ascultă";
     };
-    utterance.onerror = () => {
+
+    utterance.onerror = (e) => {
+      console.warn("SpeechSynthesis error:", e);
       this.isSpeaking = false;
       btn.textContent = "🔊 Ascultă";
     };
 
-    this.isSpeaking = true;
-    btn.textContent = "⏹️ Oprește";
+    // Chrome bug prevention: cancel, unpause, and speak after 50ms tick
     window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utterance);
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
+    }
+
+    setTimeout(() => {
+      window.speechSynthesis.speak(utterance);
+    }, 50);
+
     this.announce("Se citește textul cu voce tare.");
   }
 
   closeCard() {
     if (this.isSpeaking) {
-      window.speechSynthesis.cancel();
+      if (typeof window !== "undefined" && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
       this.isSpeaking = false;
     }
     if (this.overlayKeyHandler) {
@@ -799,7 +931,10 @@ export class CardManager {
       this.overlay.remove();
       this.overlay = null;
     }
-    if (this.lastActiveElement && typeof this.lastActiveElement.focus === "function") {
+    if (
+      this.lastActiveElement &&
+      typeof this.lastActiveElement.focus === "function"
+    ) {
       this.lastActiveElement.focus();
     }
   }
