@@ -442,31 +442,6 @@ export function renderStep(stepIndex) {
         });
       }
     });
-
-      card.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          const input = card.querySelector("input[type='radio']");
-          if (input) {
-            input.checked = true;
-            let val = input.value;
-            if (val === "true") val = true;
-            else if (val === "false") val = false;
-            selectOption(question.id, val);
-          }
-        }
-      });
-
-      const input = card.querySelector("input[type='radio']");
-      if (input) {
-        input.addEventListener("change", (e) => {
-          let val = e.target.value;
-          if (val === "true") val = true;
-          else if (val === "false") val = false;
-          selectOption(question.id, val);
-        });
-      }
-    });
   }
 
   // Update action buttons text & state
@@ -546,6 +521,8 @@ export function saveAndContinue() {
   try {
     if (trimmedName) {
       localStorage.setItem("limpede_user_name", trimmedName);
+    } else {
+      localStorage.removeItem("limpede_user_name");
     }
     localStorage.setItem("limpede.welcome.completed", "true");
     if (welcomeState.lang) {

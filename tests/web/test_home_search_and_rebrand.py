@@ -257,3 +257,75 @@ def test_actions_send_tasks_to_planner_canonical_schema_via_node() -> None:
     assert data["ok"] is True
     assert data["taskCount"] == 2
 
+
+def test_welcome_js_syntax_integrity() -> None:
+    """Verifies that web/js/welcome.js has valid syntax and no dangling brackets."""
+    welcome_js = WEB_DIR / "js" / "welcome.js"
+    assert welcome_js.exists()
+    res = subprocess.run(["node", "-c", str(welcome_js)], capture_output=True, text=True)
+    assert res.returncode == 0, f"welcome.js syntax error:\n{res.stderr}"
+
+
+def test_home_search_actions_key_and_modes() -> None:
+    """Verifies that home.js wires Enter submit, Shift+Enter newline, and execute button."""
+    home_js = (WEB_DIR / "js" / "home.js").read_text(encoding="utf-8")
+    assert 'e.key === "Enter" && !e.shiftKey' in home_js
+    assert "btn-home-execute" in home_js
+    assert "executeCurrentTask" in home_js
+    assert "setMode" in home_js
+    assert "btn-home-ics" in home_js
+
+
+def test_shell_hero_greeting_personalization() -> None:
+    """Verifies that shell.js personalizes hero greetings when user name is provided."""
+    shell_js_path = WEB_DIR / "js" / "shell.js"
+    assert shell_js_path.exists()
+
+    js_code = f"""
+    import {{ updateUserDisplay }} from "{shell_js_path.as_posix()}";
+
+    const store = new Map();
+    globalThis.localStorage = {{
+      getItem: (k) => store.get(k) || null,
+      setItem: (k, v) => store.set(k, String(v)),
+    }};
+
+    let greetingText = "";
+    globalThis.document = {{
+      documentElement: {{ lang: "ro" }},
+      querySelectorAll: (sel) => {{
+        if (sel === ".user-name") return [{{ set textContent(v) {{}} }}];
+        if (sel === ".user-avatar-circle") return [{{ set textContent(v) {{}} }}];
+        if (sel === ".gemini-greeting") return [{{ set textContent(v) {{ greetingText = v; }} }}];
+        return [];
+      }}
+    }};
+
+    // Case 1: Anonymous
+    updateUserDisplay();
+    if (greetingText !== "De unde să începem?") throw new Error("Anonymous greeting mismatch: " + greetingText);
+
+    // Case 2: Personalized Romanian
+    localStorage.setItem("limpede_user_name", "Elena");
+    updateUserDisplay();
+    if (greetingText !== "Bună, Elena! De unde să începem?") throw new Error("Personalized RO greeting mismatch: " + greetingText);
+
+    // Case 3: Personalized English
+    document.documentElement.lang = "en";
+    updateUserDisplay();
+    if (greetingText !== "Hello, Elena! Where should we start?") throw new Error("Personalized EN greeting mismatch: " + greetingText);
+
+    process.stdout.write(JSON.stringify({{ ok: true }}));
+    """
+
+    res = subprocess.run(
+        ["node", "--input-type=module", "-e", js_code],
+        cwd=str(ROOT),
+        capture_output=True,
+        text=True,
+    )
+    assert res.returncode == 0, f"Node greeting test failed:\n{res.stderr}"
+    data = json.loads(res.stdout)
+    assert data["ok"] is True
+
+

@@ -89,6 +89,17 @@ export function updateUserDisplay() {
   avatarEls.forEach((el) => {
     el.textContent = avatarChar;
   });
+
+  const greetingEls = document.querySelectorAll(".gemini-greeting");
+  greetingEls.forEach((el) => {
+    if (userName && userName.trim()) {
+      el.textContent = isEn
+        ? `Hello, ${userName.trim()}! Where should we start?`
+        : `Bună, ${userName.trim()}! De unde să începem?`;
+    } else {
+      el.textContent = isEn ? "Where should we start?" : "De unde să începem?";
+    }
+  });
 }
 
 // Storage listener & custom event listener for dynamic user name changes
