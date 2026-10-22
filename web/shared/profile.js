@@ -29,6 +29,7 @@ export const DEFAULT_A11Y_PREFS = {
 
 /**
  * Loads the user profile from localStorage, falling back to defaults.
+ * Single source of truth: primazi_user_profile.
  */
 export function getProfile() {
   if (typeof localStorage === "undefined") return { ...DEFAULT_PROFILE };
@@ -41,35 +42,19 @@ export function getProfile() {
       } catch (_) {}
     }
 
-    // Secondary fallback: inspect wp.prefs.v1 and primazi_profile
+    // Direct clean read of needs_notes from single primary source
     let notes =
       parsed && typeof parsed.needs_notes === "string"
         ? parsed.needs_notes
         : "";
-    if (!notes) {
+
+    // Secondary fallback only if PROFILE_KEY has never been initialized yet
+    if (!parsed) {
       try {
         const wpRaw = localStorage.getItem("wp.prefs.v1");
         if (wpRaw) {
           const wpParsed = JSON.parse(wpRaw);
-          notes =
-            wpParsed.freeText ||
-            wpParsed.notes ||
-            (wpParsed.answers &&
-              (wpParsed.answers.freeform_needs ||
-                wpParsed.answers.needs_notes)) ||
-            "";
-        }
-      } catch (_) {}
-    }
-    if (!notes) {
-      try {
-        const oldRaw = localStorage.getItem("primazi_profile");
-        if (oldRaw) {
-          const oldParsed = JSON.parse(oldRaw);
-          notes =
-            (oldParsed.profile && oldParsed.profile.needs_notes) ||
-            oldParsed.needs_notes ||
-            "";
+          notes = wpParsed.freeText || wpParsed.notes || "";
         }
       } catch (_) {}
     }
@@ -100,6 +85,7 @@ export function getProfile() {
 
 /**
  * Saves profile updates to localStorage.
+ * Overwrites previous needs cleanly so only 1 active disability context is saved.
  */
 export function saveProfile(updates = {}) {
   if (typeof localStorage === "undefined")
@@ -128,13 +114,31 @@ export function saveProfile(updates = {}) {
   };
   localStorage.setItem(PROFILE_KEY, JSON.stringify(next));
 
-  // Also sync freeText with wp.prefs.v1 so all systems stay consistent
+  // Single source of truth: sync freeText and cleanly overwrite any old conflicting notes
   try {
     const wpRaw = localStorage.getItem("wp.prefs.v1");
     const wpState = wpRaw ? JSON.parse(wpRaw) : { version: 1, prefs: {} };
     wpState.freeText = next.needs_notes;
+    delete wpState.notes;
+    if (wpState.answers) {
+      delete wpState.answers.freeform_needs;
+      delete wpState.answers.needs_notes;
+    }
     wpState.updatedAt = new Date().toISOString();
     localStorage.setItem("wp.prefs.v1", JSON.stringify(wpState));
+  } catch (_) {}
+
+  try {
+    localStorage.removeItem("primazi_profile");
+  } catch (_) {}
+
+  // Dispatch event so other components or tabs sync immediately
+  try {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("primazi:profile-updated", { detail: next }),
+      );
+    }
   } catch (_) {}
 
   return next;
@@ -242,6 +246,7 @@ export function deleteAllUserData() {
   try {
     localStorage.removeItem(PROFILE_KEY);
     localStorage.removeItem(A11Y_KEY);
+    localStorage.removeItem("wp.prefs.v1");
     localStorage.removeItem("primazi_planner_tasks");
     applyA11yPrefs(DEFAULT_A11Y_PREFS);
     return true;

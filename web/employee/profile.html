@@ -1224,6 +1224,10 @@
             // Initialize fields
             populateForm();
 
+            window.addEventListener("primazi:profile-updated", () => {
+                populateForm();
+            });
+
             if (needsNotesTextarea) {
                 needsNotesTextarea.addEventListener("input", updateCounter);
             }

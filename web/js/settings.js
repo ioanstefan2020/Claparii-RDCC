@@ -12,6 +12,7 @@
  * - Resilient memory fallback notice in private browsing mode
  */
 
+import { getProfile, saveProfile } from "/shared/profile.js";
 import {
   loadPrefs,
   savePrefs,
@@ -124,6 +125,11 @@ function populateForm(state) {
     if (el && prefs[key]) {
       el.value = prefs[key];
     }
+  }
+  const freeformNeeds = document.getElementById("pref-freeform-needs");
+  if (freeformNeeds) {
+    const prof = getProfile();
+    freeformNeeds.value = prof.needs_notes || "";
   }
 }
 
@@ -311,6 +317,7 @@ function initSettings() {
       announce("Se calculează adaptările ergonomice optime...");
 
       try {
+        saveProfile({ needs_notes: text });
         const res = await fetch("/api/profile/recommend-adaptations", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
