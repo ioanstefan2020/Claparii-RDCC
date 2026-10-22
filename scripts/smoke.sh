@@ -159,7 +159,7 @@ echo "    [PASS] Empty input produced HTTP 400 with code=empty_input envelope"
 
 # Check 9: Static HTML web page serving
 echo "==> [9/9] Checking static HTML web page serving"
-PAGES=("/" "/index.html" "/welcome.html" "/settings.html" "/library.html" "/employee/profile.html" "/employee/clarify.html" "/employee/plan.html" "/employee/meeting.html" "/employee/adjustments.html" "/employer/index.html")
+PAGES=("/" "/index.html" "/welcome.html" "/settings.html" "/library.html" "/audio.html" "/employee/profile.html" "/employee/clarify.html" "/employee/plan.html" "/employee/meeting.html" "/employee/adjustments.html" "/employer/index.html")
 for page in "${PAGES[@]}"; do
   PAGE_RESP=$(curl -sf "http://127.0.0.1:$PORT$page")
   echo "$PAGE_RESP" | grep -i '<html' >/dev/null || { echo "!! Page $page did not return HTML"; exit 1; }

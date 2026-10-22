@@ -938,6 +938,27 @@ main#main {
   flex-wrap: wrap;
 }
 
+.action-bar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-height: var(--target-size-min);
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--font-size-sm);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.action-bar-btn svg {
+  flex-shrink: 0;
+}
+
+#home-transform-banner {
+  margin-top: var(--space-sm);
+  margin-bottom: var(--space-md);
+  border-radius: var(--radius-md);
+}
+
 .home-result-body {
   display: flex;
   flex-direction: column;

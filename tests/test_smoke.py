@@ -301,6 +301,7 @@ def test_smoke_not_found_envelope(client: TestClient) -> None:
         "/welcome.html",
         "/settings.html",
         "/library.html",
+        "/audio.html",
         "/employee/profile.html",
         "/employee/clarify.html",
         "/employee/plan.html",
@@ -719,6 +720,34 @@ def test_smoke_employer_headings_and_landmarks(client: TestClient) -> None:
     # Programmatic focus receiver on results
     assert 'id="results-heading"' in html
     assert 'tabindex="-1"' in html
+
+
+def test_smoke_audio_page_structure(client: TestClient) -> None:
+    """Verifies that /audio.html contains the necessary Wave 2 audio transcription elements."""
+    res = client.get("/audio.html")
+    assert res.status_code == 200
+    html = res.text
+
+    # Landmark and core elements
+    assert "<main" in html
+    assert 'id="main"' in html
+    assert 'id="skip-link"' in html
+    assert 'id="audio-upload-form"' in html
+    assert 'id="audio-file-input"' in html
+    assert 'id="btn-audio-submit"' in html
+    assert 'id="btn-audio-sample"' in html
+    assert 'id="btn-audio-record"' in html
+    assert 'id="audio-status-container"' in html
+    assert 'id="audio-result-section"' in html
+    assert 'id="audio-playback"' in html
+    assert 'id="audio-transcript-container"' in html
+    assert 'id="btn-export-srt"' in html
+    assert 'id="btn-export-vtt"' in html
+    assert 'id="btn-export-txt"' in html
+    assert 'id="btn-audio-summarize"' in html
+    assert 'id="btn-audio-bullets"' in html
+    assert 'id="btn-audio-plan"' in html
+    assert 'id="btn-audio-save-library"' in html
 
 
 

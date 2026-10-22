@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audio în text și subtitrări — PrimaZi</title>
+  
+  <!-- Anti-FOUC Early Theme & Font Loader -->
+  <script>
+    (function () {
+      try {
+        var raw = localStorage.getItem("primazi_prefs_v1");
+        if (raw) {
+          var p = JSON.parse(raw);
+          var doc = document.documentElement;
+          if (p.theme) doc.setAttribute("data-theme", p.theme);
+          if (p.contrast) doc.setAttribute("data-contrast", p.contrast);
+          if (p.fontSize) doc.setAttribute("data-font-size", p.fontSize);
+          if (p.font) doc.setAttribute("data-font", p.font);
+          if (p.density) doc.setAttribute("data-density", p.density);
+          if (p.sidebar) doc.setAttribute("data-sidebar", p.sidebar);
+          if (typeof p.bionic !== "undefined") doc.setAttribute("data-bionic", p.bionic ? "true" : "false");
+          if (typeof p.highlightKeyTerms !== "undefined") doc.setAttribute("data-highlight-terms", p.highlightKeyTerms ? "true" : "false");
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- Typography & Global CSS -->
+  <link rel="stylesheet" href="/fonts/fonts.css?v=2.3">
+  <link rel="stylesheet" href="/css/tokens.css?v=2.3">
+  <link rel="stylesheet" href="/css/shell.css?v=2.3">
+</head>
+<body>
+  <!-- Accessible Skip Link -->
+  <a href="#main" id="skip-link" class="skip-link">Sari la conținutul principal</a>
+
+  <!-- Top-level Application Layout -->
+  <div class="app-container">
+
+    <!-- Collapsible Sidebar -->
+    <aside id="app-sidebar" class="app-sidebar" aria-label="Bara de navigare laterală">
+      <div class="sidebar-header">
+        <span class="app-logo-text">PrimaZi</span>
+        <button type="button" id="btn-sidebar-collapse" class="btn-sidebar-toggle" aria-expanded="true" aria-label="Comută bara laterală" title="Comută bara laterală">
+          <svg class="toggle-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+        </button>
+      </div>
+
+      <!-- Action Pill: Conversație nouă -->
+      <div class="sidebar-actions">
+        <a href="/" id="btn-sidebar-new" class="sidebar-new-pill" aria-label="Pornește o conversație nouă">
+          <svg class="btn-new-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <span class="btn-new-text">Conversație nouă</span>
+        </a>
+      </div>
+
+      <!-- Main Navigation Landmark -->
+      <nav aria-label="Navigare principală">
+        <ul class="sidebar-nav">
+          <li>
+            <a href="/" class="nav-link">
+              <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+              <span class="nav-text">Acasă</span>
+            </a>
+          </li>
+          <li>
+            <a href="/library.html" class="nav-link">
+              <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+              <span class="nav-text">Bibliotecă</span>
+            </a>
+          </li>
+          <li>
+            <a href="/audio.html" class="nav-link" aria-current="page">
+              <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+              <span class="nav-text">Audio → text</span>
+            </a>
+          </li>
+          <li>
+            <a href="/employee/clarify.html" class="nav-link">
+              <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              <span class="nav-text">Clarificare</span>
+            </a>
+          </li>
+          <li>
+            <a href="/employee/plan.html" class="nav-link">
+              <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              <span class="nav-text">Planificator</span>
+            </a>
+          </li>
+          <li>
+            <a href="/employee/meeting.html" class="nav-link">
+              <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              <span class="nav-text">Ședințe</span>
+            </a>
+          </li>
+          <li>
+            <a href="/employee/adjustments.html" class="nav-link">
+              <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="4" r="2"></circle><path d="M4 9h16M12 9v12M7 13l-3 8M17 13l3 8"></path></svg>
+              <span class="nav-text">Adaptări</span>
+            </a>
+          </li>
+          <li>
+            <a href="/employee/profile.html" class="nav-link">
+              <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              <span class="nav-text">Profil &amp; Nevoi</span>
+            </a>
+          </li>
+          <li>
+            <a href="/employer/index.html" class="nav-link">
+              <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+              <span class="nav-text">Zona Angajator</span>
+            </a>
+          </li>
+          <li>
+            <a href="/settings.html" class="nav-link">
+              <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+              <span class="nav-text">Setări Confort</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <a href="/settings.html" class="footer-link">
+          <svg class="footer-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          <span>Setări &amp; Accesibilitate</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="app-main-wrapper">
+
+      <!-- Sticky Top Bar -->
+      <header class="app-topbar" role="banner">
+        <div class="topbar-left">
+          <button type="button" id="btn-menu-toggle" class="btn-menu-toggle" aria-expanded="false" aria-controls="app-sidebar" aria-label="Deschide meniul de navigare">
+            <svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          </button>
+          <div class="topbar-title-wrapper">
+            <span class="topbar-title">Audio → text</span>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Mobile Comfort Dropdown Toggle -->
+          <button type="button" id="btn-header-a11y-menu" class="btn-comfort btn-a11y-menu" aria-expanded="false" aria-controls="header-a11y-toolbar" aria-label="Meniu opțiuni confort">
+            <span>Confort ▾</span>
+          </button>
+
+          <!-- Accessible Header Toolbar -->
+          <div id="header-a11y-toolbar" class="a11y-header-toolbar" role="toolbar" aria-label="Comenzi rapide de accesibilitate">
+            <button type="button" id="btn-header-contrast" class="a11y-toolbar-btn" aria-label="Comută modul: Luminos sau Întunecat">
+              <span class="toolbar-btn-text">Mod: Luminos</span>
+            </button>
+            <button type="button" id="btn-header-text" class="a11y-toolbar-btn" aria-label="Comută dimensiunea textului: Mediu, Mare sau Foarte Mare">
+              <span class="toolbar-btn-text">Text: Mediu</span>
+            </button>
+            <button type="button" id="btn-header-audio" class="a11y-toolbar-btn" aria-label="Controlează redarea audio: Pauză sau Continuă">
+              <span class="toolbar-btn-text">Audio: Redă</span>
+            </button>
+            <button type="button" id="btn-header-dyslexia" class="a11y-toolbar-btn" aria-pressed="false" aria-label="Comută fontul pentru dislexie">
+              <span class="toolbar-btn-text">Font: Standard</span>
+            </button>
+          </div>
+
+          <a href="/welcome.html" class="btn-comfort" aria-label="Deschide chestionarul de configurare confort">
+            <span>Chestionar</span>
+          </a>
+          <a href="/settings.html" class="btn-comfort" aria-label="Deschide setările de confort și personalizare">
+            <span>Confort</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- Main Central Workspace -->
+      <main id="main" class="app-main" role="main" tabindex="-1">
+        
+        <!-- Hero Section -->
+        <section class="home-hero-card" aria-labelledby="audio-heading">
+          <h1 id="audio-heading" class="hero-title">Audio în text și subtitrări</h1>
+          <p class="hero-subtitle">
+            Încarcă o înregistrare de la o ședință, instructaj sau notă vocală. Obții transcrierea cu marcaje de timp interactive, subtitrări descărcabile și acțiuni directe (Rezumat, Puncte, Sarcini).
+          </p>
+          <div class="status-message status-info" role="note" style="margin-top: var(--space-md); width: 100%;">
+            <strong>Confidențialitate &amp; Etică AI:</strong> Fișierele audio sunt procesate în memorie și <em>nu sunt stocate pe server</em>. Nu deducem emoții, stări de spirit sau trăsături de personalitate din voce (conform EU AI Act).
+          </div>
+        </section>
+
+        <!-- Audio Upload & Recording Card -->
+        <section class="card" aria-labelledby="upload-heading" style="margin-top: var(--space-lg); padding: var(--space-lg);">
+          <h2 id="upload-heading" class="results-subtitle" style="margin-bottom: var(--space-sm);">Încarcă sau înregistrează audio</h2>
+          
+          <form id="audio-upload-form" class="audio-form" style="display: flex; flex-direction: column; gap: var(--space-md);">
+            <div>
+              <label for="audio-file-input" style="display: block; font-weight: var(--font-weight-bold); margin-bottom: var(--space-xs);">
+                Selectează fișierul audio (.mp3, .wav, .m4a, .ogg, .webm, .flac &mdash; max 25 MB):
+              </label>
+              <input type="file" id="audio-file-input" name="file" accept="audio/*,.mp3,.wav,.m4a,.ogg,.webm,.flac" class="form-control" style="width: 100%; min-height: 44px; padding: 8px;">
+            </div>
+
+            <div style="display: flex; gap: var(--space-sm); flex-wrap: wrap; align-items: center;">
+              <button type="submit" id="btn-audio-submit" class="btn btn-primary" style="min-height: 48px; padding: 0 var(--space-md);">
+                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                <span>Transkrie audio</span>
+              </button>
+
+              <button type="button" id="btn-audio-sample" class="btn btn-secondary" style="min-height: 48px; padding: 0 var(--space-md);">
+                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <span>Încarcă exemplu ședință (Demo)</span>
+              </button>
+
+              <button type="button" id="btn-audio-record" class="btn btn-secondary" style="min-height: 48px; padding: 0 var(--space-md);">
+                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                <span id="record-btn-text">Înregistrează live</span>
+              </button>
+            </div>
+          </form>
+
+          <!-- Status & Progress Container -->
+          <div id="audio-status-container" class="status-message status-info" role="status" aria-live="polite" style="display: none; margin-top: var(--space-md);">
+            <span id="audio-status-text">Se transcrie înregistrarea audio... Poate dura câteva secunde.</span>
+          </div>
+
+          <!-- Error Alert Banner -->
+          <div id="audio-error-banner" class="status-message status-error" role="alert" style="display: none; margin-top: var(--space-md);">
+            <span id="audio-error-message"></span>
+          </div>
+        </section>
+
+        <!-- Transcription Results Section -->
+        <section id="audio-result-section" class="home-results-section" aria-labelledby="transcript-heading" style="display: none; margin-top: var(--space-lg);">
+          <div class="results-header">
+            <div>
+              <h2 id="transcript-heading" class="results-title">Transcrierea înregistrării</h2>
+              <p id="audio-meta-info" class="text-secondary" style="margin-top: 4px; font-size: 0.9rem;"></p>
+            </div>
+
+            <!-- Export Buttons -->
+            <div class="results-actions" role="toolbar" aria-label="Export subtitrări și transcriere">
+              <button type="button" id="btn-export-srt" class="btn btn-secondary action-bar-btn" aria-label="Descarcă subtitrare în format SRT">
+                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>Descarcă .SRT</span>
+              </button>
+              <button type="button" id="btn-export-vtt" class="btn btn-secondary action-bar-btn" aria-label="Descarcă subtitrare în format WebVTT">
+                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>Descarcă .VTT</span>
+              </button>
+              <button type="button" id="btn-export-txt" class="btn btn-secondary action-bar-btn" aria-label="Descarcă textul transcris în format TXT">
+                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <span>Text (.txt)</span>
+              </button>
+              <button type="button" id="btn-audio-save-library" class="btn btn-secondary action-bar-btn" aria-label="Salvează transcrierea în bibliotecă">
+                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                <span>Salvează</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- HTML5 Audio Playback Widget -->
+          <div class="card" style="padding: var(--space-md); margin-bottom: var(--space-md); background-color: var(--bg-surface-elevated);">
+            <label for="audio-playback" style="display: block; font-weight: var(--font-weight-bold); margin-bottom: var(--space-xs);">
+              Control redare audio sincronizată:
+            </label>
+            <audio id="audio-playback" controls style="width: 100%; min-height: 48px;"></audio>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: var(--space-xs); margin-bottom: 0;">
+              Sfat: Apasă pe oricare marcaj de timp (ex: <code>[00:15]</code>) pentru a sări redarea exact la acea frază.
+            </p>
+          </div>
+
+          <!-- Quick Action Bar on Transcript -->
+          <div class="card" style="padding: var(--space-md); margin-bottom: var(--space-md);">
+            <span style="font-weight: var(--font-weight-bold); display: block; margin-bottom: var(--space-xs);">
+              Transformă transcrierea în pași utili de lucru:
+            </span>
+            <div class="results-actions" role="toolbar" aria-label="Operațiuni inteligente pe transcriere">
+              <button type="button" id="btn-audio-summarize" class="btn btn-secondary action-bar-btn" aria-label="Generează rezumatul ședinței">
+                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <span>Rezumat ședință</span>
+              </button>
+              <button type="button" id="btn-audio-bullets" class="btn btn-secondary action-bar-btn" aria-label="Transformă în puncte cheie">
+                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="4" cy="6" r="2"/><path d="M9 6h11"/><circle cx="4" cy="12" r="2"/><path d="M9 12h11"/><circle cx="4" cy="18" r="2"/><path d="M9 18h11"/></svg>
+                <span>Puncte cheie</span>
+              </button>
+              <button type="button" id="btn-audio-shorter" class="btn btn-secondary action-bar-btn" aria-label="Versiune mai scurtă">
+                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h10M4 18h6"/></svg>
+                <span>Mai scurt</span>
+              </button>
+              <button type="button" id="btn-audio-plan" class="btn btn-secondary action-bar-btn" aria-label="Extrage sarcinile și pașii de lucru">
+                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <span>Ce am de făcut</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Derived Content Section (e.g., summary, tasks, bullets) -->
+          <div id="audio-derived-section" class="card" style="display: none; padding: var(--space-lg); margin-bottom: var(--space-md); border-left: 4px solid var(--accent-primary);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-sm);">
+              <h3 id="audio-derived-title" class="results-subtitle" style="margin: 0;">Sinteză generată</h3>
+              <button type="button" id="btn-close-derived" class="btn btn-secondary" style="padding: 2px 8px; min-height: 32px;" aria-label="Închide secțiunea de sinteză">✕</button>
+            </div>
+            <div id="audio-derived-body" style="line-height: 1.8;"></div>
+          </div>
+
+          <!-- Interactive Transcript Segments List -->
+          <section class="card" aria-labelledby="segments-heading" style="padding: var(--space-lg);">
+            <h3 id="segments-heading" class="results-subtitle" style="margin-bottom: var(--space-md);">Segmente transcrise (sincronizate audio)</h3>
+            <div id="audio-transcript-container" class="transcript-list" style="display: flex; flex-direction: column; gap: var(--space-sm);"></div>
+          </section>
+        </section>
+
+      </main>
+
+      <!-- Footer -->
+      <footer class="app-footer" role="contentinfo">
+        <p>
+          PrimaZi — AccessABILITY Hackathon 2026. Conform standardelor WCAG 2.2 AA. Fără conturi, fără stocare pe server.
+        </p>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Client-side Scripts -->
+  <script type="module" src="/js/shell.js?v=2.3"></script>
+  <script type="module" src="/js/audio.js?v=2.3"></script>
+</body>
+</html>

@@ -17,6 +17,7 @@ import { simplifyDocument, extractPlan, summarizeMeeting } from "/shared/api.js"
 import { speakText, stopSpeaking, isSynthesisSupported } from "/shared/speech.js";
 import { generateIcs, downloadIcsFile } from "/shared/ics.js";
 import { saveLibraryItem } from "/js/library-storage.js";
+import { transformText, sendTasksToPlanner } from "/js/actions.js";
 
 // Embedded sample texts for instant, offline-safe execution
 export const SAMPLES = {
@@ -827,6 +828,85 @@ function populateSidebarNotebooks() {
 }
 
 /**
+ * Handles quick text transformation on the active result.
+ * @param {string} mode - "shorter" | "bullets" | "steps" | "easy_read"
+ * @param {string} labelRo - Human-friendly Romanian mode label
+ */
+export async function handleTransform(mode, labelRo) {
+  if (!currentOriginalText) return;
+  const banner = document.getElementById("home-transform-banner");
+  const textEl = document.getElementById("home-transform-text");
+  const container = document.getElementById("home-result-body");
+  if (!container) return;
+
+  announceToLiveRegion(`Se transformă textul: ${labelRo}...`);
+  if (banner && textEl) {
+    textEl.textContent = `Se transformă: ${labelRo}...`;
+    banner.style.display = "flex";
+  }
+
+  const res = await transformText(currentOriginalText, mode);
+  if (res && res.ok && res.data) {
+    if (banner && textEl) {
+      textEl.textContent = `Versiune transformată: ${labelRo}`;
+      banner.style.display = "flex";
+    }
+    renderTransformedResult(res.data, labelRo);
+    announceToLiveRegion(`Transformare finalizată: ${labelRo}`);
+  } else {
+    showError("Transformarea nu a putut fi aplicată.");
+    if (banner) banner.style.display = "none";
+  }
+}
+
+/**
+ * Renders transformed text or bullets into the result body.
+ */
+export function renderTransformedResult(data, label) {
+  const container = document.getElementById("home-result-body");
+  if (!container) return;
+
+  if (data.items && Array.isArray(data.items)) {
+    currentSummaryForTTS = data.items.join(". ");
+    let html = `
+      <div class="result-card">
+        <h3 class="result-subtitle">${escapeHtml(label)}</h3>
+        <ul class="transformed-list" style="padding-left: 20px; line-height: 1.8; margin-top: var(--space-sm);">
+          ${data.items.map(it => `<li style="margin-bottom: var(--space-xs);">${escapeHtml(it)}</li>`).join("")}
+        </ul>
+      </div>
+    `;
+    container.innerHTML = html;
+  } else if (data.text) {
+    currentSummaryForTTS = data.text;
+    container.innerHTML = `
+      <div class="result-card">
+        <h3 class="result-subtitle">${escapeHtml(label)}</h3>
+        <p class="result-summary-text">${escapeHtml(data.text)}</p>
+      </div>
+    `;
+  }
+}
+
+/**
+ * Restores original analysis result.
+ */
+export function restoreOriginalResult() {
+  const banner = document.getElementById("home-transform-banner");
+  if (banner) banner.style.display = "none";
+  if (!currentResultData) return;
+
+  if (currentMode === "simplify") {
+    renderSimplifyResult(currentResultData);
+  } else if (currentMode === "plan") {
+    renderPlanResult(currentResultData);
+  } else if (currentMode === "meeting") {
+    renderMeetingResult(currentResultData);
+  }
+  announceToLiveRegion("S-a revenit la rezultatul inițial.");
+}
+
+/**
  * Initializes the Home page interactions.
  */
 export function initHomePage() {
@@ -987,14 +1067,50 @@ export function initHomePage() {
   const saveLibraryBtn = document.getElementById("btn-home-save-library");
   const copyBtn = document.getElementById("btn-home-copy");
   const ttsBtn = document.getElementById("btn-home-tts");
+  const ttsActionBtn = document.getElementById("btn-action-tts");
   const icsBtn = document.getElementById("btn-home-ics");
   const retryBtn = document.getElementById("btn-home-retry");
+
+  // Wave 2 F3 Result Action Bar buttons
+  const shorterBtn = document.getElementById("btn-action-shorter");
+  const bulletsBtn = document.getElementById("btn-action-bullets");
+  const stepsBtn = document.getElementById("btn-action-steps");
+  const easyReadBtn = document.getElementById("btn-action-easyread");
+  const planBtn = document.getElementById("btn-action-plan");
+  const resetTransformBtn = document.getElementById("btn-transform-reset");
 
   if (saveLibraryBtn) saveLibraryBtn.addEventListener("click", saveCurrentResultToLibrary);
   if (copyBtn) copyBtn.addEventListener("click", copyResultToClipboard);
   if (ttsBtn) ttsBtn.addEventListener("click", toggleTTS);
+  if (ttsActionBtn) ttsActionBtn.addEventListener("click", toggleTTS);
   if (icsBtn) icsBtn.addEventListener("click", downloadPlanIcs);
   if (retryBtn) retryBtn.addEventListener("click", executeCurrentTask);
+
+  if (shorterBtn) shorterBtn.addEventListener("click", () => handleTransform("shorter", "Versiune mai scurtă"));
+  if (bulletsBtn) bulletsBtn.addEventListener("click", () => handleTransform("bullets", "Puncte cheie"));
+  if (stepsBtn) stepsBtn.addEventListener("click", () => handleTransform("steps", "Pași concreți"));
+  if (easyReadBtn) easyReadBtn.addEventListener("click", () => handleTransform("easy_read", "Explicare simplă"));
+  if (resetTransformBtn) resetTransformBtn.addEventListener("click", restoreOriginalResult);
+
+  if (planBtn) {
+    planBtn.addEventListener("click", () => {
+      const tasksToSend = currentPlanTasks.length > 0 ? currentPlanTasks : (currentResultData && currentResultData.steps ? currentResultData.steps : []);
+      if (tasksToSend.length > 0) {
+        sendTasksToPlanner(tasksToSend);
+        announceToLiveRegion("Sarcinile au fost salvate în Planificator.");
+        const originalContent = planBtn.innerHTML;
+        planBtn.innerHTML = `
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Salvat în plan!</span>
+        `;
+        setTimeout(() => {
+          planBtn.innerHTML = originalContent;
+        }, 3000);
+      } else {
+        announceToLiveRegion("Nu există sarcini identificate pentru adăugat în plan.");
+      }
+    });
+  }
 
   // Populate dynamic Notebooks from Library storage
   populateSidebarNotebooks();
