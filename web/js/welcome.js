@@ -568,6 +568,14 @@ export function saveAndContinue() {
  */
 export function handleSkip() {
   try {
+    const nameInput = document.getElementById("wizard-user-name");
+    const name = nameInput ? nameInput.value.trim() : "";
+    if (name) {
+      localStorage.setItem("limpede_user_name", name);
+      if (typeof window !== "undefined" && typeof CustomEvent === "function") {
+        window.dispatchEvent(new CustomEvent("limpede:user-name-changed", { detail: { name } }));
+      }
+    }
     localStorage.setItem("limpede.welcome.completed", "true");
   } catch (e) {}
 }

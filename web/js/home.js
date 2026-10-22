@@ -975,6 +975,7 @@ export function initHomePage() {
 
   // Quick suggestion action chips
   document.querySelectorAll(".gemini-action-chip").forEach(chip => {
+    if (chip.tagName.toLowerCase() === "a") return;
     chip.addEventListener("click", () => {
       const sample = chip.getAttribute("data-sample");
       const mode = chip.getAttribute("data-mode");
@@ -1049,7 +1050,7 @@ export function initHomePage() {
   if (textarea) {
     textarea.addEventListener("input", updateCharCounter);
     textarea.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && !e.shiftKey) {
+      if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
         e.preventDefault();
         executeCurrentTask();
       }

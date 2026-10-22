@@ -194,9 +194,13 @@ export function getLanguage() {
     // localStorage might throw in restricted/private browsing modes
   }
   if (typeof document !== "undefined" && document.documentElement) {
-    const dataLang = document.documentElement.getAttribute("data-lang");
+    const dataLang = typeof document.documentElement.getAttribute === "function"
+      ? document.documentElement.getAttribute("data-lang")
+      : document.documentElement["data-lang"];
     if (dataLang === "ro" || dataLang === "en") return dataLang;
-    const htmlLang = document.documentElement.getAttribute("lang");
+    const htmlLang = typeof document.documentElement.getAttribute === "function"
+      ? document.documentElement.getAttribute("lang")
+      : document.documentElement.lang;
     if (htmlLang === "ro" || htmlLang === "en") return htmlLang;
   }
   return "ro";
