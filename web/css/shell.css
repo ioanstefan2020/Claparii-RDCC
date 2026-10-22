@@ -271,6 +271,7 @@ html[data-sidebar="collapsed"] .btn-sidebar-toggle {
   font-weight: var(--font-weight-semibold);
   font-size: 0.95rem;
   text-decoration: none;
+  white-space: nowrap;
   min-height: var(--min-touch-target);
   transition: background-color var(--transition-fast), border-color var(--transition-fast);
 }
@@ -2888,13 +2889,14 @@ mark.quote-highlight {
 
 /* Sidebar Gemini Enhancements */
 .sidebar-action-container {
-  padding: 0 var(--space-md) var(--space-sm);
+  padding: 0 0 var(--space-sm) 0;
+  width: 100%;
 }
 
 .sidebar-new-pill {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-xs);
   width: 100%;
   min-height: var(--min-touch-target);
   padding: var(--space-xs) var(--space-md);
@@ -2907,7 +2909,16 @@ mark.quote-highlight {
   font-weight: var(--font-weight-medium);
   cursor: pointer;
   text-decoration: none;
+  white-space: nowrap;
+  box-sizing: border-box;
   transition: background-color var(--transition-fast);
+}
+
+.sidebar-new-pill .btn-new-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
 }
 
 .sidebar-new-pill:hover {
