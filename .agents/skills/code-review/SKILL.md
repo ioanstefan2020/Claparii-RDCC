@@ -8,7 +8,7 @@ description: Use to review a diff before merge. Checklist for correctness, tests
 Get the diff: `git diff` (unstaged), `git diff --staged`, or `git diff <good-tag>..HEAD`.
 
 ## Correctness
-- Does it meet every acceptance criterion in `docs/PLAN.md`?
+- Does it meet every acceptance criterion in `docs/TASKS.md`, `docs/CONTRACTS.md` and the author's `docs/plan/<me>.md`?
 - Off-by-one, None/empty handling, wrong types, mutable defaults, async/await mistakes, resource leaks, race conditions.
 - Error handling: are failures surfaced with useful messages, or swallowed?
 

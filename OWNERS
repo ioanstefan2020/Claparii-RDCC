@@ -1,0 +1,52 @@
+# File ownership = zero merge conflicts. Longest matching prefix wins.
+# Owners: p1 | p2 | p3 | frozen (nobody edits without telling the group chat; use FORCE=1 scripts/ship.sh)
+# Need a change in someone else's file? DON'T edit it. Message the owner in the group chat with the exact change.
+
+# ---- frozen tooling and rules ----
+AGENTS.md frozen
+OWNERS frozen
+.agents/ frozen
+scripts/ frozen
+docs/PROMPTS.md frozen
+docs/TEAM-WORKFLOW.md frozen
+docs/TASKS.md frozen
+docs/DECISIONS.md frozen
+
+# ---- P1: AI core + backend ----
+app/ p1
+requirements.txt p1
+.env.example p1
+.gitignore p1
+tests/ p1
+docs/CONTRACTS.md p1
+docs/plan/p1.md p1
+docs/decisions/p1.md p1
+
+# ---- P2: employee experience + accessibility ----
+web/ p2
+tests/web/ p2
+tests/test_a11y_static.py p2
+docs/plan/p2.md p2
+docs/decisions/p2.md p2
+
+# ---- P3: employer side + content + evidence + pitch ----
+app/routers/employer.py p3
+app/routers/adjustments.py p3
+app/schemas/employer.py p3
+app/schemas/adjustments.py p3
+app/prompts/employer.py p3
+app/prompts/adjustments.py p3
+web/employer/ p3
+web/i18n/ro.employer.json p3
+tests/backend/test_employer.py p3
+tests/backend/test_adjustments.py p3
+tests/test_smoke.py p3
+scripts/smoke.sh p3
+data/ p3
+docs/PROJECT.md p3
+docs/PLAN.md p3
+docs/evidence/ p3
+docs/plan/p3.md p3
+docs/decisions/p3.md p3
+docs/ARCHITECTURE.md p3
+README.md p3

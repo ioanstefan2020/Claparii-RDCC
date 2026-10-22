@@ -6,7 +6,7 @@ description: Use when implementing a scoped task from a spec. Enforces test-firs
 # Implement a feature task
 
 ## Loop
-1. **Orient**: read the task in `docs/PLAN.md`, the interfaces it must respect, and the files you own. Run `./scripts/check.sh` to confirm you start from green. If it is red before you start, report that and stop.
+1. **Orient**: read the task in `docs/plan/<me>.md`, the interfaces it must respect, and the files you own. Run `./scripts/check.sh` to confirm you start from green. If it is red before you start, report that and stop.
 2. **Red**: write a failing test for the next slice of behavior. Run it; confirm it fails for the right reason.
 3. **Green**: write the minimum code to pass. Run the test.
 4. **Refactor**: improve names, split functions, add the why-comments and module header. Re-run the tests.
