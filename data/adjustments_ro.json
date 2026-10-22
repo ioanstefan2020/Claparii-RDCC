@@ -1,0 +1,102 @@
+{
+  "disclaimer_ro": "Informativ, nu reprezintă consultanță juridică.",
+  "items": [
+    {
+      "id": "written_instructions",
+      "title": "Instrucțiuni scrise, pas cu pas",
+      "description": "Sarcinile noi sau complexe sunt transmise și în format scris, structurate în etape scurte și clare.",
+      "applies_to": ["cognitive", "hearing"],
+      "example_request": "Aș dori să primesc sarcinile și în scris, pas cu pas, pentru a putea urmări cu precizie toate detaliile.",
+      "source": "bună practică generală"
+    },
+    {
+      "id": "extra_time",
+      "title": "Timp suplimentar pentru asimilarea procedurilor noi",
+      "description": "Intervale de lucru extinse pentru parcurgerea materialelor noi de lucru, a documentației interne și acomodarea cu fluxurile de lucru.",
+      "applies_to": ["cognitive", "visual"],
+      "example_request": "Aș avea nevoie de un interval suplimentar de timp pentru asimilarea procedurilor noi în primele săptămâni.",
+      "source": "bună practică generală"
+    },
+    {
+      "id": "quiet_space",
+      "title": "Spațiu de lucru liniștit și reducerea zgomotului",
+      "description": "Amplasarea biroului într-o zonă ferită de zgomot intens sau posibilitatea de a utiliza căști antifonice pentru o concentrare susținută.",
+      "applies_to": ["cognitive", "any"],
+      "example_request": "Mă ajută mult să lucrez într-un spațiu liniștit sau să pot purta căști pentru estomparea zgomotului de fond.",
+      "source": "bună practică generală"
+    },
+    {
+      "id": "flexible_schedule",
+      "title": "Program de lucru flexibil",
+      "description": "Ore flexibile de sosire și plecare pentru o gestionare predictibilă a energiei de lucru și a deplasărilor zilnice.",
+      "applies_to": ["motor", "cognitive", "any"],
+      "example_request": "Aș dori să stabilim un interval orar flexibil de începere și finalizare a zilei de lucru, păstrând durata zilnică contractuală.",
+      "source": "Codul Muncii (Legea 53/2003, art. 118) - https://legislatie.just.ro/Public/DetaliiDocument/41633"
+    },
+    {
+      "id": "screen_reader_tools",
+      "title": "Compatibilitate cu cititoare de ecran și instrumente de mărire",
+      "description": "Asigurarea compatibilității aplicațiilor interne și a documentelor cu tehnologiile de citire și mărire a ecranului.",
+      "applies_to": ["visual"],
+      "example_request": "Am nevoie ca fișierele și aplicațiile de lucru interne să fie compatibile cu software-ul de citire a ecranului.",
+      "source": "Legea 448/2006 privind adaptarea rezonabilă a locului de muncă (art. 78) - https://legislatie.just.ro/Public/DetaliiDocument/77403"
+    },
+    {
+      "id": "captions_transcripts",
+      "title": "Subtitrări și sinteze scrise pentru întâlniri",
+      "description": "Activarea subtitrărilor automate în convorbirile audio-video și transmiterea în scris a deciziilor adoptate.",
+      "applies_to": ["hearing"],
+      "example_request": "Vă rog să activăm subtitrările în ședințele de echipă și să avem o scurtă recapitulare scrisă a deciziilor.",
+      "source": "bună practică generală"
+    },
+    {
+      "id": "plain_language_docs",
+      "title": "Ghiduri și documente în limbaj simplu",
+      "description": "Materiale de instruire și proceduri de lucru formulate concis, cu explicații directe, fără acronime neexplicate.",
+      "applies_to": ["cognitive", "any"],
+      "example_request": "Mă ajută mult să am acces la ghiduri sintetizate în limbaj clar și simplificat pentru procesele de lucru de bază.",
+      "source": "bună practică generală"
+    },
+    {
+      "id": "regular_checkins",
+      "title": "Sincronizări scurte și periodice cu mentorul sau managerul",
+      "description": "Întâlniri scurte, de 15 minute, pentru stabilirea priorităților săptămânale, clarificarea întrebărilor și feedback reciproc.",
+      "applies_to": ["cognitive", "any"],
+      "example_request": "Aș dori să avem o discuție săptămânală de 15 minute pentru a trece în revistă prioritățile și a clarifica eventualele neclarități.",
+      "source": "bună practică generală"
+    },
+    {
+      "id": "task_breakdown",
+      "title": "Segmentarea proiectelor în etape mici și prioritizate",
+      "description": "Împărțirea obiectivelor complexe în sarcini concrete, ierarhizate logic, cu termene intermediare bine specificate.",
+      "applies_to": ["cognitive"],
+      "example_request": "Pentru proiectele ample, aș avea nevoie să definim etape intermediare clare pentru fiecare livrabil.",
+      "source": "bună practică generală"
+    },
+    {
+      "id": "advance_agenda",
+      "title": "Transmiterea agendei în avans pentru întâlniri",
+      "description": "Comunicarea temelor de discuție și a documentelor suport cu cel puțin o zi înainte de desfășurarea ședinței.",
+      "applies_to": ["cognitive", "hearing", "visual"],
+      "example_request": "Aș aprecia dacă aș putea primi temele de discuție pentru întâlniri cu 24 de ore înainte, pentru a mă pregăti adecvat.",
+      "source": "bună practică generală"
+    },
+    {
+      "id": "ergonomic_equipment",
+      "title": "Echipamente ergonomice adaptate pentru birou",
+      "description": "Dotarea postului de lucru cu scaun ergonomic reglabil, suport de încheietură, monitor ajustabil sau periferice specifice.",
+      "applies_to": ["motor", "visual"],
+      "example_request": "Aș dori să convenim utilizarea unui suport reglabil pentru monitor și a unei tastaturi ergonomice la postul de lucru.",
+      "source": "HG 1028/2006 privind cerințele minime SSM pentru lucrul cu ecranul - https://legislatie.just.ro/Public/DetaliiDocument/74686"
+    },
+    {
+      "id": "remote_option",
+      "title": "Opțiune de telemuncă parțială sau regim hibrid",
+      "description": "Posibilitatea de a lucra de la distanță câteva zile pe săptămână pentru reducerea solicitării cauzate de navetă și oboseală.",
+      "applies_to": ["motor", "cognitive", "any"],
+      "example_request": "Aș dori să putem agrea un regim de lucru hibrid, cu posibilitatea de a lucra de acasă 2-3 zile pe săptămână.",
+      "source": "Legea 81/2018 privind telemunca (art. 3) - https://legislatie.just.ro/Public/DetaliiDocument/199344"
+    }
+  ]
+}
+
