@@ -21,7 +21,9 @@ SHELL_CSS = CSS_DIR / "shell.css"
 TYPES_JS = ROOT / "web" / "js" / "prefs" / "types.js"
 
 # Strictly whitelisted grandfathered raw color values in web/css/shell.css (owned by P3)
+# To be replaced with tokens by P3 in follow-up polish pass (see docs/plan/p2.md)
 GRANDFATHERED_SHELL_COLORS = [
+    # Navigation & Drawer (N3.1)
     "rgba(96, 165, 250, 0.15)",  # L210 - active nav item background
     "#000000",                   # L215 - high-contrast nav background
     "#ffff00",                   # L216 - high-contrast nav text
@@ -29,6 +31,27 @@ GRANDFATHERED_SHELL_COLORS = [
     "rgba(96, 165, 250, 0.1)",   # L442 - dark theme card background
     "rgba(0, 0, 0, 0.5)",         # L494 - drawer backdrop
     "rgba(0, 0, 0, 0.25)",        # L514 - drawer shadow
+    # Welcome & Live Preview (N3.3 added by P3)
+    "#ffff00",                   # L588 - preview high-contrast button bg
+    "#000000",                   # L589 - preview high-contrast button text
+    "#ffffff",                   # L590 - preview high-contrast button outline
+    "#ffffff",                   # L726 - preview button text
+    "#fee2e2",                   # L987 - error banner bg (can use var(--error-bg))
+    "#991b1b",                   # L988 - error banner text (can use var(--error-text))
+    "#fef08a",                   # L1060 - line-focus light bg
+    "#1c1b1f",                   # L1061 - line-focus light text
+    "#ca8a04",                   # L1064 - line-focus light border
+    "#854d0e",                   # L1069 - line-focus dark bg
+    "#fef08a",                   # L1070 - line-focus dark text
+    "#facc15",                   # L1071 - line-focus dark border
+    "#ffff00",                   # L1076 - line-focus hc bg
+    "#000000",                   # L1077 - line-focus hc text
+    "#000000",                   # L1078 - line-focus hc border
+    "#ffffff",                   # L1079 - line-focus hc outline
+    "rgba(96, 165, 250, 0.12)",  # L1228 - dark option card selected bg
+    "#ffff00",                   # L1233 - hc option card border
+    "#000000",                   # L1234 - hc option card bg
+    "#ffff00",                   # L1235 - hc option card outline
 ]
 
 
