@@ -1,0 +1,25 @@
+{
+  "ok": true,
+  "data": {
+    "subject": "Solicitare de adaptări în primele săptămâni",
+    "body_ro": "Bună ziua,\n\nPentru a-mi putea desfășura activitatea cu eficiență maximă în perioada de onboarding, aș dori să vă propun câteva adaptări rezonabile:\n- Instrucțiuni scrise, pas cu pas pentru noile sarcini;\n- Timp suplimentar pentru familiarizarea cu procedurile interne.\n\nAceste adaptări mă vor ajuta să asimilez rapid cerințele rolului. Vă mulțumesc pentru deschidere și sprijin.",
+    "checklist": [
+      {
+        "id": "written_instructions",
+        "title": "Instrucțiuni scrise, pas cu pas",
+        "why": "Reduce nevoia de a reține informații spuse oral."
+      },
+      {
+        "id": "extra_time",
+        "title": "Timp suplimentar pentru sarcini noi",
+        "why": "Permite asimilarea completă fără suprasolicitare cognitivă."
+      }
+    ]
+  },
+  "meta": {
+    "provider": "mock",
+    "cached": false,
+    "warnings": [],
+    "ai_notice_ro": "Generat de AI — verifică datele importante."
+  }
+}

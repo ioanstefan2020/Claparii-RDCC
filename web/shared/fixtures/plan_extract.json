@@ -1,0 +1,38 @@
+{
+  "ok": true,
+  "data": {
+    "tasks": [
+      {
+        "id": "t1",
+        "title": "Completează formularul F-12",
+        "due_iso": "2026-10-28",
+        "due_text": "miercuri, 28 octombrie",
+        "needs_confirmation": false,
+        "priority": "high",
+        "steps": [
+          "Deschide portalul intern",
+          "Completează datele personale și bancare"
+        ],
+        "source_quote": "Până miercuri, 28 octombrie, trebuie să completezi în portalul intern formularul F-12"
+      },
+      {
+        "id": "t2",
+        "title": "Trimite raportul lunar",
+        "due_iso": null,
+        "due_text": "cât mai repede, până joi la prânz",
+        "needs_confirmation": true,
+        "priority": "normal",
+        "steps": [],
+        "source_quote": "până joi la prânz"
+      }
+    ]
+  },
+  "meta": {
+    "provider": "mock",
+    "cached": false,
+    "warnings": [
+      "1 dată vagă necesită confirmare manuală."
+    ],
+    "ai_notice_ro": "Generat de AI — verifică datele importante."
+  }
+}
