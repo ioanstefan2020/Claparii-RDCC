@@ -565,5 +565,163 @@ def test_smoke_library_filter_mode_options(client: TestClient) -> None:
         assert f'value="{val}"' in html, f"Missing mode option {val} in #library-filter-mode"
 
 
+def test_smoke_employer_page_elements(client: TestClient) -> None:
+    """Verifies that /employer/index.html is served and contains all required UI elements for Task N3.6."""
+    res = client.get("/employer/index.html")
+    assert res.status_code == 200, f"Expected 200, got {res.status_code}"
+    html = res.text
+
+    # Basic accessibility markers & shell
+    assert '<html lang="ro">' in html
+    assert '<main id="main"' in html
+    assert 'class="skip-link"' in html
+    assert '<h1 class="page-title">Audit de accesibilitate a documentelor</h1>' in html
+
+    # Core Form elements
+    assert 'id="employer-form"' in html
+    assert 'id="doc-type"' in html
+    assert 'id="file-upload"' in html
+    assert 'id="btn-load-sample"' in html
+    assert 'id="document-text"' in html
+    assert 'id="char-counter"' in html
+    assert 'id="btn-clear"' in html
+    assert 'id="btn-analyze"' in html
+
+    # Results Section & AI transparency
+    assert 'id="results-section"' in html
+    assert 'id="results-heading"' in html
+    assert 'id="ai-notice-container"' in html
+    assert 'id="ai-notice-text"' in html
+    assert 'id="warnings-container"' in html
+
+    # Card 1: Readability Metrics & Score circle
+    assert 'id="score-circle"' in html
+    assert 'id="score-value"' in html
+    assert 'id="score-badge"' in html
+    assert 'id="score-description"' in html
+    assert 'id="metric-sentence-count"' in html
+    assert 'id="metric-avg-words"' in html
+    assert 'id="metric-long-count"' in html
+    assert 'id="long-sentences-wrapper"' in html
+    assert 'id="long-sentences-summary-count"' in html
+    assert 'id="long-sentences-list"' in html
+
+    # Card 2: Clarity & Jargon Issues
+    assert 'id="issues-container"' in html
+    assert 'id="issues-counter-badge"' in html
+
+    # Card 3: Easy-to-Read Rewrite
+    assert 'id="easy-read-content"' in html
+    assert 'id="btn-copy-easy"' in html
+    assert 'id="btn-download-easy"' in html
+    assert 'id="btn-read-aloud"' in html
+
+    # Card 4: Adjustments checklist
+    assert 'id="adjustments-list"' in html
+
+    # Live region and notification banner
+    assert 'id="status-live"' in html
+    assert 'id="status-banner"' in html
+
+    # Module script imports
+    assert 'src="/js/shell.js"' in html
+    assert 'src="/employer/employer.js"' in html
+
+
+def test_smoke_employer_doc_type_options(client: TestClient) -> None:
+    """Verifies that #doc-type in /employer/index.html defines all 4 contract doc_type options."""
+    res = client.get("/employer/index.html")
+    assert res.status_code == 200
+    html = res.text
+    for doc_type in ["onboarding", "job_ad", "policy", "other"]:
+        assert f'value="{doc_type}"' in html, f"Missing doc_type option {doc_type} in #doc-type"
+
+
+def test_smoke_employer_fixture_contract(client: TestClient) -> None:
+    """Verifies that /employer/fixture.json matches the CONTRACTS §3.6 schema."""
+    res = client.get("/employer/fixture.json")
+    assert res.status_code == 200, f"Expected 200, got {res.status_code}"
+    body = res.json()
+    assert body.get("ok") is True
+    assert "data" in body
+    data = body["data"]
+
+    # Readability
+    assert "readability" in data
+    readability = data["readability"]
+    assert isinstance(readability["score_0_100"], int)
+    assert 0 <= readability["score_0_100"] <= 100
+    assert readability["sentence_count"] > 0
+    assert readability["avg_sentence_words"] > 0
+    assert isinstance(readability["long_sentences"], list)
+    assert len(readability["long_sentences"]) > 0
+
+    # Issues
+    assert "issues" in data and isinstance(data["issues"], list)
+    valid_kinds = {"jargon", "long_sentence", "missing_deadline", "vague_instruction", "missing_structure"}
+    for issue in data["issues"]:
+        assert issue["kind"] in valid_kinds
+        assert len(issue["quote"]) > 0
+        assert len(issue["fix"]) > 0
+
+    # Easy-read plain Romanian rewrite
+    assert "easy_read_ro" in data
+    assert len(data["easy_read_ro"]) > 50
+
+    # Adjustments checklist
+    assert "adjustment_checklist" in data and isinstance(data["adjustment_checklist"], list)
+    assert len(data["adjustment_checklist"]) >= 3
+    for adj in data["adjustment_checklist"]:
+        assert "id" in adj
+        assert "title" in adj
+
+    # Meta
+    assert "meta" in body
+    assert body["meta"].get("provider") == "mock"
+    assert "ai_notice_ro" in body["meta"]
+
+
+def test_smoke_employer_headings_and_landmarks(client: TestClient) -> None:
+    """Verifies semantic landmarks, accessible card labelledby references, and heading structure."""
+    res = client.get("/employer/index.html")
+    assert res.status_code == 200
+    html = res.text
+
+    # Semantic landmarks
+    assert '<header class="app-topbar" role="banner">' in html
+    assert '<main id="main" class="app-main-content">' in html
+    assert '<aside id="app-sidebar"' in html
+    assert '<nav aria-label="Navigare principală">' in html
+    assert '<footer class="app-footer" role="contentinfo">' in html
+
+    # Accessible aria-labelledby card relationships
+    assert 'aria-labelledby="transparency-notice-heading"' in html
+    assert 'id="transparency-notice-heading"' in html
+
+    assert 'aria-labelledby="readability-heading"' in html
+    assert 'id="readability-heading"' in html
+
+    assert 'aria-labelledby="issues-heading"' in html
+    assert 'id="issues-heading"' in html
+
+    assert 'aria-labelledby="easy-read-heading"' in html
+    assert 'id="easy-read-heading"' in html
+
+    assert 'aria-labelledby="adjustments-heading"' in html
+    assert 'id="adjustments-heading"' in html
+
+    # Accessible scrollable region with label
+    assert 'id="easy-read-content"' in html
+    assert 'role="region"' in html
+    assert 'aria-label="Conținut rescris în limbaj simplu"' in html
+    assert 'tabindex="0"' in html
+
+    # Programmatic focus receiver on results
+    assert 'id="results-heading"' in html
+    assert 'tabindex="-1"' in html
+
+
+
+
 
 

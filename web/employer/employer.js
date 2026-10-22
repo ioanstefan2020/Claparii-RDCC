@@ -13,7 +13,7 @@
  * - Displays Recommended Workplace Adjustments.
  * - Fully accessible: screen reader announcements (#status-live) and programmatic focus shift.
  */
-import { applyA11yPrefs } from "/shared/profile.js";
+import { applyPrefs, loadPrefs } from "/js/prefs/index.js";
 
 // Embedded fallback sample in case data/samples/onboarding_ro.txt cannot be fetched
 const FALLBACK_SAMPLE = `Bine ai venit în echipa Companie Exemplu SRL!
@@ -193,7 +193,7 @@ function renderResults(payload) {
   scoreDescription.textContent = tier.desc;
 
   metricSentenceCount.textContent = readability.sentence_count;
-  metricAvgWords.textContent = Number(readability.avg_sentence_words).toLocaleString("ro-RO", { minimumFractionDigits: 1 });
+  metricAvgWords.textContent = Number(readability.avg_sentence_words).toLocaleString("ro-RO", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   metricLongCount.textContent = readability.long_sentences.length;
 
   if (readability.long_sentences.length > 0) {
@@ -505,7 +505,7 @@ function handleClear() {
 
 // Initialization
 document.addEventListener("DOMContentLoaded", () => {
-  applyA11yPrefs();
+  applyPrefs(loadPrefs().prefs, document.documentElement);
   updateCharCounter();
 
   // Event Listeners
