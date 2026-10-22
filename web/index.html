@@ -222,42 +222,23 @@
             <div class="gemini-ambient-glow" aria-hidden="true"></div>
 
             <form id="home-input-form" class="gemini-input-capsule" role="search" novalidate>
-              <!-- Left: Attachment / Quick Samples Dropdown Button -->
+              <!-- Left: Attachment / PDF Upload Button -->
               <div class="capsule-left">
-                <button type="button" id="btn-capsule-attach" class="capsule-circle-btn" aria-label="Atașează document sau alege un exemplu demonstrativ" aria-expanded="false" aria-haspopup="menu" style="width: 48px; height: 48px; min-width: 48px; min-height: 48px;">
+                <button type="button" id="btn-capsule-attach" class="capsule-circle-btn" aria-label="Încarcă fișier PDF din calculator" title="Încarcă fișier PDF din calculator" style="width: 48px; height: 48px; min-width: 48px; min-height: 48px;">
                   <svg class="capsule-icon" width="32" height="32" viewBox="0 0 24 24" style="width: 32px !important; height: 32px !important; min-width: 32px; min-height: 32px;" aria-hidden="true"><line x1="12" y1="2" x2="12" y2="22" stroke-width="3"></line><line x1="2" y1="12" x2="22" y2="12" stroke-width="3"></line></svg>
                 </button>
-
-                <!-- Floating Dropdown for Samples -->
-                <div id="capsule-samples-menu" class="capsule-dropdown-menu" role="menu" style="display: none;">
-                  <button type="button" role="menuitem" class="dropdown-item" id="btn-sample-onboarding" data-sample="onboarding">
-                    <span class="dropdown-icon" aria-hidden="true">📋</span>
-                    <div class="dropdown-text">
-                      <strong>Ghid Onboarding IT</strong>
-                      <small>Proceduri și sarcini prima săptămână</small>
-                    </div>
-                  </button>
-                  <button type="button" role="menuitem" class="dropdown-item" id="btn-sample-email" data-sample="email">
-                    <span class="dropdown-icon" aria-hidden="true">✉️</span>
-                    <div class="dropdown-text">
-                      <strong>Email Sarcini Urgente</strong>
-                      <small>Termene limită de la manager</small>
-                    </div>
-                  </button>
-                  <button type="button" role="menuitem" class="dropdown-item" id="btn-sample-meeting" data-sample="meeting">
-                    <span class="dropdown-icon" aria-hidden="true">🎙</span>
-                    <div class="dropdown-text">
-                      <strong>Transcriere Ședință</strong>
-                      <small>Sinteză decizii și acțiuni echipă</small>
-                    </div>
-                  </button>
-                </div>
+                <input type="file" id="home-file-input" accept=".pdf,.docx,.txt,.md" style="display: none;" aria-label="Alege fișier PDF din calculator">
               </div>
 
               <!-- Center: Expanding Prompt Textarea -->
-              <div class="capsule-center">
+              <div class="capsule-center" style="display: flex; flex-direction: column; align-items: flex-start; width: 100%;">
+                <div id="capsule-file-chip" class="capsule-file-chip" style="display: none;">
+                  <span class="file-chip-icon" aria-hidden="true">📄</span>
+                  <span id="capsule-file-name" class="file-chip-name">document.pdf</span>
+                  <button type="button" id="btn-remove-file" class="file-chip-remove" aria-label="Elimină fișierul atașat">✕</button>
+                </div>
                 <label for="home-input-text" id="home-input-label" class="sr-only">Lipește documentul sau instrucțiunile de simplificat:</label>
-                <textarea id="home-input-text" class="capsule-input" name="home-input-text" rows="1" maxlength="12000" placeholder="Introdu textul sau instrucțiunile de la manager..." aria-describedby="home-char-counter"></textarea>
+                <textarea id="home-input-text" class="capsule-input" name="home-input-text" rows="1" maxlength="12000" placeholder="Introdu textul, lipește instrucțiunile sau atașează un fișier PDF (+)..." aria-describedby="home-char-counter"></textarea>
               </div>
 
               <!-- Right: Mode Selector + Mic Dictation + Send Button -->

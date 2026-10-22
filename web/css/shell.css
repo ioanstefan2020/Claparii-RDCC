@@ -2713,6 +2713,43 @@ mark.quote-highlight {
   stroke-linejoin: round;
 }
 
+.capsule-file-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  background: var(--primary-subtle);
+  color: var(--primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  padding: var(--space-xxs) var(--space-sm);
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-semibold);
+  margin: var(--space-xxs) 0;
+}
+.file-chip-icon {
+  font-size: 1rem;
+}
+.file-chip-name {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.file-chip-remove {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: 14px;
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  padding: 0 var(--space-xxs);
+  border-radius: var(--radius-xs);
+  line-height: 1;
+}
+.file-chip-remove:hover {
+  background: var(--bg-surface-hover);
+}
+
 .capsule-center {
   flex: 1;
   display: flex;

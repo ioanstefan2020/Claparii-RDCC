@@ -932,32 +932,110 @@ export function initHomePage() {
     });
   });
 
-  // Quick sample buttons (in attach menu)
-  const onboardingBtn = document.getElementById("btn-sample-onboarding");
-  const emailBtn = document.getElementById("btn-sample-email");
-  const meetingBtn = document.getElementById("btn-sample-meeting");
+  // Capsule attachment: direct PDF / Document upload
+  const attachBtn = document.getElementById("btn-capsule-attach");
+  const fileInput = document.getElementById("home-file-input");
+  const fileChip = document.getElementById("capsule-file-chip");
+  const fileNameSpan = document.getElementById("capsule-file-name");
+  const removeFileBtn = document.getElementById("btn-remove-file");
 
-  function handleSampleClick(sampleKey) {
-    loadSample(sampleKey);
-    const attachMenu = document.getElementById("capsule-samples-menu");
-    if (attachMenu) attachMenu.style.display = "none";
-    const attachBtn = document.getElementById("btn-capsule-attach");
-    if (attachBtn) attachBtn.setAttribute("aria-expanded", "false");
+  if (attachBtn && fileInput) {
+    attachBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      fileInput.click();
+    });
   }
 
-  if (onboardingBtn) onboardingBtn.addEventListener("click", () => handleSampleClick("onboarding"));
-  if (emailBtn) emailBtn.addEventListener("click", () => handleSampleClick("email"));
-  if (meetingBtn) meetingBtn.addEventListener("click", () => handleSampleClick("meeting"));
+  if (fileInput) {
+    fileInput.addEventListener("change", async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
 
-  // Capsule attachment dropdown toggle
-  const attachBtn = document.getElementById("btn-capsule-attach");
-  const attachMenu = document.getElementById("capsule-samples-menu");
-  if (attachBtn && attachMenu) {
-    attachBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const isOpen = attachMenu.style.display === "flex";
-      attachMenu.style.display = isOpen ? "none" : "flex";
-      attachBtn.setAttribute("aria-expanded", isOpen ? "false" : "true");
+      if (fileChip && fileNameSpan) {
+        fileNameSpan.textContent = `Se extrage: ${file.name}...`;
+        fileChip.style.display = "inline-flex";
+      }
+
+      announceToLiveRegion(`Se extrage textul din ${file.name}...`);
+
+      try {
+        if (file.name.endsWith(".txt") || file.name.endsWith(".md")) {
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+            const content = evt.target.result;
+            const textarea = document.getElementById("home-input-text");
+            if (textarea) {
+              textarea.value = content;
+              updateCharCounter();
+              textarea.focus();
+            }
+            if (fileNameSpan) fileNameSpan.textContent = file.name;
+            announceToLiveRegion(`Fișierul ${file.name} a fost încărcat.`);
+          };
+          reader.readAsText(file);
+        } else {
+          const formData = new FormData();
+          formData.append("file", file);
+
+          const res = await fetch("/api/extract-text", {
+            method: "POST",
+            body: formData
+          });
+
+          if (!res.ok) {
+            let errJson = null;
+            try { errJson = await res.json(); } catch (_) {}
+            const msg = errJson?.error?.message_ro || `Eroare la extragerea textului (${res.status}).`;
+            alert(msg);
+            if (fileChip) fileChip.style.display = "none";
+            return;
+          }
+
+          const result = await res.json();
+          const extractedText = result.data?.text || "";
+
+          if (!extractedText.trim()) {
+            if (result.data?.needs_ocr) {
+              alert("Fișierul PDF este o imagine scanată fără text selectabil (necesită OCR).");
+            } else {
+              alert("Nu s-a putut extrage text din acest fișier PDF.");
+            }
+            if (fileChip) fileChip.style.display = "none";
+            return;
+          }
+
+          const textarea = document.getElementById("home-input-text");
+          if (textarea) {
+            textarea.value = extractedText;
+            updateCharCounter();
+            textarea.focus();
+          }
+
+          if (fileNameSpan) {
+            const pageInfo = result.data.pages ? ` (${result.data.pages} pag.)` : "";
+            fileNameSpan.textContent = `${file.name}${pageInfo}`;
+          }
+
+          announceToLiveRegion(`Documentul ${file.name} a fost extras cu succes.`);
+        }
+      } catch (err) {
+        console.error("File extraction error:", err);
+        alert("A apărut o problemă la procesarea fișierului PDF.");
+        if (fileChip) fileChip.style.display = "none";
+      }
+    });
+  }
+
+  if (removeFileBtn) {
+    removeFileBtn.addEventListener("click", () => {
+      if (fileInput) fileInput.value = "";
+      if (fileChip) fileChip.style.display = "none";
+      const textarea = document.getElementById("home-input-text");
+      if (textarea) {
+        textarea.value = "";
+        updateCharCounter();
+      }
+      announceToLiveRegion("Fișierul atașat a fost eliminat.");
     });
   }
 
