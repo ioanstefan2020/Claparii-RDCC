@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <title>Audit Accesibilitate Documente Angajator — PrimaZi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/shared/a11y.css">
+  <style>
+    /* Specific scoped styling for the Employer analysis dashboard */
+    .metric-badge {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 0.35rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    .score-circle {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      border: 5px solid currentColor;
+      margin: 0.5rem auto;
+      font-size: 2.25rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .score-sublabel {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 0.25rem;
+    }
+    .easy-read-box {
+      white-space: pre-wrap;
+      font-size: 1.05rem;
+      line-height: 1.7;
+      background-color: var(--bg-surface-alt);
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      max-height: 450px;
+      overflow-y: auto;
+    }
+    .issue-card {
+      background-color: var(--bg-surface-alt);
+      border-left: 5px solid var(--warning-border);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .issue-card.issue-jargon {
+      border-left-color: #8b5cf6;
+    }
+    .issue-card.issue-long_sentence {
+      border-left-color: var(--error-border);
+    }
+    .issue-card.issue-missing_deadline {
+      border-left-color: #f59e0b;
+    }
+    .issue-card.issue-vague_instruction {
+      border-left-color: #3b82f6;
+    }
+    .issue-card.issue-missing_structure {
+      border-left-color: #10b981;
+    }
+  </style>
+</head>
+<body>
+  <!-- Skip link for keyboard navigation (mandatory WCAG 2.2 AA) -->
+  <a href="#main" class="skip-link">Sari la conținutul principal</a>
+
+  <!-- Header & Navigation -->
+  <header role="banner">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <a href="/index.html" style="text-decoration: none;">
+          <span style="font-size: 1.5rem; font-weight: 800; color: var(--primary);">PrimaZi</span>
+        </a>
+        <span class="meta-secondary" style="margin-left: 0.5rem; color: var(--text-muted); font-size: 0.95rem;">
+          — Audit Accesibilitate Documente
+        </span>
+      </div>
+      <nav aria-label="Navigare principală">
+        <ul style="list-style: none; display: flex; gap: 1rem; margin: 0; padding: 0; flex-wrap: wrap;">
+          <li><a href="/index.html">Acasă</a></li>
+          <li><a href="/employee/profile.html">Profil &amp; Nevoi</a></li>
+          <li><a href="/employee/clarify.html">Clarificare</a></li>
+          <li><a href="/employee/plan.html">Planificator</a></li>
+          <li><a href="/employee/adjustments.html">Adaptări</a></li>
+          <li><a href="/employer/index.html" aria-current="page">Zona Angajator</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content Landmark -->
+  <main id="main">
+    <!-- Live region for accessibility announcements -->
+    <div id="status-live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Visible notification banner for feedback and errors -->
+    <div id="status-banner" role="status" aria-live="assertive" style="display: none;"></div>
+
+    <!-- Page Title & Introduction -->
+    <header style="border-bottom: none; background: transparent; padding: 0; margin-bottom: 1.5rem;">
+      <h1>Audit de accesibilitate a documentelor</h1>
+      <p style="font-size: 1.15rem; color: var(--text-muted); max-width: 800px; margin-top: 0.5rem;">
+        Evaluează ghidurile de onboarding, anunțurile de angajare și politicile interne pentru claritate cognitivă și limbaj simplu (Plain Romanian). Obține un scor de lizibilitate, recomandări de formulare și adaptări de lucru potrivite.
+      </p>
+    </header>
+
+    <!-- Responsible AI & Transparency Banner -->
+    <section class="card" aria-labelledby="transparency-notice-heading" style="border-left: 6px solid var(--primary); background-color: var(--bg-surface-alt);">
+      <h2 id="transparency-notice-heading" style="border-bottom: none; margin-bottom: 0.75rem; font-size: 1.25rem;">
+        Principiile evaluării de accesibilitate
+      </h2>
+      <ul style="margin: 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.6rem;">
+        <li>
+          <strong>Evaluăm exclusiv documentul:</strong> Analizăm structura frazelor, nivelul de jargon și claritatea pașilor. Nu evaluăm, nu etichetăm și nu judecăm niciodată o persoană, un angajat sau un candidat.
+        </li>
+        <li>
+          <strong>Fără date medicale sau diagnostice:</strong> Recomandările se concentrează pe comunicare clară și pe adaptări funcționale la locul de muncă conform catalogului de bune practici.
+        </li>
+        <li>
+          <strong>Citate verificate (Grounding):</strong> Fiecare problemă semnalată conține un citat exact din textul analizat, garantând că recomandarea este ancorată în conținutul real.
+        </li>
+      </ul>
+    </section>
+
+    <!-- Document Input Form -->
+    <form id="employer-form" novalidate>
+      <fieldset>
+        <legend>Document pentru analiză</legend>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem; align-items: flex-end;">
+          <div style="flex: 1; min-width: 250px;">
+            <label for="doc-type">Tipul documentului:</label>
+            <select id="doc-type">
+              <option value="onboarding">Ghid de onboarding / acomodare</option>
+              <option value="job_ad">Anunț de recrutare / angajare</option>
+              <option value="policy">Politică internă / regulament</option>
+              <option value="other">Alt document de lucru</option>
+            </select>
+          </div>
+
+          <div style="flex: 1; min-width: 250px;">
+            <label for="file-upload">Încarcă fișier (.txt):</label>
+            <input type="file" id="file-upload" accept=".txt" aria-describedby="file-upload-hint" style="padding: 0.4rem;">
+            <span id="file-upload-hint" class="meta-secondary" style="font-size: 0.8rem; display: block; margin-top: 0.25rem;">Format .txt, UTF-8, max. 12.000 caractere</span>
+          </div>
+
+          <div>
+            <button type="button" id="btn-load-sample" class="btn-secondary">Încarcă exemplu de onboarding</button>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 0.75rem;">
+          <label for="document-text">Conținutul documentului (text):</label>
+          <textarea id="document-text" maxlength="12000" rows="12" placeholder="Lipește textul documentului aici sau încarcă un fișier .txt (până la 12.000 caractere)..."></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.25rem;">
+          <div id="char-counter" aria-live="polite" class="meta-secondary">0 / 12.000 caractere</div>
+          <button type="button" id="btn-clear" class="btn-secondary" style="font-size: 0.9rem; padding: 0.35rem 0.75rem;">Șterge textul</button>
+        </div>
+
+        <div>
+          <button type="submit" id="btn-analyze" class="btn">Analizează documentul</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <!-- Results Section (Initially hidden) -->
+    <section id="results-section" aria-labelledby="results-heading" style="display: none; margin-top: 2rem;">
+      <h2 id="results-heading" tabindex="-1">Rezultatele analizei de accesibilitate</h2>
+
+      <!-- AI Transparency Banner -->
+      <div id="ai-notice-container" class="status-message status-info" role="note" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+        <span id="ai-notice-text">Generat de AI — verifică datele importante.</span>
+        <span class="badge" style="background: var(--bg-surface);">Informativ</span>
+      </div>
+
+      <!-- Warnings container (e.g. ungrounded quotes dropped) -->
+      <div id="warnings-container" role="status" aria-live="polite" style="display: none; margin-bottom: 1.25rem;"></div>
+
+      <!-- Card 1: Readability Metrics Dashboard -->
+      <article class="card" aria-labelledby="readability-heading">
+        <h3 id="readability-heading">1. Indicatori de lizibilitate și structură</h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">
+          Scorul evaluează claritatea frazelor și nivelul de dificultate la citire (calcul determinist conform lungimii medii a frazelor și prezenței frazelor excesiv de lungi).
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; align-items: center; margin-top: 1.25rem;">
+          <div style="text-align: center; padding: 1rem; background-color: var(--bg-surface-alt); border-radius: var(--radius-md);">
+            <div id="score-circle" class="score-circle">
+              <span id="score-value">0</span>
+              <span class="score-sublabel">/ 100</span>
+            </div>
+            <div id="score-badge" class="badge" style="margin-top: 0.5rem; font-size: 0.95rem; padding: 0.35rem 0.75rem;">
+              Calculare...
+            </div>
+            <p id="score-description" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; margin-bottom: 0;">
+              Descriere nivel accesibilitate
+            </p>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <div style="padding: 0.75rem 1rem; background-color: var(--bg-surface-alt); border-radius: var(--radius-sm); display: flex; justify-content: space-between; align-items: center;">
+              <span>Total fraze detectate:</span>
+              <strong id="metric-sentence-count" style="font-size: 1.15rem;">0</strong>
+            </div>
+            <div style="padding: 0.75rem 1rem; background-color: var(--bg-surface-alt); border-radius: var(--radius-sm); display: flex; justify-content: space-between; align-items: center;">
+              <span>Medie cuvinte per frază:</span>
+              <strong id="metric-avg-words" style="font-size: 1.15rem;">0</strong>
+            </div>
+            <div style="padding: 0.75rem 1rem; background-color: var(--bg-surface-alt); border-radius: var(--radius-sm); display: flex; justify-content: space-between; align-items: center;">
+              <span>Fraze lungi (≥ 25 cuvinte):</span>
+              <strong id="metric-long-count" style="font-size: 1.15rem;">0</strong>
+            </div>
+          </div>
+        </div>
+
+        <div id="long-sentences-wrapper" style="margin-top: 1.5rem; display: none;">
+          <details style="background: var(--bg-surface-alt); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.75rem 1rem;">
+            <summary style="font-weight: 700; cursor: pointer;">
+              Vezi frazele lungi identificate (<span id="long-sentences-summary-count">0</span>)
+            </summary>
+            <ul id="long-sentences-list" style="margin-top: 0.75rem; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem;">
+            </ul>
+          </details>
+        </div>
+      </article>
+
+      <!-- Card 2: Clarity & Jargon Issues -->
+      <article class="card" aria-labelledby="issues-heading">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem;">
+          <h3 id="issues-heading" style="margin: 0;">2. Probleme de claritate și jargon identificate</h3>
+          <span id="issues-counter-badge" class="badge">0 probleme</span>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">
+          Fiecare problemă include fragmentul exact din text (grounding garantat) și o sugestie practică de reformulare în limbaj clar.
+        </p>
+
+        <div id="issues-container" style="margin-top: 1rem;">
+          <!-- Dynamically inserted issues -->
+        </div>
+      </article>
+
+      <!-- Card 3: Easy-to-Read Rewrite -->
+      <article class="card" aria-labelledby="easy-read-heading">
+        <h3 id="easy-read-heading">3. Rescriere în limbaj simplificat (Easy-to-Read)</h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">
+          Versiune restructurată în limba română conform standardelor Easy-to-Read: propoziții scurte, diacritice, pași cronologici și puncte de reper evidențiate.
+        </p>
+
+        <div id="easy-read-content" class="easy-read-box" tabindex="0" role="region" aria-label="Conținut rescris în limbaj simplu"></div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center;">
+          <button type="button" id="btn-copy-easy" class="btn-secondary">Copiază textul</button>
+          <button type="button" id="btn-download-easy" class="btn-secondary">Descarcă (.txt)</button>
+          <button type="button" id="btn-read-aloud" class="btn-secondary">Citește cu voce tare</button>
+        </div>
+      </article>
+
+      <!-- Card 4: Recommended Workplace Adjustments -->
+      <article class="card" aria-labelledby="adjustments-heading">
+        <h3 id="adjustments-heading">4. Adaptări recomandate la locul de muncă</h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">
+          Măsuri organizaționale din catalogul standard de bune practici recomandate pentru a sprijini noii colegi care parcurg acest tip de document:
+        </p>
+
+        <ul id="adjustments-list" style="margin: 1rem 0 0; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem;">
+          <!-- Dynamically inserted adjustments -->
+        </ul>
+      </article>
+    </section>
+  </main>
+
+  <!-- Page Footer -->
+  <footer role="contentinfo">
+    <p>PrimaZi — Asistent accesibil pentru primul loc de muncă. Creat pentru AccessABILITY Hackathon 2026.</p>
+  </footer>
+
+  <!-- Application Logic -->
+  <script type="module" src="/employer/employer.js"></script>
+</body>
+</html>
+

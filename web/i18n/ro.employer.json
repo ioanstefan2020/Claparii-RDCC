@@ -1,0 +1,86 @@
+{
+  "page": {
+    "title": "Audit Accesibilitate Documente Angajator — PrimaZi",
+    "heading": "Audit de accesibilitate a documentelor",
+    "subtitle": "Evaluează ghidurile de onboarding, anunțurile de angajare și politicile interne pentru claritate cognitivă și limbaj simplu (Plain Romanian). Obține un scor de lizibilitate, recomandări practice de formulare și adaptări de lucru potrivite.",
+    "transparency_title": "Principiile evaluării de accesibilitate",
+    "transparency_doc_only": "Evaluăm exclusiv documentul: Analizăm structura, lungimea frazelor și jargonul din text. Nu evaluăm, nu etichetăm și nu judecăm niciodată o persoană, un angajat sau un candidat.",
+    "transparency_no_medical": "Fără date medicale sau diagnostice: Recomandările se concentrează pe bune practici de comunicare organizațională și adaptări funcționale la locul de muncă.",
+    "transparency_grounding": "Citate verificate (Grounding): Fiecare problemă identificată citează cuvânt cu cuvânt fragmentul din textul original și oferă o alternativă concretă în limbaj simplu."
+  },
+  "form": {
+    "legend": "Document pentru analiză",
+    "doc_type_label": "Tipul documentului:",
+    "doc_types": {
+      "onboarding": "Ghid de onboarding / acomodare",
+      "job_ad": "Anunț de recrutare / angajare",
+      "policy": "Politică internă / regulament",
+      "other": "Alt document de lucru"
+    },
+    "file_upload_label": "Încarcă fișier (.txt):",
+    "load_sample_btn": "Încarcă exemplu de onboarding",
+    "doc_text_label": "Conținutul documentului (text):",
+    "doc_text_placeholder": "Lipește textul documentului aici sau încarcă un fișier .txt (până la 12.000 caractere)...",
+    "char_counter": "{current} / {max} caractere",
+    "clear_btn": "Șterge textul",
+    "analyze_btn": "Analizează documentul",
+    "analyzing_btn": "Se analizează..."
+  },
+  "results": {
+    "heading": "Rezultatele analizei de accesibilitate",
+    "card1_title": "Indicatori de lizibilitate și structură",
+    "score_label": "Scor de accesibilitate a textului:",
+    "sentence_count_label": "Număr de fraze:",
+    "avg_words_label": "Medie cuvinte / frază:",
+    "long_sentences_label": "Fraze lungi (≥ 25 cuvinte):",
+    "long_sentences_details": "Vezi lista frazelor lungi identificate",
+    "card2_title": "Probleme de claritate și jargon identificate",
+    "no_issues": "Nu au fost identificate probleme majore de jargon sau ambiguitate. Textul respectă principiile limbajului simplu.",
+    "card3_title": "Rescriere în limbaj simplificat (Easy-to-Read)",
+    "copy_btn": "Copiază textul",
+    "copied_btn": "Copiat!",
+    "download_btn": "Descarcă (.txt)",
+    "read_aloud_btn": "Citește cu voce tare",
+    "stop_reading_btn": "Oprește lectura",
+    "card4_title": "Adaptări recomandate la locul de muncă",
+    "adjustments_intro": "Pentru a sprijini noii angajați care parcurg acest document, luați în considerare următoarele adaptări organizaționale din catalog:"
+  },
+  "score_tiers": {
+    "excellent": {
+      "label": "Accesibilitate excelentă",
+      "description": "Documentul este clar, concis și ușor de parcurs pentru orice nou angajat.",
+      "class": "status-success"
+    },
+    "moderate": {
+      "label": "Accesibilitate moderată — recomandăm simplificări",
+      "description": "Documentul conține pasaje sau fraze care pot îngreuna parcurgerea rapidă a sarcinilor.",
+      "class": "status-warning"
+    },
+    "difficult": {
+      "label": "Accesibilitate dificilă — necesită restructurare",
+      "description": "Documentul este dens, conține fraze excesiv de lungi sau termeni neclari.",
+      "class": "status-error"
+    }
+  },
+  "issue_kinds": {
+    "jargon": "Jargon corporatist",
+    "long_sentence": "Frază prea lungă",
+    "missing_deadline": "Termen lipsă",
+    "vague_instruction": "Instrucțiune vagă",
+    "missing_structure": "Structură deficitară"
+  },
+  "announcements": {
+    "analyzing": "Se analizează documentul pentru accesibilitate cognitivă...",
+    "success": "Analiza a fost finalizată cu succes. Rezultatele sunt afișate mai jos.",
+    "empty_input": "Te rugăm să introduci sau să încarci un text pentru analiză.",
+    "too_long": "Textul depășește limita maximă de 12.000 de caractere.",
+    "generic_error": "A apărut o eroare la comunicarea cu serverul. S-a utilizat fișa demonstrativă.",
+    "sample_loaded": "Exemplul de ghid de onboarding a fost încărcat în formular.",
+    "file_loaded": "Fișierul a fost încărcat cu succes.",
+    "form_cleared": "Formularul și rezultatele au fost șterse.",
+    "text_copied": "Textul rescris a fost copiat în clipboard.",
+    "tts_not_supported": "Sinteza vocală nu este suportată de browserul dumneavoastră.",
+    "tts_ro_missing": "Vocea în limba română nu este instalată pe acest dispozitiv."
+  }
+}
+

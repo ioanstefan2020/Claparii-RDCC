@@ -61,6 +61,11 @@ _ROMANIAN_ABBREVIATIONS = (
 )
 
 
+def _count_words(sentence: str) -> int:
+    """Counts words in a sentence, ignoring pure punctuation."""
+    return len([w for w in sentence.split() if any(c.isalnum() for c in w)])
+
+
 def _split_into_sentences(text: str) -> list[str]:
     """Splits text into sentences, protecting decimal numbers and common abbreviations."""
     if not text or not text.strip():
@@ -86,15 +91,10 @@ def _split_into_sentences(text: str) -> list[str]:
         s = chunk.replace("__DOT__", ".").strip()
         # Strip leading bullet/list symbols (e.g., "- ", "• ", "* ")
         s = re.sub(r"^[-•*–—]\s*", "", s).strip()
-        if s:
+        if s and _count_words(s) > 0:
             sentences.append(s)
 
     return sentences
-
-
-def _count_words(sentence: str) -> int:
-    """Counts words in a sentence, ignoring pure punctuation."""
-    return len([w for w in sentence.split() if any(c.isalnum() for c in w)])
 
 
 def compute_readability(text: str) -> ReadabilityStats:
@@ -181,12 +181,14 @@ async def analyze_employer_document(req: AnalyzeRequest) -> AnalyzeResponse:
     )
 
     # Defense-in-depth: Ensure easy_read_ro and fixes contain no medical diagnoses
-    lower_easy_read = validated_llm.easy_read_ro.lower()
-    for bad_word in DENY_LIST_DIAGNOSES:
-        if re.search(rf"\b{re.escape(bad_word)}\b", lower_easy_read):
-            raise BadLLMOutput(
-                message_ro="Răspunsul primit conține termeni nepermiși din zona medicală sau diagnostic."
-            )
+    text_to_scan = [validated_llm.easy_read_ro] + [issue.fix for issue in validated_llm.issues]
+    for text_fragment in text_to_scan:
+        lower_frag = text_fragment.lower()
+        for bad_word in DENY_LIST_DIAGNOSES:
+            if re.search(rf"\b{re.escape(bad_word)}\b", lower_frag):
+                raise BadLLMOutput(
+                    message_ro="Răspunsul primit conține termeni nepermiși din zona medicală sau diagnostic."
+                )
 
     # 3. Guardrail: Grounding check (all issue quotes must be verbatim in input)
     issue_dicts = [issue.model_dump() for issue in validated_llm.issues]

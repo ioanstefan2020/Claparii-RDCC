@@ -334,3 +334,93 @@ def test_api_analyze_invalid_doc_type(client: TestClient) -> None:
     payload = res.json()
     assert payload.get("ok") is False
     assert payload["error"]["code"] == "bad_request"
+
+
+def test_api_analyze_boundary_max_chars(client: TestClient) -> None:
+    """Exactly 12,000 characters is accepted; 12,001 is rejected with too_long."""
+    base = "Acesta este un text de test pentru verificare. "
+    repetitions = 12000 // len(base)
+    text_exact = (base * repetitions) + ("x" * (12000 - len(base * repetitions)))
+    assert len(text_exact) == 12000
+
+    res_ok = client.post("/api/employer/analyze", json={"text": text_exact})
+    assert res_ok.status_code == 200
+    assert res_ok.json().get("ok") is True
+
+    res_err = client.post("/api/employer/analyze", json={"text": text_exact + "!"})
+    assert res_err.status_code == 400
+    payload = res_err.json()
+    assert payload.get("ok") is False
+    assert payload["error"]["code"] == "too_long"
+
+
+def test_api_analyze_null_input(client: TestClient) -> None:
+    """None/null text is rejected with 422 bad_request."""
+    res = client.post("/api/employer/analyze", json={"text": None})
+    assert res.status_code == 422
+    payload = res.json()
+    assert payload.get("ok") is False
+    assert payload["error"]["code"] == "bad_request"
+
+
+def test_api_analyze_all_fabricated_quotes_dropped(client: TestClient) -> None:
+    """When all quotes are ungrounded, all are dropped and warning is issued."""
+    source_text = "Text scurt de test fără legătură cu problemele fabricate."
+    mock_llm_output = EmployerAnalyzeLLMOutput(
+        issues=[
+            DocumentIssue(kind="jargon", quote="frază inventată 1", fix="fix 1"),
+            DocumentIssue(kind="long_sentence", quote="frază inventată 2", fix="fix 2"),
+        ],
+        easy_read_ro="Text simplificat.",
+        adjustment_checklist=[],
+    )
+
+    with patch(
+        "app.routers.employer.generate_json",
+        return_value=(mock_llm_output, {"provider": "mock", "cached": False, "warnings": []}),
+    ):
+        res = client.post("/api/employer/analyze", json={"text": source_text})
+        assert res.status_code == 200
+        payload = res.json()
+        assert payload.get("ok") is True
+        assert payload["data"]["issues"] == []
+        assert len(payload["meta"]["warnings"]) == 1
+        assert "2 probleme eliminate: citatul nu apare în text." in payload["meta"]["warnings"][0]
+
+
+def test_api_analyze_denylist_diagnosis_triggers_502(client: TestClient) -> None:
+    """If LLM includes a medical diagnosis, BadLLMOutput is raised returning HTTP 502."""
+    mock_llm_output = EmployerAnalyzeLLMOutput(
+        issues=[],
+        easy_read_ro="Acest angajat are autism și are nevoie de sprijin.",
+        adjustment_checklist=[],
+    )
+
+    with patch(
+        "app.routers.employer.generate_json",
+        return_value=(mock_llm_output, {"provider": "mock", "cached": False, "warnings": []}),
+    ):
+        res = client.post("/api/employer/analyze", json={"text": "Text de intrare valid."})
+        assert res.status_code == 502
+        payload = res.json()
+        assert payload.get("ok") is False
+        assert payload["error"]["code"] == "bad_llm_output"
+
+
+def test_compute_readability_extreme_penalties_clamped() -> None:
+    """Score never drops below 0 even under heavy penalties."""
+    long_s = " ".join(["cuvânt"] * 40) + "."
+    heavy_text = " ".join([long_s] * 20)
+    stats = compute_readability(heavy_text)
+    assert stats.score_0_100 == 0
+    assert stats.sentence_count == 20
+    assert len(stats.long_sentences) == 20
+
+
+def test_compute_readability_punctuation_only() -> None:
+    """Text with only punctuation characters returns 0 sentences and 100 score."""
+    stats = compute_readability("... ! ? ; : - --")
+    assert stats.sentence_count == 0
+    assert stats.avg_sentence_words == 0.0
+    assert stats.score_0_100 == 100
+
