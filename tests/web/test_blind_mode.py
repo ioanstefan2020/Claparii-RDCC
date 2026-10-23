@@ -188,3 +188,28 @@ def test_blind_mode_js_structure():
     assert "isBlindModeActive" in js_content
     assert "limpede_blind_mode" in js_content
     assert "Modul ecran negru activat" in js_content
+
+
+def test_voiceover_toggle_without_black_curtain():
+    """Verify toggleVoiceover enables voiceover reading without activating the black curtain."""
+    js_content = BLIND_MODE_JS.read_text(encoding="utf-8")
+    assert "toggleVoiceover" in js_content
+    assert "isVoiceoverActive" in js_content
+    assert "Citire vocală activată" in js_content
+    assert "pointerover" in js_content
+    assert "focusin" in js_content
+
+    script = f"""
+    import {{ toggleVoiceover, isVoiceoverActive, isBlindModeActive }} from '{BLIND_MODE_JS.as_uri()}';
+
+    const out = {{
+        hasToggleVO: typeof toggleVoiceover === "function",
+        hasIsVOActive: typeof isVoiceoverActive === "function",
+        hasIsBlindActive: typeof isBlindModeActive === "function"
+    }};
+    console.log(JSON.stringify(out));
+    """
+    res = json.loads(run_node_code(script))
+    assert res["hasToggleVO"] is True
+    assert res["hasIsVOActive"] is True
+    assert res["hasIsBlindActive"] is True

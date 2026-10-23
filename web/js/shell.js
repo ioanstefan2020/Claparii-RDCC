@@ -25,7 +25,7 @@ import {
   isPaused,
 } from "../shared/speech.js";
 import { toggleReadingRuler } from "../shared/a11y-text.js";
-import { toggleBlindMode, isBlindModeActive } from "../a11y/blind-mode.js";
+import { toggleBlindMode, isBlindModeActive, toggleVoiceover, isVoiceoverActive } from "../a11y/blind-mode.js";
 
 const STORAGE_KEY = "wp.prefs.v1";
 const PLANNER_STORAGE_KEY = "primazi_planner_tasks";
@@ -465,112 +465,17 @@ if (typeof document !== "undefined") {
     });
   }
 
-  // Audio control: Smart Read aloud / Pause / Resume / Stop via speech.js
+  // Audio control: Screen Reader / Voiceover Mode Toggle (Blind mode without black curtain)
   if (btnAudio) {
     const span = btnAudio.querySelector("span");
-    if (span) span.textContent = "Audio: Citește";
+    if (span) span.textContent = isVoiceoverActive() ? "Audio: Pornit" : "Audio: Citește";
+    btnAudio.setAttribute("aria-pressed", isVoiceoverActive() ? "true" : "false");
 
-    window.addEventListener("primazi:speech-state", (e) => {
-      if (!span) return;
-      const state = e.detail && e.detail.state;
-      if (state === "speaking") {
-        span.textContent = "Audio: Pauză";
-        btnAudio.setAttribute("aria-label", "Pauză redare audio");
-        btnAudio.classList.add("is-speaking");
-      } else if (state === "paused") {
-        span.textContent = "Audio: Continuă";
-        btnAudio.setAttribute("aria-label", "Continuă redarea audio");
-        btnAudio.classList.remove("is-speaking");
-      } else {
-        span.textContent = "Audio: Citește";
-        btnAudio.setAttribute("aria-label", "Citește cu voce tare");
-        btnAudio.classList.remove("is-speaking");
-      }
-    });
-
-    btnAudio.addEventListener("click", () => {
-      if (isSpeaking()) {
-        if (isPaused()) {
-          resumeSpeaking();
-          if (span) span.textContent = "Audio: Pauză";
-          btnAudio.classList.add("is-speaking");
-          announce("Redarea audio a continuat.");
-          window.dispatchEvent(new CustomEvent("primazi:speech-state", { detail: { state: "speaking" } }));
-        } else {
-          pauseSpeaking();
-          if (span) span.textContent = "Audio: Continuă";
-          btnAudio.classList.remove("is-speaking");
-          announce("Redarea audio a fost pusă pe pauză.");
-          window.dispatchEvent(new CustomEvent("primazi:speech-state", { detail: { state: "paused" } }));
-        }
-      } else {
-        // Find readable content on current page
-        let textToRead = "";
-        const questionPrompt = document.getElementById("question-prompt");
-        const resultBody = document.getElementById("home-result-body");
-        const summaryCard = document.querySelector(".summary-card, .results-content, .card-summary, .results-body, .output-card");
-        const mainEl = document.getElementById("main");
-
-        if (questionPrompt && questionPrompt.innerText.trim()) {
-          const parts = [];
-          const stepCounter = document.getElementById("wizard-step-counter");
-          if (stepCounter && stepCounter.innerText.trim()) {
-            parts.push(stepCounter.innerText.trim());
-          }
-          parts.push(questionPrompt.innerText.trim());
-          const help = document.getElementById("question-help");
-          if (help && help.innerText.trim()) {
-            parts.push(help.innerText.trim());
-          }
-          const options = document.querySelectorAll("#question-options .radio-card");
-          options.forEach((opt, idx) => {
-            const title = opt.querySelector(".radio-title");
-            const desc = opt.querySelector(".radio-desc");
-            const isSel = opt.classList.contains("is-selected") || Boolean(opt.querySelector("input:checked"));
-            const prefix = isSel ? "Opțiunea selectată" : `Opțiunea ${idx + 1}`;
-            const tText = title ? title.innerText.trim() : "";
-            const dText = desc ? desc.innerText.trim() : "";
-            parts.push(`${prefix}: ${tText}. ${dText}`);
-          });
-          textToRead = parts.join(". ");
-        } else if (resultBody && resultBody.offsetParent !== null && resultBody.innerText.trim()) {
-          textToRead = resultBody.innerText.trim();
-        } else if (summaryCard && summaryCard.innerText.trim()) {
-          textToRead = summaryCard.innerText.trim();
-        } else if (mainEl) {
-          const h1 = mainEl.querySelector("h1");
-          const lead = mainEl.querySelector(".hero-lead, .gemini-greeting, p");
-          const parts = [];
-          if (h1 && h1.innerText) parts.push(h1.innerText.trim());
-          if (lead && lead.innerText) parts.push(lead.innerText.trim());
-          textToRead = parts.join(". ");
-        }
-
-        if (textToRead) {
-          speakText(textToRead, {
-            onStart: () => {
-              if (span) span.textContent = "Audio: Pauză";
-              btnAudio.classList.add("is-speaking");
-              announce("Lectura audio a pornit.");
-              window.dispatchEvent(new CustomEvent("primazi:speech-state", { detail: { state: "speaking" } }));
-            },
-            onEnd: () => {
-              if (span) span.textContent = "Audio: Citește";
-              btnAudio.classList.remove("is-speaking");
-              announce("Lectura audio s-a încheiat.");
-              window.dispatchEvent(new CustomEvent("primazi:speech-state", { detail: { state: "idle" } }));
-            },
-            onError: (err) => {
-              if (span) span.textContent = "Audio: Citește";
-              btnAudio.classList.remove("is-speaking");
-              announce(typeof err === "string" ? err : "Eroare la redarea audio.");
-              window.dispatchEvent(new CustomEvent("primazi:speech-state", { detail: { state: "idle" } }));
-            }
-          });
-        } else {
-          announce("Niciun text disponibil pentru citire audio pe această pagină.");
-        }
-      }
+    window.addEventListener("limpede:voiceover-changed", (e) => {
+      const active = e.detail && e.detail.active;
+      if (span) span.textContent = active ? "Audio: Pornit" : "Audio: Citește";
+      btnAudio.setAttribute("aria-pressed", active ? "true" : "false");
+      btnAudio.classList.toggle("is-active", Boolean(active));
     });
   }
 
