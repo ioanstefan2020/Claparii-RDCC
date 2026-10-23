@@ -545,3 +545,58 @@ legend {
   font-weight: 700;
   border: 1px solid var(--border-color);
 }
+
+/* ================================================== */
+/* Blind Mode & Pitch Black Curtain Overlay (F9)      */
+/* ================================================== */
+.blind-curtain {
+  display: none;
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000000 !important;
+  z-index: 2147483647;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease-in-out;
+}
+
+.blind-curtain.is-active,
+[data-blind-mode="active"] .blind-curtain {
+  display: block !important;
+  opacity: 1 !important;
+}
+
+[data-blind-mode="active"] :focus-visible {
+  outline: 4px solid #ffffff !important;
+  outline-offset: 2px !important;
+}
+
+.btn-header-blind {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs, 0.5rem);
+  min-height: var(--target-size-min, 44px);
+  padding: 0 var(--space-sm, 0.75rem);
+  background-color: var(--bg-surface, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: var(--radius-md, 0.5rem);
+  color: var(--text-main, #1e293b);
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-medium, 500);
+  cursor: pointer;
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.btn-header-blind:hover {
+  background-color: var(--bg-surface-alt, #f8fafc);
+  border-color: var(--border-strong, #94a3b8);
+}
+
+.btn-header-blind.is-active,
+.btn-header-blind[aria-pressed="true"] {
+  background-color: #1c1917 !important;
+  color: #fafaf9 !important;
+  border-color: #000000 !important;
+}

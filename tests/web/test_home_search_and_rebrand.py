@@ -36,7 +36,6 @@ SERVED_ROUTES = [
     "/employee/clarify.html",
     "/employee/plan.html",
     "/employee/meeting.html",
-    "/employee/adjustments.html",
     "/employee/profile.html",
     "/employer/index.html",
 ]

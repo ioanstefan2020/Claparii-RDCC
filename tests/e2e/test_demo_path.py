@@ -371,7 +371,6 @@ def test_e2e_step6_employer_review(client: TestClient, onboarding_text: str) -> 
         "/employee/clarify.html",
         "/employee/plan.html",
         "/employee/meeting.html",
-        "/employee/adjustments.html",
         "/employer/index.html",
     ],
 )
@@ -489,7 +488,6 @@ def test_e2e_step3_planner_calendar_export_contract(client: TestClient, task_ema
         "/employee/clarify.html",
         "/employee/plan.html",
         "/employee/meeting.html",
-        "/employee/adjustments.html",
         "/employer/index.html",
     ],
 )

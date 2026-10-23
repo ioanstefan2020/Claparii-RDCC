@@ -89,6 +89,13 @@
   --transition-fast: 150ms ease;
   --transition-normal: 250ms ease;
 
+  /* Blind Mode & Screen Curtain Tokens */
+  --blind-curtain-bg: #000000;
+  --blind-focus-outline: #ffffff;
+  --blind-active-bg: #1c1917;
+  --blind-active-text: #fafaf9;
+  --blind-active-border: #000000;
+
   /* Gemini Thematic Tokens (Light / Cald Mode) */
   --gemini-canvas: var(--bg-app);
   --gemini-surface: var(--bg-surface);

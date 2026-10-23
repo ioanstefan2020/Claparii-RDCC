@@ -3888,3 +3888,58 @@ mark.quote-highlight {
   color: var(--text-main);
   line-height: 1.5;
 }
+
+/* ================================================== */
+/* Blind Mode & Pitch Black Curtain Overlay (F9)      */
+/* ================================================== */
+.blind-curtain {
+  display: none;
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--blind-curtain-bg) !important;
+  z-index: 2147483647;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease-in-out;
+}
+
+.blind-curtain.is-active,
+[data-blind-mode="active"] .blind-curtain {
+  display: block !important;
+  opacity: 1 !important;
+}
+
+[data-blind-mode="active"] :focus-visible {
+  outline: 4px solid var(--blind-focus-outline) !important;
+  outline-offset: 2px !important;
+}
+
+.btn-header-blind {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-height: var(--target-size-min, 44px);
+  padding: 0 var(--space-sm);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-header-blind:hover {
+  background-color: var(--bg-surface-alt);
+  border-color: var(--border-strong);
+}
+
+.btn-header-blind.is-active,
+.btn-header-blind[aria-pressed="true"] {
+  background-color: var(--blind-active-bg) !important;
+  color: var(--blind-active-text) !important;
+  border-color: var(--blind-active-border) !important;
+}

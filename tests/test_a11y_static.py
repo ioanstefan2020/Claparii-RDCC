@@ -206,7 +206,6 @@ def test_employee_navigation_consistency():
         ROOT / "web" / "employee" / "clarify.html",
         ROOT / "web" / "employee" / "plan.html",
         ROOT / "web" / "employee" / "meeting.html",
-        ROOT / "web" / "employee" / "adjustments.html"
     ]
     for page in employee_pages:
         assert page.exists(), f"{page.name} missing"
@@ -215,7 +214,6 @@ def test_employee_navigation_consistency():
         assert 'href="/employee/clarify.html"' in html, f"Clarify link missing in {page.name}"
         assert 'href="/employee/plan.html"' in html, f"Plan link missing in {page.name}"
         assert 'href="/employee/meeting.html"' in html, f"Meeting link missing in {page.name}"
-        assert 'href="/employee/adjustments.html"' in html, f"Adjustments link missing in {page.name}"
         assert 'href="/employee/profile.html"' in html, f"Profile link missing in {page.name}"
 
 

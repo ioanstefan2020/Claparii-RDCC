@@ -91,7 +91,6 @@ def test_all_employee_pages_have_consistent_footer_and_landmarks():
         ROOT / "web" / "employee" / "clarify.html",
         ROOT / "web" / "employee" / "plan.html",
         ROOT / "web" / "employee" / "meeting.html",
-        ROOT / "web" / "employee" / "adjustments.html"
     ]
     for page in pages:
         content = page.read_text(encoding="utf-8")

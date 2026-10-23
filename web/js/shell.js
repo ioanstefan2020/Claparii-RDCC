@@ -25,6 +25,7 @@ import {
   isPaused,
 } from "../shared/speech.js";
 import { toggleReadingRuler } from "../shared/a11y-text.js";
+import { toggleBlindMode, isBlindModeActive } from "../a11y/blind-mode.js";
 
 const STORAGE_KEY = "wp.prefs.v1";
 const PLANNER_STORAGE_KEY = "primazi_planner_tasks";
@@ -593,6 +594,21 @@ if (typeof document !== "undefined") {
           : "Fontul pentru dislexie a fost activat.",
       );
     });
+  }
+
+  // 5. Blind Mode (Mod Orb / Ecran Negru F9) Toggle in Header Toolbar
+  if (a11yToolbar && !document.getElementById("btn-header-blind")) {
+    const btnBlind = document.createElement("button");
+    btnBlind.type = "button";
+    btnBlind.id = "btn-header-blind";
+    btnBlind.className = "a11y-toolbar-btn btn-header-blind";
+    btnBlind.setAttribute("aria-pressed", isBlindModeActive() ? "true" : "false");
+    btnBlind.setAttribute("aria-label", "Comută modul pentru nevăzători: Ecran negru și citire vocală (Tasta F9)");
+    btnBlind.innerHTML = `<span>${isBlindModeActive() ? "Mod Orb: Activat (F9)" : "Mod Orb (F9)"}</span>`;
+    btnBlind.addEventListener("click", () => {
+      toggleBlindMode();
+    });
+    a11yToolbar.appendChild(btnBlind);
   }
   });
 }
