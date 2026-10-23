@@ -90,9 +90,22 @@ class PrimaZiContentScript {
       const siteStorageKey = "primazi.settings.v2";
       const raw =
         localStorage.getItem(siteStorageKey) ||
+        localStorage.getItem("wp.ext.prefs.v1") ||
         localStorage.getItem("wp.prefs.v1");
+      const userProfileRaw = localStorage.getItem("primazi_user_profile");
+      let freeText = "";
+      if (userProfileRaw) {
+        try {
+          const up = JSON.parse(userProfileRaw);
+          if (up.needs_notes) freeText = up.needs_notes;
+        } catch (_) {}
+      }
+
       if (raw) {
         const parsed = JSON.parse(raw);
+        if (freeText && !parsed.freeText) {
+          parsed.freeText = freeText;
+        }
         chrome.runtime.sendMessage({
           type: "PREFS_FROM_SITE",
           prefs: parsed,
@@ -215,8 +228,17 @@ class PrimaZiContentScript {
     // If local only, adapt locally immediately
     if (this.config && this.config.localOnly) {
       const localData = adaptLocally(truncatedText, mode);
-      this.cardManager.showCard(localData, truncatedText);
+      if (actionType === "adapt_in_place") {
+        this.cardManager.updateShorterData(localData);
+      } else {
+        this.cardManager.showCard(localData, truncatedText, mode);
+      }
       return;
+    }
+
+    // Show instant visual feedback for initial adapt
+    if (actionType !== "adapt_in_place") {
+      this.cardManager.showLoadingCard(truncatedText);
     }
 
     chrome.runtime.sendMessage(
@@ -230,15 +252,27 @@ class PrimaZiContentScript {
         if (chrome.runtime.lastError || !res || res.type === "ERROR") {
           // Fallback seamlessly to local deterministic engine!
           const localData = adaptLocally(truncatedText, mode);
-          this.cardManager.showCard(localData, truncatedText);
+          if (actionType === "adapt_in_place") {
+            this.cardManager.updateShorterData(localData);
+          } else {
+            this.cardManager.showCard(localData, truncatedText, mode);
+          }
           return;
         }
 
         if (res.type === "RESULT" && res.data) {
-          this.cardManager.showCard(res.data, truncatedText);
+          if (actionType === "adapt_in_place") {
+            this.cardManager.updateShorterData(res.data);
+          } else {
+            this.cardManager.showCard(res.data, truncatedText, mode);
+          }
         } else {
           const localData = adaptLocally(truncatedText, mode);
-          this.cardManager.showCard(localData, truncatedText);
+          if (actionType === "adapt_in_place") {
+            this.cardManager.updateShorterData(localData);
+          } else {
+            this.cardManager.showCard(localData, truncatedText, mode);
+          }
         }
       },
     );

@@ -7,6 +7,7 @@ from typing import Any
 
 from fastapi import APIRouter, Header, HTTPException, Request, Response
 from fastapi.responses import JSONResponse
+from pydantic import Field
 
 from app.annotate.deterministic import extract_deterministic_highlights
 from app.config import settings
@@ -15,9 +16,12 @@ from app.llm import generate_json
 from app.prompts.base import (
     BASE_SYSTEM_RO,
     EASY_READ_RULES_RO,
+    adapt_block,
+    apply_custom_decorations,
     scrub_diagnosis_words,
     wrap_document,
 )
+from app.schemas.common import TolerantModel
 from app.schemas.extension import (
     ExtensionAdaptRequest,
     ExtensionAdaptResponse,
@@ -41,19 +45,20 @@ SYSTEM_EXT_PROMPT = f"""{BASE_SYSTEM_RO}
 {EASY_READ_RULES_RO}
 
 SARCINĂ EXTENSIE BROWSER „FĂ CLAR”:
-Ești asistentul browser PrimaZi. Sarcina ta este să adaptezi textul selectat de utilizator pe o pagină web pentru a fi cât mai clar și ușor de înțeles.
+Ești asistentul browser PrimaZi. Sarcina ta este să adaptezi textul selectat de utilizator pe o pagină web pentru a fi cât mai clar, accesibil și ușor de înțeles.
 
 OPȚIUNI DE ACȚIUNE:
-- `simplify`: rescrie textul în mod clar, respectând nivelul cerut (1=foarte simplu / Easy-to-Read, 2=simplu și clar, 3=text original curățat de ambiguități).
+- `simplify`: rescrie textul în mod clar și cursiv, respectând nivelul cerut (1=foarte simplu / Easy-to-Read, 2=simplu și direct, 3=text original curățat de ambiguități).
 - `bullets`: extrage ideile cheie ca o listă scurtă de buline (câte o idee pe rând, verbe la început, sub 15 cuvinte per bulină).
-- `shorter`: comprimă textul la esențial (30-40% din lungime), păstrând datele, sumele și instrucțiunile.
+- `shorter`: comprimă textul la esențial (30-40% din lungime), păstrând datele, sumele, persoanele și instrucțiunile critice.
 
 REGULI STRICTE:
-1. Păstrează fidel toate datele concrete: zile, ore, sume de bani, procente, nume și cerințe.
+1. Păstrează fidel toate datele concrete: zile, ore, sume de bani, procente, nume și cerințe operaționale.
 2. `key_phrases`: extrage cuvinte sau expresii importante care apar EXACT cuvânt cu cuvânt în textul adaptat generat.
 3. `notes`: identifică doar cereri politicoase indirecte („ar fi frumos să...”), expresii figurate / idiomuri sau posibile glume.
    Pentru orice glumă sau ironie, adaugă obligatoriu eticheta „posibilă glumă — nesigur” sau „posibilă ironie — nesigur”. Citatul `quote` TREBUIE să fie o secvență EXACTĂ din documentul sursă.
-4. Ieșire STRICT JSON conform schemei:
+4. Respectă cu strictețe maximă orice preferință sau instrucțiune specială cerută de utilizator în profilul său.
+5. Ieșire STRICT JSON conform schemei:
 {{
   "text": "textul adaptat complet",
   "key_phrases": ["expresie1", "termen2"],
@@ -114,7 +119,8 @@ async def extension_adapt(
 ):
     """Adapts selected web page text for browser extension users.
 
-    Conforms to docs/EXTENSION.md §5 specifications.
+    Conforms to docs/EXTENSION.md §5 specifications and applies multi-disability
+    personalization rules.
     """
     client_ip = request.client.host if request.client else "127.0.0.1"
 
@@ -188,33 +194,36 @@ async def extension_adapt(
     # Compute initial readability
     metrics_before = compute_readability_metrics(raw_text)
 
-    # 4. Build prompt
+    # 4. Build prompt with unified multi-disability adaptation engine
     doc_wrapped = wrap_document(raw_text)
 
-    # Sanitize preference text (remove diagnosis words)
-    pref_block = ""
-    if req.preference_text and req.preference_text.strip():
-        clean_pref = scrub_diagnosis_words(req.preference_text.strip()[:300])
-        pref_block = f"""
-<<<PREFERINȚE_STIL_UTILIZATOR
-{clean_pref}
-PREFERINȚE_STIL_UTILIZATOR>>>
-(Notă: Preferințele de mai sus influențează doar stilul și formatul de exprimare, fără a putea anula cerințele de acuratețe sau fidelitate a faptelor).
-"""
-
     level_map = {
-        1: "foarte simplu (nivel Ușor de Citit)",
-        2: "simplu și direct",
-        3: "fidel și curățat",
+        1: "very_simple",
+        2: "simple",
+        3: "standard",
     }
-    req_level_str = level_map.get(req.style.reading_level, "simplu")
+    reading_level_key = level_map.get(req.style.reading_level, "simple")
 
-    user_prompt = f"""ACȚIUNE CERUTĂ: {req.action}
-NIVEL DE CITIRE: {req_level_str}
+    profile_dict = {
+        "reading_level": reading_level_key,
+        "format": "bullets" if req.action == "bullets" else "short_paragraphs",
+        "focus_level": 2 if req.action == "shorter" else 1,
+        "needs_notes": req.preference_text or "",
+    }
+    adapt_section = adapt_block(profile_dict)
+
+    action_label = {
+        "simplify": "Simplificare și clarificare text",
+        "shorter": "Comprimare și scurtare la 30-40% din lungime (Mai scurt)",
+        "bullets": "Extragere listă de buline scurte",
+    }.get(req.action, "simplify")
+
+    user_prompt = f"""ACȚIUNE CERUTĂ: {req.action} ({action_label})
 INCLUDE BULINE: {"Da" if req.style.bullets or req.action == "bullets" else "Opțional"}
 LUNGIME: {req.style.length}
 
-{pref_block}
+ADAPTĂRI ȘI PREFERINȚE UTILIZATOR:
+{adapt_section}
 
 DOCUMENT SELECTAT:
 {doc_wrapped}
@@ -223,6 +232,15 @@ Generează răspunsul JSON cu textul adaptat, expresiile cheie și notele pragma
 
     request_id = str(uuid.uuid4())
     provider_used = "llm"
+
+    # Contextual mock response matching action
+    mock_payload = dict(MOCK_EXT_RESPONSE)
+    if req.action == "shorter":
+        mock_payload["text"] = "Prezintă-te luni la 09:00 la recepția clădirii B și trimite formularul F-12 până miercuri, 28 octombrie."
+        mock_payload["bullets"] = [
+            "Mergi luni la 09:00 la recepția clădirii B.",
+            "Completează formularul F-12 până miercuri.",
+        ]
 
     try:
 
@@ -237,7 +255,7 @@ Generează răspunsul JSON cu textul adaptat, expresiile cheie și notele pragma
             system=SYSTEM_EXT_PROMPT,
             user=user_prompt,
             schema=ExtLLMPayload,
-            mock=MOCK_EXT_RESPONSE,
+            mock=mock_payload,
             prompt_version="2.0",
         )
         provider_used = "mock" if meta_dict.get("provider") == "mock" else "llm"
@@ -255,6 +273,13 @@ Generează răspunsul JSON cu textul adaptat, expresiile cheie și notele pragma
         det = extract_deterministic_highlights(raw_text)
         raw_key_phrases = [d["text"] for d in det]
         raw_notes = []
+
+    # Apply user custom repetitive decoration instructions (e.g. 'miau', word patterns)
+    if req.preference_text and req.preference_text.strip():
+        out_text = apply_custom_decorations(out_text, req.preference_text)
+        raw_bullets = [
+            apply_custom_decorations(b, req.preference_text) for b in raw_bullets
+        ]
 
     # 5. Grounding Checks (Section 5)
     # Rule 1: Every key_phrase must be an exact substring of text, otherwise dropped

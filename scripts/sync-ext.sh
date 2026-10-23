@@ -10,6 +10,7 @@ mkdir -p "$DEST"
 
 # 1. Copy web/a11y files
 cp web/a11y/settings.js "$DEST/"
+cp web/a11y/presets.js "$DEST/"
 cp web/a11y/highlight.js "$DEST/"
 cp web/a11y/tts.js "$DEST/"
 cp web/a11y/tts-normalize-ro.js "$DEST/"

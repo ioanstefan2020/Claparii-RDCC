@@ -105,6 +105,37 @@ def test_extension_adapt_success_basic():
     assert isinstance(metrics["readability_after"], (int, float))
 
 
+def test_extension_adapt_shorter_action():
+    sample_text = (
+        "Luni la 09:00 te prezinți la recepția clădirii B. "
+        "Până miercuri la 14:00 trimiți documentele completate către resurse umane."
+    )
+    response = client.post(
+        "/api/v1/extension/adapt",
+        headers=AUTH_HEADER,
+        json={"text": sample_text, "action": "shorter"},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data["text"]) > 0
+    assert "request_id" in data
+
+
+def test_extension_adapt_with_custom_word_preference():
+    sample_text = "Luni la 09:00 începe ședința de echipă."
+    response = client.post(
+        "/api/v1/extension/adapt",
+        headers=AUTH_HEADER,
+        json={
+            "text": sample_text,
+            "preference_text": "cuvantul miau dupa fiecare paragraf",
+        },
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert "miau" in data["text"].lower()
+
+
 def test_extension_adapt_prompt_injection_safety():
     """Ensure malicious prompt injection in preference_text does not leak system prompt or alter instructions."""
     sample_text = "Ședința săptămânală a echipei va avea loc joi la ora 10."

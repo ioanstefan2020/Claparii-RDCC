@@ -1,7 +1,7 @@
 /**
  * options.js - Full Settings & Onboarding Controller
  * Handles the 7 plain-language comfort questions, live preview,
- * free-text box, export/import JSON, and connection parameters.
+ * free-text box, export/import JSON, local storage sync, and connection parameters.
  */
 
 import { QUESTIONNAIRE_RO } from "../shared/prefs/questionnaire.js";
@@ -9,9 +9,13 @@ import { derivePrefs } from "../shared/prefs/derive.js";
 import { DEFAULT_ANSWERS } from "../shared/prefs/types.js";
 
 const DEFAULT_CONFIG = {
-  backendUrl: "http://localhost:8000",
+  backendUrl: "https://curves-relates-kenneth-pen.trycloudflare.com",
   token: "primazi-demo-2026",
-  siteOrigins: ["http://localhost:8000", "http://127.0.0.1:8000"],
+  siteOrigins: [
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "https://curves-relates-kenneth-pen.trycloudflare.com",
+  ],
   localOnly: false,
   disabledSites: [],
 };
@@ -30,22 +34,55 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function loadStoredData() {
   try {
-    const stored = await chrome.storage.local.get([
-      "wp.ext.prefs.v1",
-      "wp.ext.config",
-    ]);
-    const storedPrefs = stored["wp.ext.prefs.v1"] || {};
+    let storedPrefs = {};
+    if (
+      typeof chrome !== "undefined" &&
+      chrome.storage &&
+      chrome.storage.local
+    ) {
+      const stored = await chrome.storage.local.get([
+        "wp.ext.prefs.v1",
+        "wp.ext.config",
+      ]);
+      storedPrefs = stored["wp.ext.prefs.v1"] || {};
+      currentConfig = {
+        ...DEFAULT_CONFIG,
+        ...(stored["wp.ext.config"] || {}),
+      };
+    }
+
+    // Single source of truth / fallback sync with localStorage
+    let localFreeText = "";
+    let localAnswers = null;
+    let localPrefs = null;
+    try {
+      const userProfileRaw = localStorage.getItem("primazi_user_profile");
+      if (userProfileRaw) {
+        const up = JSON.parse(userProfileRaw);
+        if (up.needs_notes) localFreeText = up.needs_notes;
+      }
+
+      const extPrefsRaw =
+        localStorage.getItem("wp.ext.prefs.v1") ||
+        localStorage.getItem("wp.prefs.v1");
+      if (extPrefsRaw) {
+        const ep = JSON.parse(extPrefsRaw);
+        if (!localFreeText && ep.freeText) localFreeText = ep.freeText;
+        if (!localFreeText && ep.answers?.needs_notes)
+          localFreeText = ep.answers.needs_notes;
+        if (ep.answers) localAnswers = ep.answers;
+        if (ep.prefs) localPrefs = ep.prefs;
+      }
+    } catch (_) {}
 
     currentAnswers = {
       ...DEFAULT_ANSWERS,
+      ...(localAnswers || {}),
       ...(storedPrefs.answers || {}),
     };
-    currentPrefs = storedPrefs.prefs || derivePrefs(currentAnswers);
-    currentFreeText = storedPrefs.freeText || "";
-    currentConfig = {
-      ...DEFAULT_CONFIG,
-      ...(stored["wp.ext.config"] || {}),
-    };
+    currentPrefs =
+      storedPrefs.prefs || localPrefs || derivePrefs(currentAnswers);
+    currentFreeText = storedPrefs.freeText || localFreeText || "";
 
     // Populate form inputs
     const freeTextInput = document.getElementById("freeTextInput");
@@ -57,7 +94,7 @@ async function loadStoredData() {
     const backendUrlInput = document.getElementById("backendUrlInput");
     if (backendUrlInput) {
       backendUrlInput.value =
-        currentConfig.backendUrl || "http://localhost:8000";
+        currentConfig.backendUrl || DEFAULT_CONFIG.backendUrl;
     }
 
     const tokenInput = document.getElementById("tokenInput");
@@ -154,7 +191,7 @@ function renderQuestions() {
 function updateCharCount(text) {
   const counter = document.getElementById("charCount");
   if (counter) {
-    counter.textContent = `${(text || "").length} / 300`;
+    counter.textContent = `${(text || "").length} / 500`;
   }
 }
 
@@ -208,18 +245,18 @@ function setupEventListeners() {
   const freeTextInput = document.getElementById("freeTextInput");
   if (freeTextInput) {
     freeTextInput.addEventListener("input", (e) => {
-      currentFreeText = e.target.value.slice(0, 300);
+      currentFreeText = e.target.value.slice(0, 500);
       updateCharCount(currentFreeText);
     });
   }
 
-  // Save Settings directly into chrome.storage.local
+  // Save Settings directly into chrome.storage.local and localStorage
   const saveBtn = document.getElementById("saveBtn");
   if (saveBtn) {
     saveBtn.addEventListener("click", async () => {
       const backendUrl = (
         document.getElementById("backendUrlInput")?.value ||
-        "http://localhost:8000"
+        DEFAULT_CONFIG.backendUrl
       ).trim();
       const token = (
         document.getElementById("tokenInput")?.value || "primazi-demo-2026"
@@ -231,7 +268,7 @@ function setupEventListeners() {
       currentConfig.token = token;
       currentConfig.localOnly = localOnly;
 
-      // Update prefs
+      // Update prefs payload
       const payload = {
         version: 1,
         source: "extension_manual",
@@ -243,21 +280,64 @@ function setupEventListeners() {
       };
 
       try {
-        await chrome.storage.local.set({
-          "wp.ext.config": currentConfig,
-          "wp.ext.prefs.v1": payload,
-        });
+        // 1. Save to chrome.storage.local
+        if (
+          typeof chrome !== "undefined" &&
+          chrome.storage &&
+          chrome.storage.local
+        ) {
+          await chrome.storage.local.set({
+            "wp.ext.config": currentConfig,
+            "wp.ext.prefs.v1": payload,
+          });
+        }
+
+        // 2. Save persistently to localStorage for single source of truth
+        try {
+          localStorage.setItem("wp.ext.prefs.v1", JSON.stringify(payload));
+          localStorage.setItem("wp.prefs.v1", JSON.stringify(payload));
+          localStorage.setItem(
+            "primazi_user_profile",
+            JSON.stringify({
+              needs_notes: currentFreeText,
+              reading_level: currentPrefs.reading_level || "simple",
+              format: currentPrefs.format || "steps",
+              updated_at: new Date().toISOString(),
+            }),
+          );
+        } catch (_) {}
 
         showToast(
-          "✓ Toate preferințele și conexiunea au fost salvate cu succes!",
+          "✓ Toate preferințele au fost salvate cu succes! Se revine la pagina de lucru...",
         );
 
         try {
-          chrome.runtime.sendMessage({
-            type: "PREFS_SET",
-            prefs: payload,
-          });
+          if (typeof chrome !== "undefined" && chrome.runtime) {
+            chrome.runtime.sendMessage({
+              type: "PREFS_SET",
+              prefs: payload,
+            });
+          }
         } catch (_) {}
+
+        // 3. Smoothly close the settings tab to return seamlessly to previous tab
+        setTimeout(() => {
+          if (
+            typeof chrome !== "undefined" &&
+            chrome.tabs &&
+            chrome.tabs.getCurrent
+          ) {
+            chrome.tabs.getCurrent((tab) => {
+              if (tab && tab.id) {
+                chrome.tabs.remove(tab.id);
+              } else {
+                window.close();
+              }
+            });
+          } else {
+            window.close();
+          }
+        }, 450);
       } catch (err) {
         console.error("Save error:", err);
         showToast("❌ Eroare la salvarea setărilor în memorie.");
@@ -321,17 +401,36 @@ function setupEventListeners() {
           updateLivePreview();
 
           // Auto-persist imported configuration
-          await chrome.storage.local.set({
-            "wp.ext.config": currentConfig,
-            "wp.ext.prefs.v1": {
-              version: 1,
-              source: "imported",
-              updatedAt: new Date().toISOString(),
-              answers: currentAnswers,
-              prefs: currentPrefs,
-              freeText: currentFreeText,
-            },
-          });
+          const payload = {
+            version: 1,
+            source: "imported",
+            updatedAt: new Date().toISOString(),
+            answers: currentAnswers,
+            prefs: currentPrefs,
+            freeText: currentFreeText,
+          };
+
+          if (
+            typeof chrome !== "undefined" &&
+            chrome.storage &&
+            chrome.storage.local
+          ) {
+            await chrome.storage.local.set({
+              "wp.ext.config": currentConfig,
+              "wp.ext.prefs.v1": payload,
+            });
+          }
+
+          try {
+            localStorage.setItem("wp.ext.prefs.v1", JSON.stringify(payload));
+            localStorage.setItem(
+              "primazi_user_profile",
+              JSON.stringify({
+                needs_notes: currentFreeText,
+                updated_at: new Date().toISOString(),
+              }),
+            );
+          } catch (_) {}
 
           showToast("✓ Setările au fost importate și salvate cu succes!");
         } catch (err) {
@@ -356,17 +455,31 @@ function setupEventListeners() {
         currentFreeText = "";
         currentConfig = { ...DEFAULT_CONFIG };
 
-        await chrome.storage.local.set({
-          "wp.ext.config": currentConfig,
-          "wp.ext.prefs.v1": {
-            version: 1,
-            source: "default",
-            updatedAt: new Date().toISOString(),
-            answers: currentAnswers,
-            prefs: currentPrefs,
-            freeText: "",
-          },
-        });
+        const payload = {
+          version: 1,
+          source: "default",
+          updatedAt: new Date().toISOString(),
+          answers: currentAnswers,
+          prefs: currentPrefs,
+          freeText: "",
+        };
+
+        if (
+          typeof chrome !== "undefined" &&
+          chrome.storage &&
+          chrome.storage.local
+        ) {
+          await chrome.storage.local.set({
+            "wp.ext.config": currentConfig,
+            "wp.ext.prefs.v1": payload,
+          });
+        }
+
+        try {
+          localStorage.removeItem("wp.ext.prefs.v1");
+          localStorage.removeItem("wp.prefs.v1");
+          localStorage.removeItem("primazi_user_profile");
+        } catch (_) {}
 
         renderQuestions();
         if (freeTextInput) freeTextInput.value = "";

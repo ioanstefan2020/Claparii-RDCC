@@ -11,6 +11,7 @@
  */
 
 import { normalizeRomanianForSpeech } from "../shared/tts-normalize-ro.js";
+import { splitSentencesRo } from "../shared/tts.js";
 import { adaptLocally, extractKeyPhrases } from "./local_mode.js";
 
 const CARD_STYLES = `
@@ -95,6 +96,11 @@ const CARD_STYLES = `
     to { opacity: 1; transform: scale(1); }
   }
 
+  @keyframes primaziPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
+  }
+
   /* Theme overrides */
   .primazi-card.theme-dark {
     background: #0f172a;
@@ -121,8 +127,7 @@ const CARD_STYLES = `
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     background: rgba(13, 148, 136, 0.06);
   }
-  .primazi-card.theme-dark .primazi-header,
-  .primazi-card.theme-high-contrast .primazi-header {
+  .primazi-card.theme-dark .primazi-header,\n  .primazi-card.theme-high-contrast .primazi-header {
     border-bottom: 1px solid currentColor;
     background: transparent;
   }
@@ -149,6 +154,11 @@ const CARD_STYLES = `
     background: #e2e8f0;
     color: #475569;
     border: 1px solid #cbd5e1;
+  }
+  .primazi-badge.loading {
+    background: #0284c7;
+    color: #ffffff;
+    animation: primaziPulse 1.4s infinite;
   }
   .primazi-card.theme-high-contrast .primazi-badge {
     background: #000000;
@@ -350,6 +360,7 @@ export class CardManager {
     this.hostElement = null;
     this.floatingBtn = null;
     this.overlay = null;
+    this.bodyContainer = null;
     this.lastActiveElement = null;
     this.currentData = null;
     this.originalText = "";
@@ -357,6 +368,9 @@ export class CardManager {
     this.viewMode = "text"; // "text" | "bullets" | "shorter"
     this.isSpeaking = false;
     this.currentUtterance = null;
+    this.ttsSentences = [];
+    this.ttsIndex = 0;
+    this.ttsBtn = null;
     this.userPrefs = {};
 
     this.initShadowHost();
@@ -455,20 +469,14 @@ export class CardManager {
   }
 
   /**
-   * Renders the accessible dialog card with result data
+   * Shows immediate loading card so the user sees instant feedback.
    */
-  showCard(data, originalText) {
+  showLoadingCard(selectedText) {
     this.hideFloatingButton();
     this.closeCard();
 
-    this.currentData = data;
-    this.originalText = originalText || this.originalText;
+    this.originalText = selectedText || this.originalText;
     this.lastActiveElement = document.activeElement;
-    this.showingOriginal = false;
-    this.viewMode =
-      data.bullets && data.bullets.length > 0 && !data.text
-        ? "bullets"
-        : "text";
 
     const overlay = document.createElement("div");
     overlay.className = "primazi-overlay";
@@ -480,7 +488,126 @@ export class CardManager {
     card.setAttribute("aria-labelledby", "primazi-card-title");
 
     // Apply visual preferences
-    const p = this.userPrefs.prefs || {};
+    const p = this.userPrefs?.prefs || {};
+    if (p.theme === "dark" || p.theme === "soft_dark") {
+      card.classList.add("theme-dark");
+    } else if (p.theme === "high_contrast") {
+      card.classList.add("theme-high-contrast");
+    }
+    if (p.font_scale) {
+      card.style.fontSize = `${16 * Number(p.font_scale)}px`;
+    }
+
+    const header = document.createElement("header");
+    header.className = "primazi-header";
+
+    const titleRow = document.createElement("div");
+    titleRow.className = "primazi-title-row";
+
+    const title = document.createElement("h2");
+    title.id = "primazi-card-title";
+    title.className = "primazi-title";
+    title.textContent = "PrimaZi Claritate";
+
+    const badge = document.createElement("span");
+    badge.className = "primazi-badge loading";
+    badge.textContent = "Se adaptează...";
+
+    titleRow.appendChild(title);
+    titleRow.appendChild(badge);
+
+    const closeBtn = document.createElement("button");
+    closeBtn.className = "primazi-btn-close";
+    closeBtn.setAttribute("type", "button");
+    closeBtn.setAttribute("aria-label", "Închide dialogul (Esc)");
+    closeBtn.textContent = "✕";
+    closeBtn.addEventListener("click", () => this.closeCard());
+
+    header.appendChild(titleRow);
+    header.appendChild(closeBtn);
+
+    const bodyContainer = document.createElement("div");
+    bodyContainer.className = "primazi-body";
+
+    const loadingText = document.createElement("p");
+    loadingText.className = "primazi-text";
+    loadingText.style.fontStyle = "italic";
+    loadingText.textContent =
+      "✨ Se adaptează textul conform profilului tău de confort...";
+    bodyContainer.appendChild(loadingText);
+
+    const footer = document.createElement("footer");
+    footer.className = "primazi-footer";
+    const disclaimer = document.createElement("span");
+    disclaimer.textContent = "Procesare text cu asistență de accesibilitate...";
+    footer.appendChild(disclaimer);
+
+    card.appendChild(header);
+    card.appendChild(bodyContainer);
+    card.appendChild(footer);
+    overlay.appendChild(card);
+
+    const keyHandler = (e) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        this.closeCard();
+      }
+    };
+    this.overlayKeyHandler = keyHandler;
+    window.addEventListener("keydown", keyHandler);
+
+    this.shadowRoot.appendChild(overlay);
+    this.overlay = overlay;
+    this.announce("Se adaptează textul...");
+  }
+
+  /**
+   * Updates shorter text in-place when received asynchronously.
+   */
+  updateShorterData(data) {
+    if (!this.currentData) this.currentData = {};
+    if (data && data.text) {
+      this.currentData.shorterText = data.text;
+      if (data.key_phrases?.length) {
+        this.currentData.shorterKeyPhrases = data.key_phrases;
+      }
+      if (this.viewMode === "shorter" && this.bodyContainer) {
+        this.renderBodyContent(this.bodyContainer);
+      }
+    }
+  }
+
+  /**
+   * Renders the accessible dialog card with result data
+   */
+  showCard(data, originalText, initialMode = "text") {
+    this.hideFloatingButton();
+    this.closeCard();
+
+    this.currentData = data;
+    this.originalText = originalText || this.originalText;
+    this.lastActiveElement = document.activeElement;
+    this.showingOriginal = false;
+    this.viewMode =
+      initialMode === "shorter"
+        ? "shorter"
+        : initialMode === "bullets"
+          ? "bullets"
+          : data.bullets && data.bullets.length > 0 && !data.text
+            ? "bullets"
+            : "text";
+
+    const overlay = document.createElement("div");
+    overlay.className = "primazi-overlay";
+
+    const card = document.createElement("div");
+    card.className = "primazi-card";
+    card.setAttribute("role", "dialog");
+    card.setAttribute("aria-modal", "true");
+    card.setAttribute("aria-labelledby", "primazi-card-title");
+
+    // Apply visual preferences
+    const p = this.userPrefs?.prefs || {};
     if (p.theme === "dark" || p.theme === "soft_dark") {
       card.classList.add("theme-dark");
     } else if (p.theme === "high_contrast") {
@@ -535,7 +662,7 @@ export class CardManager {
 
     // Bullets Button
     const bulletsBtn = document.createElement("button");
-    bulletsBtn.className = "primazi-btn";
+    bulletsBtn.className = `primazi-btn ${this.viewMode === "bullets" ? "active" : ""}`;
     bulletsBtn.setAttribute("type", "button");
     bulletsBtn.textContent = "• Buline";
     bulletsBtn.addEventListener("click", () => {
@@ -543,6 +670,8 @@ export class CardManager {
       bulletsBtn.classList.toggle("active", this.viewMode === "bullets");
       if (this.viewMode === "bullets") {
         shorterBtn.classList.remove("active");
+        origBtn.classList.remove("active");
+        this.showingOriginal = false;
       }
       this.renderBodyContent(bodyContainer);
       this.announce(
@@ -553,9 +682,9 @@ export class CardManager {
     });
     actions.appendChild(bulletsBtn);
 
-    // Shorter Button (toggles compressed view instantly!)
+    // Shorter Button (toggles compressed view smoothly without dialog recreation!)
     const shorterBtn = document.createElement("button");
-    shorterBtn.className = "primazi-btn";
+    shorterBtn.className = `primazi-btn ${this.viewMode === "shorter" ? "active" : ""}`;
     shorterBtn.setAttribute("type", "button");
     shorterBtn.textContent = "✂️ Mai scurt";
     shorterBtn.addEventListener("click", () => {
@@ -563,6 +692,23 @@ export class CardManager {
       shorterBtn.classList.toggle("active", this.viewMode === "shorter");
       if (this.viewMode === "shorter") {
         bulletsBtn.classList.remove("active");
+        origBtn.classList.remove("active");
+        this.showingOriginal = false;
+
+        // Provide instantaneous shorter text if not yet loaded
+        if (!this.currentData.shorterText) {
+          const localShorter = adaptLocally(this.originalText, "shorter");
+          this.currentData.shorterText = localShorter.text;
+          this.currentData.shorterKeyPhrases = localShorter.key_phrases;
+
+          if (this.onActionCallback) {
+            this.onActionCallback(
+              "adapt_in_place",
+              this.originalText,
+              "shorter",
+            );
+          }
+        }
       }
       this.renderBodyContent(bodyContainer);
       this.announce(
@@ -570,10 +716,6 @@ export class CardManager {
           ? "Afișat în format mai scurt și comprimat."
           : "Afișat ca text continuu.",
       );
-
-      if (this.onActionCallback && this.viewMode === "shorter") {
-        this.onActionCallback("adapt", this.originalText, "shorter");
-      }
     });
     actions.appendChild(shorterBtn);
 
@@ -629,6 +771,7 @@ export class CardManager {
     // 3. Body
     const bodyContainer = document.createElement("div");
     bodyContainer.className = "primazi-body";
+    this.bodyContainer = bodyContainer;
     this.renderBodyContent(bodyContainer);
 
     // 4. Footer
@@ -704,9 +847,11 @@ export class CardManager {
       p.className = "primazi-text";
       const shorterText =
         data.shorterText || adaptLocally(this.originalText, "shorter").text;
-      const keyPhrases = data.key_phrases?.length
-        ? data.key_phrases
-        : extractKeyPhrases(shorterText);
+      const keyPhrases = data.shorterKeyPhrases?.length
+        ? data.shorterKeyPhrases
+        : data.key_phrases?.length
+          ? data.key_phrases
+          : extractKeyPhrases(shorterText);
       this.renderTextWithHighlights(p, shorterText, keyPhrases);
       container.appendChild(p);
     } else if (
@@ -814,25 +959,22 @@ export class CardManager {
     const first = focusable[0];
     const last = focusable[focusable.length - 1];
 
-    if (e.shiftKey && document.activeElement === first) {
+    const activeEl = this.shadowRoot?.activeElement || document.activeElement;
+    if (e.shiftKey && activeEl === first) {
       last.focus();
       e.preventDefault();
-    } else if (!e.shiftKey && document.activeElement === last) {
+    } else if (!e.shiftKey && activeEl === last) {
       first.focus();
       e.preventDefault();
     }
   }
 
   /**
-   * Reliable Romanian speech synthesis with cross-platform fallback
+   * Natural sentence-by-sentence Romanian TTS with reliable speech synthesis
    */
   toggleReadAloud(btn) {
     if (this.isSpeaking) {
-      if (typeof window !== "undefined" && window.speechSynthesis) {
-        window.speechSynthesis.cancel();
-      }
-      this.isSpeaking = false;
-      btn.textContent = "🔊 Ascultă";
+      this.stopReadAloud(btn);
       this.announce("Redarea vocală a fost oprită.");
       return;
     }
@@ -860,69 +1002,97 @@ export class CardManager {
 
     if (!textToRead) return;
 
-    // Normalise Romanian spoken numbers, dates, codes
-    const normalized = normalizeRomanianForSpeech(textToRead);
-    const utterance = new SpeechSynthesisUtterance(normalized);
-    utterance.rate = Number(this.userPrefs.prefs?.speech_rate) || 1.0;
+    const sentences = splitSentencesRo(textToRead);
+    if (!sentences.length) return;
 
-    // Retrieve voices
-    const voices = window.speechSynthesis.getVoices() || [];
-    const roVoice = voices.find(
-      (v) =>
-        v.lang.startsWith("ro") ||
-        v.name.toLowerCase().includes("romanian") ||
-        v.name.toLowerCase().includes("alina") ||
-        v.name.toLowerCase().includes("emil"),
-    );
+    this.isSpeaking = true;
+    this.ttsIndex = 0;
+    this.ttsSentences = sentences;
+    this.ttsBtn = btn;
+    btn.textContent = "⏹️ Oprește";
+    btn.classList.add("active");
 
-    if (roVoice) {
-      utterance.voice = roVoice;
-      utterance.lang = roVoice.lang;
-    } else {
-      // Fallback: pick default voice
-      const defaultVoice = voices.find((v) => v.default) || voices[0];
-      if (defaultVoice) {
-        utterance.voice = defaultVoice;
-        utterance.lang = defaultVoice.lang;
-      }
-    }
-
-    utterance.onstart = () => {
-      this.isSpeaking = true;
-      btn.textContent = "⏹️ Oprește";
-    };
-
-    utterance.onend = () => {
-      this.isSpeaking = false;
-      btn.textContent = "🔊 Ascultă";
-    };
-
-    utterance.onerror = (e) => {
-      console.warn("SpeechSynthesis error:", e);
-      this.isSpeaking = false;
-      btn.textContent = "🔊 Ascultă";
-    };
-
-    // Chrome bug prevention: cancel, unpause, and speak after 50ms tick
-    window.speechSynthesis.cancel();
-    if (window.speechSynthesis.paused) {
-      window.speechSynthesis.resume();
-    }
-
-    setTimeout(() => {
-      window.speechSynthesis.speak(utterance);
-    }, 50);
-
+    this.playNextTtsSentence();
     this.announce("Se citește textul cu voce tare.");
   }
 
-  closeCard() {
-    if (this.isSpeaking) {
-      if (typeof window !== "undefined" && window.speechSynthesis) {
-        window.speechSynthesis.cancel();
-      }
-      this.isSpeaking = false;
+  playNextTtsSentence() {
+    if (!this.isSpeaking || !window.speechSynthesis) return;
+
+    if (this.ttsIndex >= this.ttsSentences.length) {
+      this.stopReadAloud(this.ttsBtn);
+      return;
     }
+
+    const raw = this.ttsSentences[this.ttsIndex];
+    const normalized = normalizeRomanianForSpeech(raw);
+
+    const utt = new SpeechSynthesisUtterance(normalized);
+    utt.rate = Number(this.userPrefs?.prefs?.speech_rate) || 0.95;
+
+    // Pick voice
+    const voices = window.speechSynthesis.getVoices() || [];
+    const roVoice = voices.find(
+      (v) =>
+        (v.lang && (v.lang === "ro-RO" || v.lang.startsWith("ro"))) ||
+        /romanian|alina|emil/i.test(v.name),
+    );
+
+    if (roVoice) {
+      utt.voice = roVoice;
+      utt.lang = roVoice.lang;
+    } else {
+      utt.lang = "ro-RO";
+      const defaultVoice = voices.find((v) => v.default);
+      if (defaultVoice) utt.voice = defaultVoice;
+    }
+
+    utt.onend = () => {
+      if (this.isSpeaking) {
+        this.ttsIndex++;
+        setTimeout(() => this.playNextTtsSentence(), 200);
+      }
+    };
+
+    utt.onerror = (e) => {
+      if (e.error !== "canceled" && e.error !== "interrupted") {
+        console.warn("TTS sentence error:", e);
+        if (this.isSpeaking) {
+          this.ttsIndex++;
+          this.playNextTtsSentence();
+        }
+      }
+    };
+
+    this.currentUtterance = utt;
+    try {
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(utt);
+    } catch (err) {
+      console.warn("speechSynthesis speak failed:", err);
+      this.stopReadAloud(this.ttsBtn);
+    }
+  }
+
+  stopReadAloud(btn) {
+    this.isSpeaking = false;
+    this.currentUtterance = null;
+    this.ttsSentences = [];
+    this.ttsIndex = 0;
+    if (typeof window !== "undefined" && window.speechSynthesis) {
+      try {
+        window.speechSynthesis.cancel();
+      } catch (_) {}
+    }
+    const b = btn || this.ttsBtn;
+    if (b) {
+      b.textContent = "🔊 Ascultă";
+      b.classList.remove("active");
+    }
+  }
+
+  closeCard() {
+    this.stopReadAloud();
     if (this.overlayKeyHandler) {
       window.removeEventListener("keydown", this.overlayKeyHandler);
       this.overlayKeyHandler = null;
@@ -931,6 +1101,7 @@ export class CardManager {
       this.overlay.remove();
       this.overlay = null;
     }
+    this.bodyContainer = null;
     if (
       this.lastActiveElement &&
       typeof this.lastActiveElement.focus === "function"
