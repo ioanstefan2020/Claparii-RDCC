@@ -4,5 +4,4 @@ node_modules/
 .venv/
 *.log
 .cache/
-extension/dist/
-*.zip
+clar-extension.zip
