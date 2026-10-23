@@ -7,6 +7,9 @@
  * - Tactile Mobile Controller (#blind-mobile-controller):
  *   3 giant round touch buttons (Anterior ◀, Selectează ✔, Următor ▶) with haptics
  * - Direct topbar "🕶️ Mod Orb" button for instant one-tap mobile access
+ * - Streamlined Blind Navigation: skips all navigation chrome (sidebar, topbar, footer)
+ *   so users only cycle through vital workflow elements:
+ *   [Adaugă document] -> [Text / Întrebare] -> [Trimite] -> [Rezultat / Ascultă rezumat]
  * - "Audio: Citește" button: Assisted Voiceover Mode WITHOUT black screen
  *   (for low-vision users navigating with mouse or keyboard)
  * - Speaks element role, accessible label, and content in Romanian on:
@@ -216,7 +219,7 @@ export function toggleBlindMode(forceState) {
     updateBlindButtons(true);
     updateVoiceoverButtons(true);
 
-    // Initial focus on first interactive element
+    // Initial focus on first interactive task element (excluding navbar/sidebar)
     setTimeout(() => {
       const focusables = getFocusableElements();
       if (focusables.length > 0) {
@@ -301,20 +304,88 @@ function announceLive(msg) {
 
 /**
  * Returns meaningful focusable elements, excluding the controller itself.
+ * In Blind Mode, prioritizes main workflow elements and filters out redundant navigation chrome.
  */
 function getFocusableElements() {
   if (typeof document === "undefined") return [];
-  return Array.from(
-    document.querySelectorAll(
-      'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
-    ),
-  ).filter((el) => {
+
+  // When blind mode is active, focus exclusively on the core task elements in the main landmark
+  const selector = isBlindActive
+    ? 'main button:not([disabled]), main input:not([disabled]), main textarea:not([disabled]), main select:not([disabled]), main a[href], main [tabindex]:not([tabindex="-1"]), main [role="button"], #btn-capsule-attach, #home-file-input, #home-input-text, #home-prompt-input, #btn-home-execute, #btn-capsule-submit, #btn-clarify, #btn-load-sample, #file-upload, #doc-text, #btn-tts-toggle, #btn-home-tts, #btn-home-copy, #home-results-section .result-card, #results-section article, [data-blind-focusable="true"]'
+    : 'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+  const raw = Array.from(document.querySelectorAll(selector));
+
+  const filtered = raw.filter((el) => {
     if (el.closest("#blind-mobile-controller")) return false;
     if (el.closest("[aria-hidden='true']") && el.id !== "blind-curtain")
       return false;
     if (el.id === "btn-controller-exit") return false;
+
+    // Filter out invisible elements or hidden parents
+    if (
+      el.offsetParent === null &&
+      el.offsetWidth === 0 &&
+      el.offsetHeight === 0
+    ) {
+      return false;
+    }
+    if (
+      el.closest("[style*='display: none']") ||
+      el.closest("[style*='display:none']")
+    ) {
+      return false;
+    }
+
+    // In Blind Mode: exclude secondary navigation chrome and non-essential tools
+    if (isBlindActive) {
+      if (
+        el.closest(
+          "nav:not(#blind-mobile-controller), aside, .app-sidebar, #app-sidebar, .sidebar, .app-topbar, .site-header, .site-footer, .app-footer, .a11y-header-toolbar, .a11y-toolbar, .gemini-theme-picker, .btn-comfort, .skip-link, .topbar-right, .topbar-left",
+        )
+      ) {
+        return false;
+      }
+      if (
+        el.id === "btn-menu-toggle" ||
+        el.id === "btn-sidebar-collapse" ||
+        el.id === "btn-header-a11y-menu" ||
+        el.id === "btn-topbar-blind-mobile" ||
+        el.id === "btn-capsule-clear" ||
+        el.id === "btn-home-clear-text"
+      ) {
+        return false;
+      }
+      // Skip secondary post-result transformation buttons (keep Ascultă and Copiază)
+      if (
+        el.id === "btn-action-shorter" ||
+        el.id === "btn-action-bullets" ||
+        el.id === "btn-action-steps" ||
+        el.id === "btn-action-easyread" ||
+        el.id === "btn-action-plan"
+      ) {
+        return false;
+      }
+    }
+
     return true;
   });
+
+  // Fallback if main was empty
+  if (isBlindActive && filtered.length === 0) {
+    return Array.from(
+      document.querySelectorAll(
+        "main button:not([disabled]), main input:not([disabled]), main textarea:not([disabled]), button:not([disabled]), textarea:not([disabled])",
+      ),
+    ).filter(
+      (el) =>
+        !el.closest("#blind-mobile-controller") &&
+        el.id !== "btn-controller-exit" &&
+        !el.closest("aside, nav, header, footer"),
+    );
+  }
+
+  return filtered;
 }
 
 /**
@@ -591,6 +662,49 @@ export function initBlindMode() {
       toggleVoiceover();
     }
   });
+
+  // 7. Auto-announce when results are generated while in blind mode
+  if (
+    typeof MutationObserver !== "undefined" &&
+    typeof document !== "undefined"
+  ) {
+    let resultAnnounced = false;
+    const observer = new MutationObserver(() => {
+      if (!isBlindActive) {
+        resultAnnounced = false;
+        return;
+      }
+      const resHome = document.getElementById("home-results-section");
+      const resClarify = document.getElementById("results-section");
+      const isVisible =
+        (resHome && resHome.style.display !== "none") ||
+        (resClarify && resClarify.style.display !== "none");
+
+      if (isVisible && !resultAnnounced) {
+        resultAnnounced = true;
+        voiceEngine.speak(
+          "Rezultatele au fost generate cu succes. Apăsați Următor pentru a asculta rezumatul.",
+        );
+        const focusables = getFocusableElements();
+        const ttsBtn = focusables.find(
+          (el) => el.id === "btn-home-tts" || el.id === "btn-tts-toggle",
+        );
+        if (ttsBtn) {
+          lastSelectedFocusTarget = ttsBtn;
+        }
+      } else if (!isVisible) {
+        resultAnnounced = false;
+      }
+    });
+
+    try {
+      observer.observe(document.body, {
+        attributes: true,
+        subtree: true,
+        attributeFilter: ["style", "class"],
+      });
+    } catch (_) {}
+  }
 
   // Initial UI button sync
   updateBlindButtons(isBlindActive);

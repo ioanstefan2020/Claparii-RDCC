@@ -4112,3 +4112,36 @@ mark.quote-highlight {
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+
+/* ================================================== */
+/* Streamlined Blind Mode Layout                     */
+/* Removes navigation chrome and focuses on core task */
+/* ================================================== */
+[data-blind-mode="active"] .app-sidebar,
+[data-blind-mode="active"] #app-sidebar,
+[data-blind-mode="active"] .sidebar-backdrop,
+[data-blind-mode="active"] .app-topbar,
+[data-blind-mode="active"] .site-header,
+[data-blind-mode="active"] .a11y-header-toolbar,
+[data-blind-mode="active"] .a11y-toolbar,
+[data-blind-mode="active"] .app-footer,
+[data-blind-mode="active"] .site-footer,
+[data-blind-mode="active"] .skip-link,
+[data-blind-mode="active"] .btn-menu-toggle,
+[data-blind-mode="active"] .btn-sidebar-toggle,
+[data-blind-mode="active"] .capsule-right,
+[data-blind-mode="active"] .results-actions .action-bar-btn:not(#btn-home-tts):not(#btn-home-copy):not(#btn-tts-toggle):not(#btn-download-ics):not(#btn-meeting-tts) {
+  display: none !important;
+}
+
+[data-blind-mode="active"] .app-main-area {
+  margin-left: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  padding-bottom: 140px !important;
+}
+
+[data-blind-mode="active"] .gemini-hero-container,
+[data-blind-mode="active"] .clarify-grid {
+  padding-bottom: 100px !important;
+}

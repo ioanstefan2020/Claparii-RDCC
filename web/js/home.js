@@ -387,7 +387,7 @@ export function renderSimplifyResult(data, meta = {}) {
   }
 
   html += `
-    <div class="result-card">
+    <div class="result-card" tabindex="0" role="region" aria-label="Rezumatul documentului">
       <h3 class="result-subtitle">Rezumatul documentului</h3>
       <p class="result-summary-text">${formatTextWithHighlights(data.summary, data.key_terms, needsProminence)}</p>
     </div>
