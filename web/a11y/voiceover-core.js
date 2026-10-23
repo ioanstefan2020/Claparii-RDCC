@@ -9,7 +9,10 @@
  * - Normalizes numbers and abbreviations for speech via tts-normalize-ro.js
  */
 
-import { normalizeRomanianForSpeech, numberToWordsRo } from "./tts-normalize-ro.js";
+import {
+  normalizeRomanianForSpeech,
+  numberToWordsRo,
+} from "./tts-normalize-ro.js";
 
 const ROLE_NAMES_RO = {
   button: "Buton",
@@ -57,12 +60,16 @@ export function getElementRoleRo(el) {
   const tag = el.tagName.toLowerCase();
 
   if (tag === "button") return { role: "Buton" };
-  if (tag === "a" && (el.hasAttribute("href") || el.getAttribute("role") === "link")) {
+  if (
+    tag === "a" &&
+    (el.hasAttribute("href") || el.getAttribute("role") === "link")
+  ) {
     return { role: "Link" };
   }
   if (tag === "input") {
     const type = (el.getAttribute("type") || "text").toLowerCase();
-    if (type === "button" || type === "submit" || type === "reset") return { role: "Buton" };
+    if (type === "button" || type === "submit" || type === "reset")
+      return { role: "Buton" };
     if (type === "checkbox") return { role: "Bifă" };
     if (type === "radio") return { role: "Opțiune radio" };
     if (type === "range") return { role: "Glisor" };
@@ -94,13 +101,17 @@ export function getAccessibleLabel(el) {
   if (!el || typeof el !== "object") return "";
 
   // 1. aria-labelledby
-  const labelledBy = el.getAttribute ? el.getAttribute("aria-labelledby") : null;
+  const labelledBy = el.getAttribute
+    ? el.getAttribute("aria-labelledby")
+    : null;
   if (labelledBy && typeof document !== "undefined") {
     const ids = labelledBy.split(/\s+/).filter(Boolean);
     const texts = ids
-      .map(id => {
+      .map((id) => {
         const target = document.getElementById(id);
-        return target ? (target.innerText || target.textContent || "").trim() : "";
+        return target
+          ? (target.innerText || target.textContent || "").trim()
+          : "";
       })
       .filter(Boolean);
     if (texts.length > 0) return texts.join(" ");
@@ -115,9 +126,15 @@ export function getAccessibleLabel(el) {
   // 3. For form elements: linked <label for="..."> or wrapping <label>
   if (el.id && typeof document !== "undefined") {
     try {
-      const explicitLabel = document.querySelector(`label[for="${CSS.escape(el.id)}"]`);
+      const explicitLabel = document.querySelector(
+        `label[for="${CSS.escape(el.id)}"]`,
+      );
       if (explicitLabel) {
-        const text = (explicitLabel.innerText || explicitLabel.textContent || "").trim();
+        const text = (
+          explicitLabel.innerText ||
+          explicitLabel.textContent ||
+          ""
+        ).trim();
         if (text) return text;
       }
     } catch (_) {}
@@ -128,7 +145,7 @@ export function getAccessibleLabel(el) {
       // Clone label and remove this input to avoid duplication
       const clone = parentLabel.cloneNode(true);
       const inputs = clone.querySelectorAll("input, select, textarea, button");
-      inputs.forEach(i => i.remove());
+      inputs.forEach((i) => i.remove());
       const text = (clone.innerText || clone.textContent || "").trim();
       if (text) return text;
     }
@@ -146,7 +163,21 @@ export function getAccessibleLabel(el) {
 
   // 6. Direct text content for interactive buttons/links
   const tag = (el.tagName || "").toLowerCase();
-  if (["button", "a", "h1", "h2", "h3", "h4", "h5", "h6", "summary", "legend"].includes(tag) || el.getAttribute?.("role") === "button") {
+  if (
+    [
+      "button",
+      "a",
+      "h1",
+      "h2",
+      "h3",
+      "h4",
+      "h5",
+      "h6",
+      "summary",
+      "legend",
+    ].includes(tag) ||
+    el.getAttribute?.("role") === "button"
+  ) {
     const text = (el.innerText || el.textContent || "").trim();
     if (text) return text;
   }
@@ -169,7 +200,11 @@ export function getElementStateRo(el) {
   const states = [];
 
   const type = (el.getAttribute("type") || "").toLowerCase();
-  if (type === "checkbox" || el.getAttribute("role") === "checkbox" || el.getAttribute("role") === "switch") {
+  if (
+    type === "checkbox" ||
+    el.getAttribute("role") === "checkbox" ||
+    el.getAttribute("role") === "switch"
+  ) {
     if (el.checked || el.getAttribute("aria-checked") === "true") {
       states.push("bifat");
     } else {
@@ -191,7 +226,8 @@ export function getElementStateRo(el) {
 
   if (el.getAttribute("aria-selected") === "true") states.push("selectat");
 
-  if (el.disabled || el.getAttribute("aria-disabled") === "true") states.push("indisponibil");
+  if (el.disabled || el.getAttribute("aria-disabled") === "true")
+    states.push("indisponibil");
   if (el.getAttribute("aria-invalid") === "true") states.push("conține erori");
 
   return states;
@@ -266,9 +302,11 @@ export function scoreVoice(voice) {
   }
 
   // Romanian voice scoring:
+  // Heavily penalize robotic local synthesizers (eSpeak, mbrola, etc.)
+  if (/espeak|compact|festival|mbrola|klatt/i.test(name)) return 25;
+
   if (/natural|online/i.test(name)) return 100;
   if (/alina|emil/i.test(name)) return 95;
   if (/google|microsoft/i.test(name)) return 90;
-  if (voice.localService) return 85;
   return 80;
 }

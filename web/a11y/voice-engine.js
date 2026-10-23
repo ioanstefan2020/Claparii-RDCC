@@ -19,7 +19,7 @@ class VoiceEngine {
     this.cachedVoice = null;
     this.isUnlocked = false;
     this.enabled = true;
-    this.rate = 1.0;
+    this.rate = 0.92;
     this.pitch = 1.0;
     this.volume = 1.0;
 

@@ -4,17 +4,21 @@
  *
  * Features:
  * - F9 hotkey: Blind Mode with pitch-black screen curtain (#blind-curtain)
+ * - Tactile Mobile Controller (#blind-mobile-controller):
+ *   3 giant round touch buttons (Anterior ◀, Selectează ✔, Următor ▶) with haptics
+ * - Direct topbar "🕶️ Mod Orb" button for instant one-tap mobile access
  * - "Audio: Citește" button: Assisted Voiceover Mode WITHOUT black screen
- *   (ideal for low-vision users navigating with mouse or keyboard)
+ *   (for low-vision users navigating with mouse or keyboard)
  * - Speaks element role, accessible label, and content in Romanian on:
  *   - Keyboard focus (Tab, Shift+Tab, Arrows)
  *   - Mouse hover & mouse click (with responsive debounce)
- *   - Mobile touch swipe (left/right)
+ *   - Tactile mobile controller buttons & touch swipes
  * - Emergency exit: F9 or Escape stops speech immediately
  * - Full state synchronization with header toolbar buttons
  */
 
 import { voiceEngine } from "./voice-engine.js";
+import { formatElementAnnouncementRo } from "./voiceover-core.js";
 
 const BLIND_STORAGE_KEY = "limpede_blind_mode";
 const VOICEOVER_STORAGE_KEY = "limpede_voiceover_active";
@@ -22,8 +26,21 @@ const VOICEOVER_STORAGE_KEY = "limpede_voiceover_active";
 let isBlindActive = false;
 let _voiceoverState = false;
 let curtainEl = null;
+let controllerEl = null;
 let hoverTimer = null;
 let lastHoveredTarget = null;
+let lastSelectedFocusTarget = null;
+
+function triggerHaptic(pattern = 35) {
+  if (
+    typeof navigator !== "undefined" &&
+    typeof navigator.vibrate === "function"
+  ) {
+    try {
+      navigator.vibrate(pattern);
+    } catch (_) {}
+  }
+}
 
 /**
  * Creates or retrieves the pitch-black curtain element.
@@ -39,6 +56,53 @@ function getOrCreateCurtain() {
     document.body.appendChild(curtain);
   }
   return curtain;
+}
+
+/**
+ * Creates or retrieves the giant tactile mobile controller.
+ */
+function getOrCreateMobileController() {
+  if (typeof document === "undefined") return null;
+  let ctrl = document.getElementById("blind-mobile-controller");
+  if (!ctrl) {
+    ctrl = document.createElement("nav");
+    ctrl.id = "blind-mobile-controller";
+    ctrl.className = "blind-mobile-controller";
+    ctrl.setAttribute("aria-label", "Control tactil pentru nevăzători");
+
+    ctrl.innerHTML = `
+      <div class="blind-controller-top">
+        <button type="button" class="btn-controller-exit" id="btn-controller-exit" aria-label="Ieși din Modul Ecran Negru (F9)">
+          <span aria-hidden="true">✕</span> Ieși din Mod Orb
+        </button>
+        <span class="blind-controller-hint" id="blind-controller-hint" aria-live="polite">Comenzi tactile cu vibrație</span>
+      </div>
+      <div class="blind-controller-buttons">
+        <button type="button" class="btn-tactile btn-tactile-prev" id="btn-tactile-prev" aria-label="Elementul anterior (Shift + Tab)">
+          <svg class="tactile-icon" viewBox="0 0 24 24" width="32" height="32" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span class="tactile-label">Anterior</span>
+        </button>
+
+        <button type="button" class="btn-tactile btn-tactile-select" id="btn-tactile-select" aria-label="Selectează sau apasă elementul curent (Enter)">
+          <svg class="tactile-icon" viewBox="0 0 24 24" width="36" height="36" aria-hidden="true">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span class="tactile-label">Selectează</span>
+        </button>
+
+        <button type="button" class="btn-tactile btn-tactile-next" id="btn-tactile-next" aria-label="Elementul următor (Tab)">
+          <svg class="tactile-icon" viewBox="0 0 24 24" width="32" height="32" aria-hidden="true">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+          <span class="tactile-label">Următor</span>
+        </button>
+      </div>
+    `;
+    document.body.appendChild(ctrl);
+  }
+  return ctrl;
 }
 
 /**
@@ -85,7 +149,6 @@ export function toggleVoiceover(forceState) {
     announceLive("Citire vocală activată.");
     updateVoiceoverButtons(true);
 
-    // Speak initial active element if focused
     setTimeout(() => {
       const active = document.activeElement;
       if (
@@ -93,6 +156,7 @@ export function toggleVoiceover(forceState) {
         active !== document.body &&
         active !== document.documentElement
       ) {
+        lastSelectedFocusTarget = active;
         voiceEngine.speakElement(active);
       }
     }, 300);
@@ -110,7 +174,7 @@ export function toggleVoiceover(forceState) {
 
   window.dispatchEvent(
     new CustomEvent("limpede:voiceover-changed", {
-      detail: { active: isVoiceoverActive },
+      detail: { active: isVoiceoverActive() },
     }),
   );
 
@@ -118,7 +182,7 @@ export function toggleVoiceover(forceState) {
 }
 
 /**
- * Toggles Full Blind Mode (Pitch-black curtain + voiceover).
+ * Toggles Full Blind Mode (Pitch-black curtain + voiceover + mobile tactile controller).
  * @param {boolean} [forceState]
  */
 export function toggleBlindMode(forceState) {
@@ -129,10 +193,12 @@ export function toggleBlindMode(forceState) {
   isBlindActive = nextState;
 
   const curtain = getOrCreateCurtain();
+  const ctrl = getOrCreateMobileController();
   const root = document.documentElement;
 
   if (isBlindActive) {
     if (curtain) curtain.classList.add("is-active");
+    if (ctrl) ctrl.classList.add("is-active");
     root.setAttribute("data-blind-mode", "active");
     _voiceoverState = true;
 
@@ -140,9 +206,8 @@ export function toggleBlindMode(forceState) {
       localStorage.setItem(BLIND_STORAGE_KEY, "true");
     } catch (_) {}
 
-    // Announce activation
     voiceEngine.speak(
-      "Modul ecran negru activat. Navigați folosind tasta Tab. Apăsați tasta F9 pentru a reveni la afișajul vizual.",
+      "Modul ecran negru activat. Navigați folosind butoanele tactile de jos sau tasta Tab. Apăsați F9 pentru a reveni.",
     );
 
     announceLive(
@@ -151,14 +216,20 @@ export function toggleBlindMode(forceState) {
     updateBlindButtons(true);
     updateVoiceoverButtons(true);
 
+    // Initial focus on first interactive element
     setTimeout(() => {
-      const active = document.activeElement;
-      if (active && active !== document.body) {
-        voiceEngine.speakElement(active);
+      const focusables = getFocusableElements();
+      if (focusables.length > 0) {
+        lastSelectedFocusTarget = focusables[0];
+        try {
+          focusables[0].focus();
+        } catch (_) {}
+        voiceEngine.speakElement(focusables[0]);
       }
     }, 400);
   } else {
     if (curtain) curtain.classList.remove("is-active");
+    if (ctrl) ctrl.classList.remove("is-active");
     root.removeAttribute("data-blind-mode");
 
     try {
@@ -169,7 +240,6 @@ export function toggleBlindMode(forceState) {
     announceLive("Modul ecran negru dezactivat.");
     updateBlindButtons(false);
 
-    // Restore voiceover button state to saved pref
     const savedVO = localStorage.getItem(VOICEOVER_STORAGE_KEY) === "true";
     _voiceoverState = savedVO;
     updateVoiceoverButtons(savedVO);
@@ -186,13 +256,14 @@ export function toggleBlindMode(forceState) {
 
 function updateBlindButtons(active) {
   const btns = document.querySelectorAll(
-    "#btn-header-blind, .btn-blind-toggle, [data-action='toggle-blind']",
+    "#btn-header-blind, #btn-topbar-blind-mobile, .btn-blind-toggle, [data-action='toggle-blind']",
   );
   btns.forEach((btn) => {
     btn.setAttribute("aria-pressed", active ? "true" : "false");
     btn.classList.toggle("is-active", active);
-    const label = active ? "Mod Orb: Activat (F9)" : "Mod Orb (F9)";
-    const span = btn.querySelector("span");
+    const label = active ? "Mod Orb: Activ" : "Mod Orb (F9)";
+    const span =
+      btn.querySelector("span:not([aria-hidden])") || btn.querySelector("span");
     if (span) span.textContent = label;
   });
 }
@@ -229,10 +300,106 @@ function announceLive(msg) {
 }
 
 /**
- * Initializes global event listeners for Voiceover, Blind Mode, and Hotkeys.
+ * Returns meaningful focusable elements, excluding the controller itself.
+ */
+function getFocusableElements() {
+  if (typeof document === "undefined") return [];
+  return Array.from(
+    document.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    ),
+  ).filter((el) => {
+    if (el.closest("#blind-mobile-controller")) return false;
+    if (el.closest("[aria-hidden='true']") && el.id !== "blind-curtain")
+      return false;
+    if (el.id === "btn-controller-exit") return false;
+    return true;
+  });
+}
+
+/**
+ * Moves focus forward (+1) or backward (-1) and reads the target immediately.
+ */
+function moveFocus(direction) {
+  const focusables = getFocusableElements();
+  if (!focusables.length) return;
+
+  let currentIdx = focusables.indexOf(
+    lastSelectedFocusTarget || document.activeElement,
+  );
+  let nextIdx = currentIdx + direction;
+
+  if (nextIdx < 0) nextIdx = focusables.length - 1;
+  if (nextIdx >= focusables.length) nextIdx = 0;
+
+  const target = focusables[nextIdx];
+  lastSelectedFocusTarget = target;
+
+  try {
+    target.focus({ preventScroll: false });
+  } catch (_) {}
+
+  voiceEngine.speakElement(target);
+  triggerHaptic(35);
+}
+
+/**
+ * Activates or clicks the currently selected focus element.
+ */
+function activateSelectedElement() {
+  triggerHaptic([40, 30, 60]);
+  const focusables = getFocusableElements();
+  const target = lastSelectedFocusTarget || document.activeElement;
+
+  if (
+    !target ||
+    target === document.body ||
+    target.closest("#blind-mobile-controller")
+  ) {
+    if (focusables.length > 0) {
+      lastSelectedFocusTarget = focusables[0];
+      focusables[0].focus();
+      voiceEngine.speakElement(focusables[0]);
+    }
+    return;
+  }
+
+  const roleText = formatElementAnnouncementRo(target);
+  voiceEngine.speak("Apasă: " + roleText);
+
+  setTimeout(() => {
+    try {
+      target.click();
+    } catch (_) {}
+  }, 120);
+}
+
+/**
+ * Injects a direct "Mod Orb" button in the mobile topbar for quick one-tap activation.
+ */
+function ensureMobileTopbarButton() {
+  if (typeof document === "undefined") return;
+  const topbarRight = document.querySelector(".topbar-right");
+  if (topbarRight && !document.getElementById("btn-topbar-blind-mobile")) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.id = "btn-topbar-blind-mobile";
+    btn.className = "btn-topbar-blind-mobile";
+    btn.setAttribute("aria-label", "Comută Modul Ecran Negru (Tasta F9)");
+    btn.setAttribute("aria-pressed", isBlindActive ? "true" : "false");
+    btn.innerHTML = `<span aria-hidden="true">🕶️</span> <span>${isBlindActive ? "Activ" : "Mod Orb"}</span>`;
+    topbarRight.insertBefore(btn, topbarRight.firstChild);
+  }
+}
+
+/**
+ * Initializes global event listeners for Voiceover, Blind Mode, Controller, and Hotkeys.
  */
 export function initBlindMode() {
   if (typeof window === "undefined" || typeof document === "undefined") return;
+
+  // Mount mobile topbar button
+  ensureMobileTopbarButton();
 
   // Restore stored state if previously enabled
   try {
@@ -252,6 +419,7 @@ export function initBlindMode() {
     // F9 toggle (Curtain on/off)
     if (e.key === "F9") {
       e.preventDefault();
+      triggerHaptic(40);
       toggleBlindMode();
       return;
     }
@@ -262,6 +430,7 @@ export function initBlindMode() {
       (e.key === "b" || e.key === "B" || e.key === "â" || e.key === "Â")
     ) {
       e.preventDefault();
+      triggerHaptic(40);
       toggleBlindMode();
       return;
     }
@@ -282,8 +451,13 @@ export function initBlindMode() {
       target === document.documentElement
     )
       return;
-    if (target.id === "blind-curtain") return;
+    if (
+      target.closest("#blind-mobile-controller") ||
+      target.id === "blind-curtain"
+    )
+      return;
 
+    lastSelectedFocusTarget = target;
     voiceEngine.speakElement(target);
   });
 
@@ -299,7 +473,11 @@ export function initBlindMode() {
         target === document.documentElement
       )
         return;
-      if (target.id === "blind-curtain") return;
+      if (
+        target.closest("#blind-mobile-controller") ||
+        target.id === "blind-curtain"
+      )
+        return;
 
       const readable =
         target.closest(
@@ -312,6 +490,7 @@ export function initBlindMode() {
       clearTimeout(hoverTimer);
       hoverTimer = setTimeout(() => {
         if (isVoiceoverActive() && readable) {
+          lastSelectedFocusTarget = readable;
           voiceEngine.speakElement(readable);
         }
       }, 130);
@@ -328,10 +507,11 @@ export function initBlindMode() {
       if (!target) return;
       if (
         target.closest(
-          "#btn-header-audio, #btn-header-blind, .btn-blind-toggle",
+          "#btn-header-audio, #btn-header-blind, #btn-topbar-blind-mobile, .btn-blind-toggle, #blind-mobile-controller",
         )
-      )
+      ) {
         return;
+      }
 
       const readable =
         target.closest(
@@ -339,6 +519,7 @@ export function initBlindMode() {
         ) || target;
 
       if (readable && readable !== document.body) {
+        lastSelectedFocusTarget = readable;
         voiceEngine.speakElement(readable);
       }
     },
@@ -348,28 +529,72 @@ export function initBlindMode() {
   // 5. Mobile Touch swipe navigation support
   setupTouchNavigation();
 
-  // 6. Bind UI buttons
-  updateBlindButtons(isBlindActive);
-  updateVoiceoverButtons(isVoiceoverActive());
-
+  // 6. Centralized Click Delegation (SINGLE handler to prevent double-toggle bugs!)
   document.addEventListener("click", (e) => {
+    // Tactile controller previous
+    const prevBtn = e.target.closest("#btn-tactile-prev");
+    if (prevBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      moveFocus(-1);
+      return;
+    }
+
+    // Tactile controller next
+    const nextBtn = e.target.closest("#btn-tactile-next");
+    if (nextBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      moveFocus(1);
+      return;
+    }
+
+    // Tactile controller select
+    const selectBtn = e.target.closest("#btn-tactile-select");
+    if (selectBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      activateSelectedElement();
+      return;
+    }
+
+    // Controller exit
+    const exitBtn = e.target.closest("#btn-controller-exit");
+    if (exitBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      triggerHaptic(50);
+      toggleBlindMode(false);
+      return;
+    }
+
+    // Blind mode toggle buttons (Desktop toolbar + Mobile topbar)
     const blindBtn = e.target.closest(
-      "#btn-header-blind, .btn-blind-toggle, [data-action='toggle-blind']",
+      "#btn-header-blind, #btn-topbar-blind-mobile, .btn-blind-toggle, [data-action='toggle-blind']",
     );
     if (blindBtn) {
       e.preventDefault();
+      e.stopPropagation();
+      triggerHaptic(40);
       toggleBlindMode();
       return;
     }
 
+    // Voiceover toggle buttons (Desktop audio button)
     const audioBtn = e.target.closest(
       "#btn-header-audio, .btn-audio-toggle, [data-action='toggle-voiceover']",
     );
     if (audioBtn) {
       e.preventDefault();
+      e.stopPropagation();
+      triggerHaptic(30);
       toggleVoiceover();
     }
   });
+
+  // Initial UI button sync
+  updateBlindButtons(isBlindActive);
+  updateVoiceoverButtons(isVoiceoverActive());
 }
 
 /**
@@ -385,7 +610,7 @@ function setupTouchNavigation() {
     "touchstart",
     (e) => {
       if (
-        (!isBlindActive && !isVoiceoverActive) ||
+        (!isBlindActive && !isVoiceoverActive()) ||
         !e.touches ||
         e.touches.length !== 1
       )
@@ -400,7 +625,7 @@ function setupTouchNavigation() {
     "touchend",
     (e) => {
       if (
-        (!isBlindActive && !isVoiceoverActive) ||
+        (!isBlindActive && !isVoiceoverActive()) ||
         !e.changedTouches ||
         e.changedTouches.length !== 1
       )
@@ -414,24 +639,6 @@ function setupTouchNavigation() {
     },
     { passive: true },
   );
-}
-
-function moveFocus(direction) {
-  const focusables = Array.from(
-    document.querySelectorAll(
-      'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
-    ),
-  ).filter((el) => el.offsetParent !== null || isBlindActive);
-
-  if (focusables.length === 0) return;
-
-  const currentIdx = focusables.indexOf(document.activeElement);
-  let nextIdx = currentIdx + direction;
-
-  if (nextIdx < 0) nextIdx = focusables.length - 1;
-  if (nextIdx >= focusables.length) nextIdx = 0;
-
-  focusables[nextIdx].focus();
 }
 
 // Auto-initialize when DOM is ready
@@ -448,6 +655,8 @@ if (typeof window !== "undefined") {
   window.LimpedeBlindMode = {
     toggle: toggleBlindMode,
     isActive: isBlindModeActive,
+    moveFocus,
+    activate: activateSelectedElement,
   };
   window.LimpedeVoiceover = {
     toggle: toggleVoiceover,

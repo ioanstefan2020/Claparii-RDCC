@@ -96,6 +96,14 @@
   --blind-active-text: #fafaf9;
   --blind-active-border: #000000;
 
+  /* Tactile Mobile Blind Controller Tokens */
+  --tactile-bg: #111111;
+  --tactile-surface: #262626;
+  --tactile-border: #525252;
+  --tactile-text: #ffffff;
+  --tactile-primary: #1d4ed8;
+  --tactile-primary-border: #60a5fa;
+
   /* Gemini Thematic Tokens (Light / Cald Mode) */
   --gemini-canvas: var(--bg-app);
   --gemini-surface: var(--bg-surface);

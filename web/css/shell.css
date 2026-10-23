@@ -3321,14 +3321,27 @@ mark.quote-highlight {
   }
 
   .gemini-chips-row {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: var(--space-xs);
     width: 100%;
+    padding: var(--space-xxs) 0;
+    scrollbar-width: none;
+  }
+
+  .gemini-chips-row::-webkit-scrollbar {
+    display: none;
   }
 
   .gemini-action-chip {
-    width: 100%;
-    justify-content: center;
+    flex: 0 0 auto;
+    width: auto;
+    min-height: 42px;
+    padding: 0 var(--space-sm);
+    font-size: 0.85rem;
+    white-space: nowrap;
   }
 
   .results-header {
@@ -3338,12 +3351,17 @@ mark.quote-highlight {
   }
 
   .results-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
     width: 100%;
-    flex-direction: column;
   }
 
-  .results-actions .btn {
-    width: 100%;
+  .results-actions .action-bar-btn {
+    flex: 1 1 calc(50% - var(--space-xs));
+    min-height: 40px;
+    justify-content: center;
+    font-size: 0.82rem;
   }
 
   .audio-actions-row {
@@ -3899,7 +3917,7 @@ mark.quote-highlight {
   width: 100vw;
   height: 100vh;
   background-color: var(--blind-curtain-bg) !important;
-  z-index: 2147483647;
+  z-index: 2147483640;
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.15s ease-in-out;
@@ -3942,4 +3960,155 @@ mark.quote-highlight {
   background-color: var(--blind-active-bg) !important;
   color: var(--blind-active-text) !important;
   border-color: var(--blind-active-border) !important;
+}
+
+/* Direct Mobile Topbar Blind Toggle Button */
+.btn-topbar-blind-mobile {
+  display: none;
+  align-items: center;
+  gap: 4px;
+  min-height: 38px;
+  height: 38px;
+  padding: 0 10px;
+  font-size: 0.82rem;
+  font-weight: var(--font-weight-bold);
+  border-radius: var(--radius-full);
+  background-color: var(--primary);
+  color: var(--primary-contrast);
+  border: 1px solid var(--primary);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-topbar-blind-mobile:hover {
+  background-color: var(--primary-hover);
+}
+
+.btn-topbar-blind-mobile.is-active,
+.btn-topbar-blind-mobile[aria-pressed="true"] {
+  background-color: var(--blind-active-bg) !important;
+  border-color: var(--blind-active-border) !important;
+  color: var(--blind-active-text) !important;
+}
+
+@media (max-width: 767px) {
+  .btn-topbar-blind-mobile {
+    display: inline-flex !important;
+  }
+}
+
+/* ================================================== */
+/* Tactile Mobile Blind Controller                    */
+/* ================================================== */
+.blind-mobile-controller {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--tactile-bg);
+  border-top: 3px solid var(--tactile-primary-border);
+  box-shadow: 0 -8px 24px var(--gemini-shadow);
+  padding: var(--space-sm) var(--space-md) calc(var(--space-md) + env(safe-area-inset-bottom, 0px));
+  z-index: 2147483647;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.blind-mobile-controller.is-active,
+[data-blind-mode="active"] .blind-mobile-controller {
+  display: flex !important;
+}
+
+.blind-controller-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.btn-controller-exit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  background-color: var(--tactile-surface);
+  color: var(--tactile-text);
+  border: 1.5px solid var(--tactile-border);
+  font-size: 0.85rem;
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+}
+
+.btn-controller-exit:active {
+  background-color: var(--error-bg);
+  border-color: var(--error-border);
+}
+
+.blind-controller-hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.blind-controller-buttons {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  width: 100%;
+}
+
+.btn-tactile {
+  flex: 1 1 0;
+  min-height: 68px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background-color: var(--tactile-surface);
+  color: var(--tactile-text);
+  border: 2px solid var(--tactile-border);
+  border-radius: var(--radius-lg);
+  font-size: 0.9rem;
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  transition: transform var(--transition-fast), background-color var(--transition-fast);
+}
+
+.btn-tactile:active {
+  transform: scale(0.95);
+  background-color: var(--tactile-primary);
+  border-color: var(--tactile-primary-border);
+}
+
+.btn-tactile-select {
+  flex: 1.2 1 0;
+  background-color: var(--tactile-primary);
+  border-color: var(--tactile-primary-border);
+  box-shadow: 0 0 12px var(--primary-hover);
+}
+
+.btn-tactile-select:active {
+  transform: scale(0.95);
+  filter: brightness(1.2);
+}
+
+.tactile-icon {
+  stroke-width: 2.5;
+  stroke: currentColor;
+  fill: none;
+}
+
+.tactile-label {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }

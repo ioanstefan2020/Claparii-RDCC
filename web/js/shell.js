@@ -509,10 +509,7 @@ if (typeof document !== "undefined") {
     btnBlind.className = "a11y-toolbar-btn btn-header-blind";
     btnBlind.setAttribute("aria-pressed", isBlindModeActive() ? "true" : "false");
     btnBlind.setAttribute("aria-label", "Comută modul pentru nevăzători: Ecran negru și citire vocală (Tasta F9)");
-    btnBlind.innerHTML = `<span>${isBlindModeActive() ? "Mod Orb: Activat (F9)" : "Mod Orb (F9)"}</span>`;
-    btnBlind.addEventListener("click", () => {
-      toggleBlindMode();
-    });
+    btnBlind.innerHTML = `<span>${isBlindModeActive() ? "Mod Orb: Activ" : "Mod Orb (F9)"}</span>`;
     a11yToolbar.appendChild(btnBlind);
   }
   });
