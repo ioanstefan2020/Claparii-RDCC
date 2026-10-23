@@ -1,0 +1,34 @@
+====================================================================
+  PrimaZi - Extensie Chrome pentru Claritate si Accesibilitate
+  Ghid de instalare rapida pe Windows (Google Chrome / Edge / Brave)
+====================================================================
+
+Pasi de instalare (dureaza 30 de secunde):
+
+1. DEZARHIVARE:
+   - Fa click dreapta pe fisierul "primazi-extensie-windows.zip"
+   - Alege "Extract All..." (Extrage tot...) si apasa Extract.
+   - Vei obtine un folder care contine fisierul "manifest.json".
+
+2. DESCHIDE EXTENSIILE IN CHROME:
+   - Deschide Google Chrome (sau Microsoft Edge / Brave).
+   - In bara de adrese scrie:
+     chrome://extensions
+     (sau edge://extensions pe Edge) si apasa Enter.
+
+3. ACTIVEAZA MODUL DEVELOPER:
+   - In coltul din dreapta-sus al paginii, activeaza comutatorul:
+     "Developer mode" (Mod dezvoltator).
+
+4. INCARCA EXTENSIA:
+   - In coltul din stanga-sus va aparea butonul:
+     "Load unpacked" (Incarca extensie despachetata).
+   - Apasa pe el si selecteaza folderul dezarhivat la Pasul 1
+     (folderul in care se afla fisierul manifest.json).
+
+5. GATA!
+   - Extensia "PrimaZi - Claritate la un click" este activa!
+   - Selecteaza orice text pe orice pagina web si apasa pe butonul
+     plutitor sau foloseste combinatia rapida de taste:
+     Alt + Shift + C
+====================================================================
