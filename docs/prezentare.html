@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Limpede — Prezentare Pitch & Live Demo (7 Minute)</title>
+  <style>
+    :root {
+      --primary: #0D9488;
+      --primary-hover: #0F766E;
+      --primary-subtle: #F0FDFA;
+      --dark: #0F172A;
+      --dark-card: #1E293B;
+      --amber: #F59E0B;
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --text: #0F172A;
+      --text-muted: #64748B;
+      --border: #CBD5E1;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--dark);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Top Controls Bar */
+    header.slide-nav {
+      background-color: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid #334155;
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #FFFFFF;
+      z-index: 100;
+    }
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-badge {
+      background-color: var(--primary);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+    }
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .nav-btn {
+      background-color: #334155;
+      color: white;
+      border: 1px solid #475569;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.15s ease;
+    }
+    .nav-btn:hover {
+      background-color: var(--primary);
+      border-color: var(--primary);
+    }
+    .slide-counter {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--amber);
+      min-width: 80px;
+      text-align: center;
+    }
+
+    /* Stage Area */
+    main.stage {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: radial-gradient(circle at center, #1E293B 0%, #0F172A 100%);
+    }
+
+    .slide-viewport {
+      width: 100%;
+      max-width: 1280px;
+      aspect-ratio: 16 / 9;
+      background-color: var(--bg);
+      border-radius: 12px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Slide Styles */
+    .slide {
+      display: none;
+      flex: 1;
+      padding: 44px 56px;
+      flex-direction: column;
+      animation: fadeIn 0.25s ease;
+    }
+    .slide.active {
+      display: flex;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .slide-dark {
+      background-color: var(--dark);
+      color: #FFFFFF;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+      width: fit-content;
+    }
+    .badge-teal { background-color: var(--primary); color: white; }
+    .badge-amber { background-color: var(--amber); color: var(--dark); }
+
+    .slide-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--dark);
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+    .slide-dark .slide-title {
+      color: #FFFFFF;
+    }
+    .slide-subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+    .slide-dark .slide-subtitle {
+      color: #94A3B8;
+    }
+
+    /* Cards Grid */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      flex: 1;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      flex: 1;
+    }
+    .grid-5 {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      flex: 1;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+    .card-dark {
+      background: var(--dark-card);
+      border-color: #334155;
+      color: #FFFFFF;
+    }
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 12px;
+    }
+    .card-dark .card-title {
+      color: var(--amber);
+    }
+    .card ul {
+      list-style-type: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .card ul li {
+      font-size: 0.92rem;
+      line-height: 1.45;
+      position: relative;
+      padding-left: 16px;
+    }
+    .card ul li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    /* Tables */
+    table.a11y-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    table.a11y-table th {
+      background-color: var(--primary);
+      color: white;
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 700;
+    }
+    table.a11y-table td {
+      padding: 8px 14px;
+      border-bottom: 1px solid #E2E8F0;
+      vertical-align: top;
+      color: var(--dark);
+    }
+    table.a11y-table tr:nth-child(even) td {
+      background-color: var(--primary-subtle);
+    }
+
+    /* Notes Drawer */
+    #notes-panel {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(15, 23, 42, 0.95);
+      border-top: 2px solid var(--amber);
+      color: #E2E8F0;
+      padding: 16px 24px;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      max-height: 35%;
+      overflow-y: auto;
+      display: none;
+      backdrop-filter: blur(8px);
+      z-index: 50;
+    }
+    #notes-panel.open { display: block; }
+    .notes-tag {
+      color: var(--amber);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      margin-bottom: 4px;
+    }
+
+    /* Footer progress */
+    .progress-bar-container {
+      height: 4px;
+      background-color: #334155;
+      width: 100%;
+    }
+    .progress-bar {
+      height: 100%;
+      background-color: var(--primary);
+      width: 12.5%;
+      transition: width 0.2s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="slide-nav">
+    <div class="brand-title">
+      <span class="brand-badge">PZ</span> Limpede — Pitch &amp; Live Demo (7:00 Min)
+    </div>
+    <div class="nav-controls">
+      <button class="nav-btn" onclick="toggleNotes()">📝 Note Prezentator [N]</button>
+      <button class="nav-btn" onclick="prevSlide()">◀ Înapoi [←]</button>
+      <span id="counter" class="slide-counter">1 / 8</span>
+      <button class="nav-btn" onclick="nextSlide()">Înainte [→] ▶</button>
+      <button class="nav-btn" onclick="toggleFullScreen()">⛶ Ecran Complet [F]</button>
+    </div>
+  </header>
+
+  <div class="progress-bar-container">
+    <div id="progress" class="progress-bar"></div>
+  </div>
+
+  <main class="stage">
+    <div class="slide-viewport">
+
+      <!-- SLIDE 1: Title & Hook -->
+      <section class="slide slide-dark active" data-notes="TIMING: 0:00 – 1:00
+„Faceți cunoștință cu Ana. Are 23 de ani, a terminat facultatea și astăzi este prima ei zi de muncă. Este inteligentă, entuziasmată și dornică să performeze. Dar în primele 2 ore de la sosire, primește un teanc de 40 de pagini de proceduri birocratice, e-mailuri cu termene vagi precum «cât mai repede» și instrucțiuni confuze.
+
+Ana are o dizabilitate invizibilă: ADHD și anxietate socială. Îi este o frică paralizantă să întrebe pentru a treia oară ce înseamnă «Formularul F-12» sau «SecInfo v3», de teamă să nu pară incompetentă în perioada de probă.
+
+În România și în Uniunea Europeană, 1 din 6 tineri trăiește cu o dizabilitate, iar 68% din abandonurile la primul job se întâmplă din cauza comunicării inaccesibile și a fricii de stigmatizare. Pentru ei am creat Limpede.”">
+        <div class="badge badge-teal">AccessABILITY Hackathon 2026</div>
+        <h1 class="slide-title" style="font-size: 3.5rem; margin-top: 10px;">Limpede</h1>
+        <p style="font-size: 1.6rem; font-weight: 700; color: var(--amber); margin-bottom: 8px;">Primul pas la primul job, fără bariere de înțelegere.</p>
+        <p style="font-size: 1.15rem; font-style: italic; color: #94A3B8; margin-bottom: 34px;">Adaptăm locul de muncă la om, nu invers.</p>
+
+        <div class="grid-3">
+          <div class="card card-dark" style="border-color: var(--amber);">
+            <div style="font-size: 2rem; font-weight: 800; color: var(--amber); margin-bottom: 8px;">68% Abandon</div>
+            <p style="font-size: 0.95rem; color: #CBD5E1; line-height: 1.45;">din abandonurile la primul job se produc din cauza comunicării inaccesibile și a fricii de stigmatizare.</p>
+          </div>
+          <div class="card card-dark" style="border-color: var(--primary);">
+            <div style="font-size: 2rem; font-weight: 800; color: var(--primary); margin-bottom: 8px;">1 din 6 Tineri</div>
+            <p style="font-size: 0.95rem; color: #CBD5E1; line-height: 1.45;">trăiește cu o dizabilitate sau o neurodivergență (ADHD, autism, anxietate, dislexie).</p>
+          </div>
+          <div class="card card-dark" style="border-color: #64748B;">
+            <div style="font-size: 2rem; font-weight: 800; color: #FFFFFF; margin-bottom: 8px;">Fără Diagnostic</div>
+            <p style="font-size: 0.95rem; color: #CBD5E1; line-height: 1.45;">Zero etichete de boală sau dosare medicale. Personalizarea se face 100% pe baza confortului ales.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 2: Ecosystem -->
+      <section class="slide" data-notes="TIMING: 1:00 – 1:40
+„Limpede este prima suită completă de asistență cognitivă la locul de muncă în limba română:
+1. Pentru Angajat: Asistent confidențial care clarifică documentele pas cu pas, extrage termene în calendar, sintetizează ședințe și redactează cereri oficiale de adaptare — fără să ceară vreodată diagnostic medical.
+2. Pentru Angajator: Portal de audit prin care departamentul HR măsoară lizibilitatea documentelor interne și generează automat versiuni în limbaj simplu (Easy-to-Read).
+3. Extensia de Browser Limpede: Funcționează direct pe orice aplicație web a companiei (Confluence, Jira, Gmail, Slack). Selectezi orice text stufos și primești claritate pe loc.”">
+        <div class="badge badge-teal">1:00 – 1:40 • Ecosistemul Limpede</div>
+        <h2 class="slide-title">Soluție Unificată: Platformă Web + Extensie Browser</h2>
+        <p class="slide-subtitle">O suită integrată care conectează angajatul cu compania și funcționează direct peste fluxul de lucru.</p>
+
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-title">1. Zona Angajatului</div>
+            <ul>
+              <li>Clarificare pas-cu-pas a procedurilor interne.</li>
+              <li>Ancore tactile mari pentru date, ore și coduri cheie.</li>
+              <li>Planificator cu protecție pe termene vagi &amp; export .ics.</li>
+              <li>Asistent de ședință: audio -&gt; decizii scrise.</li>
+              <li>Cereri de adaptare legale fără diagnostic medical.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title" style="color: var(--amber);">2. Zona Angajatorului (HR)</div>
+            <ul>
+              <li>Scanner de lizibilitate documente interne (scor 0-100).</li>
+              <li>Detector automat de jargon corporatist și acronime.</li>
+              <li>Semnalare fraze peste 25 de cuvinte greu de parcurs.</li>
+              <li>Generator automat versiune Easy-to-Read.</li>
+              <li>Conformitate directă ESG / CSRD și incluziune reală.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">3. Extensia de Browser</div>
+            <ul>
+              <li>Funcționează pe Confluence, Jira, Gmail, Slack.</li>
+              <li>Selectezi text stufos -&gt; apeși «Fă clar».</li>
+              <li>Card Shadow DOM complet izolat de stilurile paginii.</li>
+              <li>Comprimare la 35% («✂️ Mai scurt») și transformare în buline.</li>
+              <li>Sinteză vocală naturală în limba română (ro-RO).</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 3: Disabilities -->
+      <section class="slide" data-notes="TIMING: 1:40 – 2:15
+„Cum arată incluziunea reală în codul Limpede? Am mapat fiecare barieră la o rezolvare tehnică precisă:
+- Memorie: Cardul prioritar «De reținut imediat» plasează esențialul în fruntea ecranului.
+- ADHD: Eliminăm introducerile sterile; afișăm doar 3-4 pași scurți, imperativi, sub 10 cuvinte.
+- Vedere: Temă Contrast Ridicat 19.5:1 AAA, scalare la 200% și pilule tactile pentru ore și date.
+- Autism: Decodificăm cererile corporatiste indirecte și marcăm glumele ca «posibilă glumă — nesigur».
+- Dislexie: Fonturi licențiate OpenDyslexic și Atkinson Hyperlegible.
+- Auz: Transcriere cu extragere de decizii scrise și sarcini cu responsabili.
+- Motor: Totul funcționează 100% din tastatură, cu ținte tactile mari de peste 44px.”">
+        <div class="badge badge-teal">1:40 – 2:15 • Spectrul Funcțional</div>
+        <h2 class="slide-title">Incluziune Reală pentru Întreg Spectrul Funcțional</h2>
+        <p class="slide-subtitle">Design universal: adaptări concrete în cod pentru fiecare tip de nevoie cognitivă sau senzorială.</p>
+
+        <table class="a11y-table">
+          <thead>
+            <tr>
+              <th style="width: 25%;">Categorie / Nevoie</th>
+              <th style="width: 32%;">Bariera la Locul de Muncă</th>
+              <th style="width: 43%;">Cum rezolvă Limpede în cod?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Memorie &amp; Reținere</strong></td>
+              <td>Uitarea instrucțiunilor și a termenelor din prima zi</td>
+              <td>Card prioritar <strong>«📌 De reținut imediat»</strong>, dublare termeni cheie, pilule tactile.</td>
+            </tr>
+            <tr>
+              <td><strong>ADHD &amp; Atenție</strong></td>
+              <td>Pierderea șirului în documente lungi de 40 pagini</td>
+              <td>Filtru politețuri; <strong>maximum 3-4 pași sub 10 cuvinte</strong> cu verbe la imperativ.</td>
+            </tr>
+            <tr>
+              <td><strong>Vedere Scăzută / Fotofobie</strong></td>
+              <td>Efort masiv pe fonturi mici și tabele neclare</td>
+              <td>Temă <strong>Contrast Ridicat (19.5:1 AAA)</strong>, fonturi mărite 200%, pilule tactile mari.</td>
+            </tr>
+            <tr>
+              <td><strong>Autism &amp; Literalitate</strong></td>
+              <td>Confuzie la metafore corporatiste și glume</td>
+              <td>Decodificare cereri indirecte; etichetare obligatorie: <code>(posibilă glumă — nesigur)</code>.</td>
+            </tr>
+            <tr>
+              <td><strong>Dislexie</strong></td>
+              <td>Litere care dansează, oboseală la lectură</td>
+              <td>Fonturi <strong>OpenDyslexic</strong> și <strong>Atkinson Hyperlegible</strong>, riglă și ghidaj bionic.</td>
+            </tr>
+            <tr>
+              <td><strong>Deficiențe de Auz</strong></td>
+              <td>Pierderea deciziilor din ședințele verbale</td>
+              <td>Transformare audio în <strong>decizii scrise și sarcini cu responsabili asignați</strong>.</td>
+            </tr>
+            <tr>
+              <td><strong>Dizabilități Motorii</strong></td>
+              <td>Dificultate la folosirea mouse-ului</td>
+              <td>Ținte tactile mari (≥ 44px), navigare <strong>100% din tastatură</strong>, Alt + Shift + S.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- SLIDE 4: Competition -->
+      <section class="slide" data-notes="TIMING: 2:15 – 3:00
+„De ce nu folosește Ana pur și simplu ChatGPT sau un corector gramatical?
+1. Zero Halucinații: ChatGPT inventează date când nu știe. Limpede verifică algoritmic fiecare citat și oferă butonul «Arată în text» — dovada matematică a sursei.
+2. Protecție pe Termene Ambigue: La fraza «trimite cât mai repede», ChatGPT ar fi ghicit o dată oarecare. Limpede refuză să ghicească, marchează cu [De confirmat] și exportă fișier .ics.
+3. Confidențialitate & Fără Etichete Medicale: Nu cerem dosar medical. Preferințele se salvează 100% în browser (localStorage).
+4. Conformitate Europeană (EU AI Act): Interzicem strict recunoașterea emoțiilor la locul de muncă (Articolul 5).”">
+        <div class="badge badge-teal">2:15 – 3:00 • Diferențiatori</div>
+        <h2 class="slide-title">De Ce Nu ChatGPT, Grammarly sau Portalele HR Clasice?</h2>
+        <p class="slide-subtitle">Matrice de conformitate și protecție cognitivă.</p>
+
+        <table class="a11y-table">
+          <thead>
+            <tr>
+              <th>Criteriu de Evaluare</th>
+              <th>ChatGPT / Generic</th>
+              <th>Grammarly</th>
+              <th>Portaluri HR</th>
+              <th style="background-color: var(--amber); color: var(--dark);">Limpede (Noi)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Garantarea Adevărului</strong></td>
+              <td>❌ Halucinează date și termene</td>
+              <td>❌ Doar gramatică</td>
+              <td>❌ Nu simplifică</td>
+              <td><strong>✅ Verbatim Quote Grounding:</strong> «Arată în text» aprinde sursa</td>
+            </tr>
+            <tr>
+              <td><strong>Protecție Termene Ambigue</strong></td>
+              <td>❌ Ghicește o dată arbitrară</td>
+              <td>❌ Indiferent</td>
+              <td>❌ Creează confuzie</td>
+              <td><strong>✅ Refuză să ghicească:</strong> marchează [De confirmat] + .ics</td>
+            </tr>
+            <tr>
+              <td><strong>Fără Date Medicale Invazive</strong></td>
+              <td>❌ Cere diagnostic medical</td>
+              <td>❌ Fără profil de nevoi</td>
+              <td>❌ Cere certificat handicap</td>
+              <td><strong>✅ 100% Funcțional:</strong> confort personal, zero etichete</td>
+            </tr>
+            <tr>
+              <td><strong>Conformitate EU AI Act</strong></td>
+              <td>❌ Neclar</td>
+              <td>❌ Cloud SUA</td>
+              <td>❌ Static</td>
+              <td><strong>✅ Articolul 5:</strong> Interzice strict detectarea emoțiilor din voce/text</td>
+            </tr>
+            <tr>
+              <td><strong>Disponibilitate Offline</strong></td>
+              <td>❌ Doar online</td>
+              <td>❌ Doar online</td>
+              <td>❌ Variabil</td>
+              <td><strong>✅ Salvare 100% localStorage + motor euristic de rezervă</strong></td>
+            </tr>
+            <tr>
+              <td><strong>Integrare Oriunde pe Web</strong></td>
+              <td>❌ Copy-paste continuu</td>
+              <td>⚠️ Doar verificare text</td>
+              <td>❌ Închis</td>
+              <td><strong>✅ Extensie Browser:</strong> card plutitor peste orice aplicație</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- SLIDE 5: Demo Workflow -->
+      <section class="slide" data-notes="TIMING: 3:00 – 6:30 (3:30 min)
+1. (3:00-3:35) Deschide /employee/profile.html. Lipește: «am probleme mari de memorie și uit repede instrucțiunile...». Salvează.
+2. (3:35-4:35) Pe Acasă, încarcă ghid_onboarding_exemplu.pdf. Arată cardul «De reținut» și apasă «Arată în text» la Pasul 1 (se luminează în stânga!).
+3. (4:35-5:15) Pe Planificator (/employee/plan.html), încarcă exemplul managerial. Arată [De confirmat] și exportă calendar .ics.
+4. (5:15-6:00) Pe Tab-ul 2, selectează text. Apasă «Fă clar». Testează «✂️ Mai scurt», buline și vocea ro-RO.
+5. (6:00-6:30) Pe /employer/index.html, arată scorul de lizibilitate și generarea Easy-to-Read.">
+        <div class="badge badge-amber">3:00 – 6:30 • Live Demo</div>
+        <h2 class="slide-title">Scenariul Live Demo Pas cu Pas (3:30 Min)</h2>
+        <p class="slide-subtitle">Demonstrația practică a celor 5 capabilități fundamentale ale ecosistemului Limpede.</p>
+
+        <div class="grid-5">
+          <div class="card" style="border-top: 4px solid var(--primary);">
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--primary);">PASUL 1 (0:35)</div>
+            <div style="font-weight: 700; margin: 6px 0;">Profil &amp; Nevoi</div>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Definire stil în propriile cuvinte. Fără diagnostic medical. Salvare 100% pe calculatorul Anei.</p>
+          </div>
+          <div class="card" style="border-top: 4px solid var(--amber);">
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--amber);">PASUL 2 (1:00)</div>
+            <div style="font-weight: 700; margin: 6px 0;">PDF &amp; «Arată în text»</div>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Încărcare onboarding, card «De reținut», pilule tactile și verificarea citatului în sursă.</p>
+          </div>
+          <div class="card" style="border-top: 4px solid var(--primary);">
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--primary);">PASUL 3 (0:45)</div>
+            <div style="font-weight: 700; margin: 6px 0;">Planificator &amp; .ICS</div>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Email «cât mai repede», protecție [De confirmat] și export Google Calendar / Outlook.</p>
+          </div>
+          <div class="card" style="border-top: 4px solid var(--amber);">
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--amber);">PASUL 4 (0:45)</div>
+            <div style="font-weight: 700; margin: 6px 0;">Extensie Browser</div>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Selectare text pe orice site, butonul «Fă clar», «✂️ Mai scurt», buline și voce sintetică ro-RO.</p>
+          </div>
+          <div class="card" style="border-top: 4px solid var(--primary);">
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--primary);">PASUL 5 (0:25)</div>
+            <div style="font-weight: 700; margin: 6px 0;">Portal Angajator</div>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Scor lizibilitate (0-100), detector jargon corporatist și generare Easy-to-Read.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 6: Tech & Ethics -->
+      <section class="slide slide-dark" data-notes="TIMING: 6:30 – 6:45
+„Din punct de vedere tehnic și etic:
+- WCAG 2.2 AAA: Avem un contrast verificat de 19.5:1, operare 100% din tastatură și ținte tactile generoase.
+- Verbatim Grounding: Algoritmul nostru de backend verifică fiecare citat și elimină halucinațiile înainte ca răspunsul să ajungă la ecran.
+- EU AI Act: Respectăm strict Articolul 5 interzicând deducerea emoțiilor la locul de muncă.
+- Rezistență maximă: Aplicația funcționează online pe server, dar are și un motor euristic local capabil să ruleze complet offline fără internet.”">
+        <div class="badge badge-teal">6:30 – 6:45 • Arhitectură &amp; Etică AI</div>
+        <h2 class="slide-title">Arhitectură Tehnică Robustă &amp; Conformitate Europeană</h2>
+        <p class="slide-subtitle">Construit la cele mai exigente standarde de accesibilitate și securitate a datelor.</p>
+
+        <div class="grid-2">
+          <div class="card card-dark" style="border-color: var(--primary);">
+            <div class="card-title" style="color: var(--primary);">WCAG 2.2 AAA &amp; Ergonomie</div>
+            <p style="font-size: 0.95rem; color: #CBD5E1; line-height: 1.5;">Contrast măsurat de 19.5:1 (depășește cerința AAA de 7:1). Operare 100% din tastatură fără capcane de focus. Ținte tactile mari ≥ 44px și design tokens unificate.</p>
+          </div>
+          <div class="card card-dark" style="border-color: var(--amber);">
+            <div class="card-title" style="color: var(--amber);">Verbatim Quote Grounding</div>
+            <p style="font-size: 0.95rem; color: #CBD5E1; line-height: 1.5;">Algoritm backend verify_quotes garantează zero halucinații. Fiecare dată, nume sau acțiune poartă un citat textual verificat direct în documentul original semnat.</p>
+          </div>
+          <div class="card card-dark" style="border-color: #64748B;">
+            <div class="card-title" style="color: #FFFFFF;">EU AI Act &amp; Confidențialitate</div>
+            <p style="font-size: 0.95rem; color: #CBD5E1; line-height: 1.5;">Conformitate deplină cu Articolul 5 (fără detecție de emoții). Zero stocare de dosare medicale sau diagnostice. Preferințele rămân 100% în localStorage-ul Anei.</p>
+          </div>
+          <div class="card card-dark" style="border-color: var(--primary);">
+            <div class="card-title" style="color: var(--primary);">Circuit Breaker &amp; Fallback Chain</div>
+            <p style="font-size: 0.95rem; color: #CBD5E1; line-height: 1.5;">Lanț inteligent de modele: Gemini -&gt; Groq -&gt; Ollama -&gt; Mock. Motor euristic local offline capabil să funcționeze chiar dacă rețeaua sau internetul pică complet.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 7: Business Model & Conclusion -->
+      <section class="slide" data-notes="TIMING: 6:45 – 7:00
+„Cu Limpede, prima zi de muncă nu mai este un test de anduranță cognitivă sau o sursă de panică, ci un parteneriat bazat pe claritate, demnitate și performanță.
+
+Vă mulțumim din suflet și așteptăm cu entuziasm întrebările dumneavoastră!”">
+        <div class="badge badge-teal">6:45 – 7:00 • Sustenabilitate &amp; Încheiere</div>
+        <h2 class="slide-title">Model Sustenabil B2B &amp; Impact Social Real</h2>
+        <p class="slide-subtitle">Cum transformăm Limpede dintr-un proiect de hackathon într-un standard național de incluziune.</p>
+
+        <div class="grid-3" style="margin-bottom: 24px;">
+          <div class="card" style="border-top: 4px solid var(--primary);">
+            <div class="card-title">Pentru Angajați</div>
+            <p style="font-size: 0.95rem; color: var(--dark); line-height: 1.45;"><strong>100% Gratuit, permanent.</strong> Fără reclame, fără bariere financiare, fără partajare de date personale.</p>
+          </div>
+          <div class="card" style="border-top: 4px solid var(--amber);">
+            <div class="card-title" style="color: var(--amber);">B2B (Companii &amp; HR)</div>
+            <p style="font-size: 0.95rem; color: var(--dark); line-height: 1.45;">Abonament SaaS pentru portalul de audit de lizibilitate, conformitate CSRD/ESG și rapoarte de incluziune.</p>
+          </div>
+          <div class="card" style="border-top: 4px solid #334155;">
+            <div class="card-title" style="color: #334155;">Parteneriate Strategice</div>
+            <p style="font-size: 0.95rem; color: var(--dark); line-height: 1.45;">Centre de carieră universitare, ONG-uri de sprijin și asociații ale persoanelor neurodivergente.</p>
+          </div>
+        </div>
+
+        <div class="card" style="background-color: var(--dark); border-color: var(--amber); color: white; padding: 20px 30px; text-align: center;">
+          <p style="font-size: 1.25rem; font-style: italic; font-weight: 700; line-height: 1.4;">
+            „Cu Limpede, prima zi de muncă nu mai este un test de anduranță cognitivă sau o sursă de panică, ci un parteneriat bazat pe claritate, demnitate și performanță.”
+          </p>
+        </div>
+      </section>
+
+      <!-- SLIDE 8: Q&A -->
+      <section class="slide slide-dark" data-notes="TIMING: 7:00 – 10:00 (Q&A)
+- Î: «De ce nu se trimit datele pe server?» -> R: „Pentru a respecta 100% confidențialitatea Anei și GDPR. Preferințele se salvează în localStorage.”
+- Î: «Cum garantați că nu halucinează?» -> R: „Funcția noastră verify_quotes compară matematic fiecare citat cu textul sursă. Dacă un citat nu există verbatim, este eliminat automat.”
+- Î: «De ce nu detectați emoțiile din voce?» -> R: „Regulamentul European AI Act interzice explicit detectarea emoțiilor la locul de muncă (Art. 5). Ne concentrăm doar pe transcriere și acțiuni concrete.”">
+        <div style="text-align: center; margin-top: 20px;">
+          <div class="badge badge-amber" style="margin: 0 auto 16px;">Sesiune Q&amp;A Juriu (3:00 Min)</div>
+          <h1 class="slide-title" style="font-size: 3.2rem; margin-bottom: 12px;">Vă mulțumim!</h1>
+          <p style="font-size: 1.35rem; color: #94A3B8; margin-bottom: 36px;">Așteptăm cu drag întrebările dumneavoastră.</p>
+
+          <div class="grid-3" style="max-width: 900px; margin: 0 auto;">
+            <div class="card card-dark" style="border-color: var(--primary);">
+              <div style="font-size: 1.6rem; font-weight: 800; color: var(--primary); margin-bottom: 6px;">441 Teste</div>
+              <p style="font-size: 0.9rem; color: #CBD5E1;">100% teste trecute (backend, contracte, a11y, tokens).</p>
+            </div>
+            <div class="card card-dark" style="border-color: var(--amber);">
+              <div style="font-size: 1.6rem; font-weight: 800; color: var(--amber); margin-bottom: 6px;">WCAG 2.2 AAA</div>
+              <p style="font-size: 0.9rem; color: #CBD5E1;">Contrast 19.5:1, navigare completă din tastatură.</p>
+            </div>
+            <div class="card card-dark" style="border-color: var(--primary);">
+              <div style="font-size: 1.6rem; font-weight: 800; color: var(--primary); margin-bottom: 6px;">Manifest V3</div>
+              <p style="font-size: 0.9rem; color: #CBD5E1;">Extensie de browser gata de utilizat pe orice site.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Notes Drawer -->
+      <div id="notes-panel">
+        <div class="notes-tag">📝 Notițe Prezentator (Spoken Script &amp; Cues):</div>
+        <div id="notes-content"></div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const counter = document.getElementById('counter');
+    const progressBar = document.getElementById('progress');
+    const notesPanel = document.getElementById('notes-panel');
+    const notesContent = document.getElementById('notes-content');
+    let currentIndex = 0;
+
+    function updateSlide(index) {
+      if (index < 0) index = 0;
+      if (index >= slides.length) index = slides.length - 1;
+      currentIndex = index;
+
+      slides.forEach((s, i) => {
+        s.classList.toggle('active', i === currentIndex);
+      });
+
+      counter.textContent = `${currentIndex + 1} / ${slides.length}`;
+      progressBar.style.width = `${((currentIndex + 1) / slides.length) * 100}%`;
+
+      const activeSlide = slides[currentIndex];
+      const rawNotes = activeSlide.getAttribute('data-notes') || 'Fără notițe.';
+      notesContent.innerHTML = rawNotes.replace(/\n/g, '<br>');
+    }
+
+    function prevSlide() { updateSlide(currentIndex - 1); }
+    function nextSlide() { updateSlide(currentIndex + 1); }
+
+    function toggleNotes() {
+      notesPanel.classList.toggle('open');
+    }
+
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        prevSlide();
+      } else if (e.key === 'n' || e.key === 'N') {
+        toggleNotes();
+      } else if (e.key === 'f' || e.key === 'F') {
+        toggleFullScreen();
+      }
+    });
+
+    updateSlide(0);
+  </script>
+</body>
+</html>
